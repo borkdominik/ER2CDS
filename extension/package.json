@@ -9,17 +9,37 @@
   "categories": [
     "Programming Languages"
   ],
+  "main": "./out/extension",
   "contributes": {
-    "languages": [{
-      "id": "er2cds",
-      "aliases": ["er2cds", "er2cds"],
-      "extensions": [".er2cds"],
-      "configuration": "./language-configuration.json"
-    }],
-    "grammars": [{
-      "language": "er2cds",
-      "scopeName": "source.er2cds",
-      "path": "./syntaxes/er2cds.tmLanguage.json"
-    }]
+    "languages": [
+      {
+        "id": "er2cds",
+        "aliases": [
+          "er2cds",
+          "er2cds"
+        ],
+        "extensions": [
+          ".er2cds"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "er2cds",
+        "scopeName": "source.er2cds",
+        "path": "./syntaxes/er2cds.tmLanguage.json"
+      }
+    ]
+  },
+  "dependencies": {
+    "sprotty-vscode": "^1.0.0",
+    "sprotty-vscode-webview": "^1.0.0",
+    "typescript": "^5.3.3",
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "@types/vscode": "^1.86.0"
   }
 }
