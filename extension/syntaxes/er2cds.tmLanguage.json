@@ -1,0 +1,91 @@
+{
+	"name": "er2cds",
+	"scopeName": "source.er2cds",
+	"patterns": [
+		{
+			"name": "constant.language.er2cds",
+			"match": "\\b(er2cds)\\b"
+		},
+		{
+			"include": "#entities"
+		},
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#comments"
+		},
+		{
+			"include": "#strings"
+		}
+	],
+	"repository": {
+		"entities": {
+			"patterns": [
+				{
+					"name": "entity.name.type.er2cds",
+					"match": "\\b(entity|relationship)\\b"
+				},
+				{
+					"name": "entity.name.tag.er2cds",
+					"match": "\\b(extends|weak)\\b"
+				},
+				{
+					"name": "entity.other.attribute-name.er2cds",
+					"match": "\\b(key|derived|multivalued|optional|partial-key)\\b"
+				}
+			]
+		},
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.operator.er2cds",
+					"match": "\\b(->|=|:)\\b"
+				}
+			]
+		},
+		"comments": {
+			"patterns": [
+				{
+					"name": "comment.block.er2cds",
+					"begin": "/\\*",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.block.comment.er2cds"
+						}
+					},
+					"end": "\\*/",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.block.comment.er2cds"
+						}
+					}
+				},
+				{
+					"name": "comment.line.er2cds",
+					"begin": "(^\\s+)?(?=//)",
+					"beginCaptures": {
+						"1": {
+							"name": "punctuation.definition.line.comment.er2cds"
+						}
+					},
+					"end": "(?=$)"
+				}
+			]
+		},
+		"strings": {
+			"patterns": [
+				{
+					"name": "string.quoted.double.er2cds",
+					"begin": "\"",
+					"end": "\""
+				},
+				{
+					"name": "string.quoted.single.er2cds",
+					"begin": "'",
+					"end": "'"
+				}
+			]
+		}
+	}
+}

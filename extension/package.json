@@ -18,7 +18,7 @@
     }],
     "grammars": [{
       "language": "er2cds",
-      "scopeName": "",
+      "scopeName": "source.er2cds",
       "path": "./syntaxes/er2cds.tmLanguage.json"
     }]
   }
