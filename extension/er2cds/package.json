@@ -1,0 +1,25 @@
+{
+  "name": "er2cds",
+  "displayName": "er2cds",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.86.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "er2cds",
+      "aliases": ["er2cds", "er2cds"],
+      "extensions": [".er2cds"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "er2cds",
+      "scopeName": "",
+      "path": "./syntaxes/er2cds.tmLanguage.json"
+    }]
+  }
+}
