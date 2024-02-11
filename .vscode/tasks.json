@@ -27,6 +27,16 @@
             "options": {
                 "cwd": "${workspaceFolder}/language-server"
             }
+        },
+        {
+            "label": "Webview Build",
+            "command": "tsc",
+            "args": [
+                "-b"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/webview"
+            }
         }
     ]
 }

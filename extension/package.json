@@ -1,7 +1,5 @@
 {
   "name": "er2cds",
-  "displayName": "er2cds",
-  "description": "",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.86.0"
@@ -30,7 +28,74 @@
         "scopeName": "source.er2cds",
         "path": "./syntaxes/er2cds.tmLanguage.json"
       }
-    ]
+    ],
+    "customEditors": [
+      {
+        "viewType": "er2cds",
+        "displayName": "ER2CDS Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.er2cds"
+          }
+        ],
+        "priority": "option"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "er2cds-container",
+          "title": "ER2CDS",
+          "icon": "$(symbol-structure)"
+        }
+      ]
+    },
+    "views": {
+      "er2cds-container": [
+        {
+          "id": "er2cds",
+          "type": "webview",
+          "name": "ER2CDS"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "er2cds.diagram.open",
+        "title": "Open in Diagram",
+        "icon": "$(symbol-structure)",
+        "category": "ER2CDS Diagram"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "er2cds.diagram.open",
+          "when": "editorLangId == 'er2cds'"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "er2cds.diagram.open",
+          "when": "editorLangId == 'er2cds'",
+          "group": "navigation"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "er2cds.diagram.open",
+          "when": "editorLangId == 'er2cds'",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "er2cds.diagram.open",
+          "when": "resourceExtname == '.er2cds'",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "dependencies": {
     "sprotty-vscode": "^1.0.0",
