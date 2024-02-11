@@ -1,16 +1,26 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "sourceMap": true,
-        "rootDir": "src",
-        "outDir": "out",
-    },
-    "include": [
-        "src"
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "Node16",
+    "lib": [
+      "ESNext"
     ],
-    "exclude": [
-        "node_modules",
-        ".vscode-test"
-    ]
+    "sourceMap": true,
+    "outDir": "out",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    "noImplicitOverride": true,
+    "moduleResolution": "Node16",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "out",
+    "node_modules"
+  ]
 }

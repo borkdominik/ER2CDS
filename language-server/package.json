@@ -1,8 +1,30 @@
 {
-  "dependencies": {
-    "@types/node": "^20.11.17",
-    "typescript": "^5.3.3",
-    "vscode-languageserver": "^9.0.1",
-    "vscode-languageserver-textdocument": "^1.0.11"
-  }
+    "name": "er2cds",
+    "version": "0.0.1",
+    "files": [
+        "out",
+        "src"
+    ],
+    "type": "module",
+    "scripts": {
+        "build": "tsc -b tsconfig.json",
+        "watch": "tsc -b tsconfig.json --watch",
+        "lint": "eslint src --ext ts",
+        "langium:generate": "langium generate",
+        "langium:watch": "langium generate --watch"
+    },
+    "dependencies": {
+        "elkjs": "^0.9.1",
+        "langium": "~2.1.0",
+        "langium-sprotty": "^2.1.0",
+        "sprotty-elk": "^1.1.0"
+    },
+    "devDependencies": {
+        "@types/node": "~16.18.41",
+        "@typescript-eslint/eslint-plugin": "~6.4.1",
+        "@typescript-eslint/parser": "~6.4.1",
+        "eslint": "~8.47.0",
+        "langium-cli": "~2.1.0",
+        "typescript": "~5.1.6"
+    }
 }
