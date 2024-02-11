@@ -1,10 +1,9 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { registerDefaultCommands, registerTextEditorSync } from 'sprotty-vscode';
-import { LspSprottyEditorProvider, LspSprottyViewProvider, LspWebviewPanelManager } from 'sprotty-vscode/lib/lsp';
+import { registerDefaultCommands } from 'sprotty-vscode';
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node';
-import { Messenger } from 'vscode-messenger';
+import { ER2CDSSprottyViewProvider } from './view-provider';
 
 let languageClient: LanguageClient;
 
@@ -17,59 +16,16 @@ export function activate(context: vscode.ExtensionContext) {
             }
         });
 
-    const diagramMode = process.env.DIAGRAM_MODE || 'panel';
-    if (!['panel', 'editor', 'view'].includes(diagramMode)) {
-        throw new Error("The environment variable 'DIAGRAM_MODE' must be set to 'panel', 'editor' or 'view'.");
-    }
-
     languageClient = createLanguageClient(context);
 
-    if (diagramMode === 'panel') {
-        // Set up webview panel manager for freestyle webviews
-        const webviewPanelManager = new LspWebviewPanelManager({
-            extensionUri: context.extensionUri,
-            defaultDiagramType: 'er2cds',
-            languageClient,
-            supportedFileExtensions: ['.er2cds']
-        });
-        registerDefaultCommands(webviewPanelManager, context, { extensionPrefix: 'er2cds' });
-    }
+    const sprottyViewProvider = new ER2CDSSprottyViewProvider({
+        extensionUri: context.extensionUri,
+        viewType: 'er2cds',
+        languageClient,
+        supportedFileExtensions: ['.er2cds']
+    });
 
-    if (diagramMode === 'editor') {
-        // Set up webview editor associated with file type
-        const webviewEditorProvider = new LspSprottyEditorProvider({
-            extensionUri: context.extensionUri,
-            viewType: 'er2cds',
-            languageClient,
-            supportedFileExtensions: ['.er2cds']
-        });
-        context.subscriptions.push(
-            vscode.window.registerCustomEditorProvider('er2cds', webviewEditorProvider, {
-                webviewOptions: { retainContextWhenHidden: true }
-            })
-        );
-        registerDefaultCommands(webviewEditorProvider, context, { extensionPrefix: 'er2cds' });
-    }
-
-    if (diagramMode === 'view') {
-        // Set up webview view shown in the side panel
-        const webviewViewProvider = new LspSprottyViewProvider({
-            extensionUri: context.extensionUri,
-            viewType: 'er2cds',
-            languageClient,
-            supportedFileExtensions: ['.er2cds'],
-            openActiveEditor: true,
-            messenger: new Messenger({ ignoreHiddenViews: false })
-        });
-        context.subscriptions.push(
-            vscode.window.registerWebviewViewProvider('er2cds', webviewViewProvider, {
-                webviewOptions: { retainContextWhenHidden: true }
-            })
-        );
-        registerDefaultCommands(webviewViewProvider, context, { extensionPrefix: 'er2cds' });
-        registerTextEditorSync(webviewViewProvider, context);
-    }
-
+    registerDefaultCommands(sprottyViewProvider, context, { extensionPrefix: 'er2cds' });
 }
 
 function createLanguageClient(context: vscode.ExtensionContext): LanguageClient {

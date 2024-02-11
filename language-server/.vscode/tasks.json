@@ -4,14 +4,13 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build er-2-cds",
+            "label": "Build er2cds",
             "command": "npm run langium:generate && npm run build",
             "type": "shell",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "detail": "Langium: Generate grammar and build the er-2-cds language",
             "icon": {
                 "color": "terminal.ansiGreen",
                 "id": "server-process"

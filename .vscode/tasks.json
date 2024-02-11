@@ -5,7 +5,8 @@
             "label": "Build ER2CDS",
             "dependsOn": [
                 "Extension Build",
-                "Language Server Build"
+                "Language Server Build",
+                "Webview Build"
             ]
         },
         {

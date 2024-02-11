@@ -10,8 +10,5 @@
     "devDependencies": {
         "esbuild": "^0.19.4",
         "typescript": "~5.2.2"
-    },
-    "scripts": {
-        "build": "esbuild ./src/index.ts --bundle --sourcemap --outfile=./static/index.js"
     }
 }
