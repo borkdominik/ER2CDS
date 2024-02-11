@@ -8,12 +8,6 @@ import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } f
 let languageClient: LanguageClient;
 
 export function activate(context: vscode.ExtensionContext) {
-    //Create output channel
-    let orange = vscode.window.createOutputChannel("Orange");
-
-    //Write to output.
-    orange.appendLine("I am a banana.");
-
     const openHelp = 'Open Help';
     vscode.window.showInformationMessage('ER2CDS Extension is active.', ...[openHelp])
         .then((selection) => {

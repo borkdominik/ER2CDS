@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "name": "Launch ER2CDS",
+            "type": "extensionHost",
+            "request": "launch",
+            "preLaunchTask": "Build ER2CDS",
+            "args": [
+                "--extensionDevelopmentPath=${workspaceFolder}/extension"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/extension/out/**/*.js"
+            ]
+        }
+    ]
+}
