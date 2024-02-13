@@ -7,6 +7,8 @@ import { ER2CDSValidator, registerValidationChecks } from './er2cds-validator.js
 import { ER2CDSDiagramGenerator } from './er2cds-diagram.js';
 import { ER2CDSLayoutConfigurator } from './er2cds-layout.js';
 
+const ElkConstructor = require('elkjs/lib/elk.bundled.js').default;
+
 /**
  * Declaration of custom services - add your own service classes here.
  */
@@ -41,7 +43,7 @@ export const ER2CDSModule: Module<ER2CDSServices, PartialLangiumServices & Sprot
         ModelLayoutEngine: services => new ElkLayoutEngine(services.layout.ElkFactory, services.layout.ElementFilter, services.layout.LayoutConfigurator) as any
     },
     layout: {
-        ElkFactory: () => () => ({ algorithms: ['layered'] }),
+        ElkFactory: () => () => new ElkConstructor({ algorithms: ['layered'] }),
         ElementFilter: () => new DefaultElementFilter,
         LayoutConfigurator: () => new ER2CDSLayoutConfigurator
     }

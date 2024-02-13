@@ -141,10 +141,13 @@
   "devDependencies": {
     "@types/node": "^20.11.17",
     "@types/vscode": "^1.86.0",
-    "typescript": "^5.3.3"
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
+    "webpack": "^5.90.1",
+    "webpack-cli": "^5.1.4"
   },
   "scripts": {
     "clean": "rm -rf out",
-    "build": "tsc -b"
+    "build": "webpack --mode=development"
   }
 }

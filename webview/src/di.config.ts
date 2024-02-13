@@ -2,10 +2,14 @@ import { Container, ContainerModule } from 'inversify';
 import {
     configureCommand,
     configureModelElement, CreateElementCommand, editLabelFeature, hoverFeedbackFeature, HtmlRootImpl, HtmlRootView, loadDefaultModules,
+    overrideViewerOptions,
     PolylineEdgeView, popupFeature, PreRenderedElementImpl, PreRenderedView, RectangularNodeView,
     SGraphImpl, SGraphView, SLabelImpl, SLabelView, SModelRootImpl, SRoutingHandleImpl, SRoutingHandleView,
 } from 'sprotty';
 import { StatesNode, StatesEdge } from './model';
+
+import '../css/diagram.css';
+import 'sprotty/css/sprotty.css';
 
 export default (containerId: string) => {
     const myModule = new ContainerModule((bind, unbind, isBound, rebind) => {
@@ -36,5 +40,9 @@ export default (containerId: string) => {
     const container = new Container();
     loadDefaultModules(container);
     container.load(myModule);
+    overrideViewerOptions(container, {
+        needsClientLayout: true,
+        needsServerLayout: true
+    });
     return container;
 }

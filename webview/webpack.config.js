@@ -1,4 +1,7 @@
 // @ts-check
+
+'use strict';
+
 const path = require('path');
 
 const outputPath = path.resolve(__dirname, 'out');
