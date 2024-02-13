@@ -11,9 +11,10 @@
         },
         {
             "label": "Extension Build",
-            "command": "tsc",
+            "command": "npm",
             "args": [
-                "-b"
+                "run",
+                "build"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/extension"
@@ -21,9 +22,10 @@
         },
         {
             "label": "Language Server Build",
-            "command": "tsc",
+            "command": "npm",
             "args": [
-                "-b"
+                "run",
+                "build"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/language-server"
@@ -31,9 +33,10 @@
         },
         {
             "label": "Webview Build",
-            "command": "tsc",
+            "command": "npm",
             "args": [
-                "-b"
+                "run",
+                "build"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/webview"

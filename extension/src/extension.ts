@@ -18,14 +18,19 @@ export function activate(context: vscode.ExtensionContext) {
 
     languageClient = createLanguageClient(context);
 
-    const sprottyViewProvider = new ER2CDSSprottyViewProvider({
+    const webviewViewProvider = new ER2CDSSprottyViewProvider({
         extensionUri: context.extensionUri,
         viewType: 'er2cds',
         languageClient,
         supportedFileExtensions: ['.er2cds']
     });
 
-    registerDefaultCommands(sprottyViewProvider, context, { extensionPrefix: 'er2cds' });
+    context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider('er2cds', webviewViewProvider, {
+            webviewOptions: { retainContextWhenHidden: true }
+        })
+    );
+    registerDefaultCommands(webviewViewProvider, context, { extensionPrefix: 'er2cds' });
 }
 
 function createLanguageClient(context: vscode.ExtensionContext): LanguageClient {

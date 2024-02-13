@@ -1,52 +1,10 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { ActionMessage } from 'sprotty-protocol';
-import { SprottyViewProvider, SprottyViewProviderOptions, WebviewContainer, WebviewEndpoint } from 'sprotty-vscode';
+import { WebviewContainer, WebviewEndpoint } from 'sprotty-vscode';
 import { SprottyDiagramIdentifier } from 'sprotty-vscode-protocol';
-import { acceptMessageType, openInTextEditorMessageType, openInTextEditor, didCloseMessageType, LspWebviewEndpoint } from 'sprotty-vscode/lib/lsp';
-import { LanguageClient } from 'vscode-languageclient/node';
+import {  LspSprottyViewProvider } from 'sprotty-vscode/lib/lsp';
 
-export interface ER2CDSSprottyViewProviderOptions extends SprottyViewProviderOptions {
-    languageClient: LanguageClient
-}
-
-export class ER2CDSSprottyViewProvider extends SprottyViewProvider {
-    constructor(options: ER2CDSSprottyViewProviderOptions) {
-        super(options);
-        options.languageClient.onNotification(acceptMessageType, message => this.acceptFromLanguageServer(message));
-        options.languageClient.onNotification(openInTextEditorMessageType, message => openInTextEditor(message));
-    }
-
-    get languageClient(): LanguageClient {
-        return (this.options as ER2CDSSprottyViewProviderOptions).languageClient;
-    }
-
-    protected override createEndpoint(webviewContainer: vscode.WebviewView, identifier?: SprottyDiagramIdentifier): WebviewEndpoint {
-        const participant = this.messenger.registerWebviewView(webviewContainer);
-        return new LspWebviewEndpoint({
-            languageClient: this.languageClient,
-            webviewContainer,
-            messenger: this.messenger,
-            messageParticipant: participant,
-            identifier
-        });
-    }
-
-    protected override didCloseWebview(endpoint: WebviewEndpoint): void {
-        super.didCloseWebview(endpoint);
-        try {
-            this.languageClient.sendNotification(didCloseMessageType, endpoint.diagramIdentifier?.clientId);
-        } catch (err) {
-            // Ignore the error and proceed
-        }
-    }
-
-    protected acceptFromLanguageServer(message: ActionMessage): void {
-        if (this.endpoint) {
-            this.endpoint.sendAction(message);
-        }
-    }
-
+export class ER2CDSSprottyViewProvider extends LspSprottyViewProvider {
     protected override configureWebview(webviewView: vscode.WebviewView, endpoint: WebviewEndpoint, cancelToken: vscode.CancellationToken): Promise<void> | void {
         const extensionPath = this.options.extensionUri.fsPath;
         webviewView.webview.options = {
@@ -77,7 +35,7 @@ export class ER2CDSSprottyViewProvider extends SprottyViewProvider {
                         </head>
                         <body>
                             <div id="${identifier.clientId}_container" style="height: 100%;"></div>
-                            <script src="${transformUri(options.scriptUri)}"></script>
+                            <script type="module" src="${transformUri(options.scriptUri)}"></script>
                         </body>
                     </html>`;
     }

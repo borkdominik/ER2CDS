@@ -2,18 +2,18 @@
   "compilerOptions": {
     "target": "ES2017",
     "module": "Node16",
+    "moduleResolution": "Node16",
     "lib": [
       "ESNext"
     ],
     "sourceMap": true,
     "rootDir": "src",
     "outDir": "out",
+    "esModuleInterop": true,
     "strict": true,
     "noUnusedLocals": true,
     "noImplicitReturns": true,
     "noImplicitOverride": true,
-    "moduleResolution": "Node16",
-    "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },

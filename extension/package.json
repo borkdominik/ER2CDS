@@ -65,6 +65,26 @@
         "title": "Open in Diagram",
         "icon": "$(symbol-structure)",
         "category": "ER2CDS Diagram"
+      },
+      {
+        "command": "er2cds.diagram.fit",
+        "title": "Fit to Screen",
+        "category": "ER2CDS Diagram"
+      },
+      {
+        "command": "er2cds.diagram.center",
+        "title": "Center selection",
+        "category": "ER2CDS Diagram"
+      },
+      {
+        "command": "er2cds.diagram.delete",
+        "title": "Delete selected element",
+        "category": "ER2CDS Diagram"
+      },
+      {
+        "command": "er2cds.diagram.export",
+        "title": "Export diagram to SVG",
+        "category": "ER2CDS Diagram"
       }
     ],
     "menus": {
@@ -72,6 +92,22 @@
         {
           "command": "er2cds.diagram.open",
           "when": "editorLangId == 'er2cds'"
+        },
+        {
+          "command": "er2cds.diagram.fit",
+          "when": "states-diagram-focused"
+        },
+        {
+          "command": "er2cds.diagram.center",
+          "when": "states-diagram-focused"
+        },
+        {
+          "command": "er2cds.diagram.delete",
+          "when": "states-diagram-focused"
+        },
+        {
+          "command": "er2cds.diagram.export",
+          "when": "states-diagram-focused"
         }
       ],
       "editor/context": [
@@ -100,11 +136,15 @@
   "dependencies": {
     "sprotty-vscode": "^1.0.0",
     "sprotty-vscode-webview": "^1.0.0",
-    "typescript": "^5.3.3",
     "vscode-languageclient": "^9.0.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
-    "@types/vscode": "^1.86.0"
+    "@types/vscode": "^1.86.0",
+    "typescript": "^5.3.3"
+  },
+  "scripts": {
+    "clean": "rm -rf out",
+    "build": "tsc -b"
   }
 }
