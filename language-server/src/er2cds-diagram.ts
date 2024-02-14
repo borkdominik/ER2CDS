@@ -1,25 +1,26 @@
 
 import { GeneratorContext, LangiumDiagramGenerator } from 'langium-sprotty';
-import { SEdge, SLabel, SModelRoot, SNode, SPort } from 'sprotty-protocol'; 
-import { State, StateMachine, Transition } from './generated/ast.js';
+import { SEdge, SLabel, SModelRoot, SNode, SPort } from 'sprotty-protocol';
+import { ER2CDS, Entity, Relationship } from './generated/ast.js';
 
 export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
 
-    protected generateRoot(args: GeneratorContext<StateMachine>): SModelRoot {
+    protected generateRoot(args: GeneratorContext<ER2CDS>): SModelRoot {
         const { document } = args;
         const sm = document.parseResult.value;
         return {
             type: 'graph',
             id: sm.name ?? 'root',
             children: [
-                ...sm.states.map(s => this.generateNode(s, args)),
-                ...sm.states.flatMap(s => s.transitions).map(t => this.generateEdge(t, args))
+                ...sm.entities.map(e => this.generateNode(e, args)),
+                ...sm.relationships.map(r => this.generateEdge(r, args))
             ]
         };
     }
 
-    protected generateNode(state: State, { idCache }: GeneratorContext<StateMachine>): SNode {
-        const nodeId = idCache.uniqueId(state.name, state);
+    protected generateNode(entity: Entity, { idCache }: GeneratorContext<ER2CDS>): SNode {
+        const nodeId = idCache.uniqueId(entity.name, entity);
+
         return {
             type: 'node',
             id: nodeId,
@@ -27,7 +28,7 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
                 <SLabel>{
                     type: 'label',
                     id: idCache.uniqueId(nodeId + '.label'),
-                    text: state.name
+                    text: entity.name
                 },
                 <SPort>{
                     type: 'port',
@@ -44,20 +45,21 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
         };
     }
 
-    protected generateEdge(transition: Transition, { idCache }: GeneratorContext<StateMachine>): SEdge {
-        const sourceId = idCache.getId(transition.$container);
-        const targetId = idCache.getId(transition.state?.ref);
-        const edgeId = idCache.uniqueId(`${sourceId}:${transition.event?.ref?.name}:${targetId}`, transition);
+    protected generateEdge(relationship: Relationship, { idCache }: GeneratorContext<ER2CDS>): SEdge {
+        const firstId = idCache.getId(relationship.first);
+        const secondId = idCache.getId(relationship.second);
+        const edgeId = idCache.uniqueId(`${firstId}:${relationship.first?.target.ref?.name}:${secondId}:${relationship.second?.target.ref?.name}`, relationship);
+
         return {
             type: 'edge',
             id: edgeId,
-            sourceId: sourceId!,
-            targetId: targetId!,
+            sourceId: firstId!,
+            targetId: secondId!,
             children: [
                 <SLabel>{
                     type: 'label:xref',
                     id: idCache.uniqueId(edgeId + '.label'),
-                    text: transition.event?.ref?.name
+                    text: relationship.name
                 }
             ]
         };

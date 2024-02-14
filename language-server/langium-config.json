@@ -1,12 +1,16 @@
 {
     "projectName": "ER2CDS",
-    "languages": [{
-        "id": "er2cds",
-        "grammar": "src/er2cds.langium",
-        "fileExtensions": [".er2cds"],
-        "textMate": {
-            "out": "../extension/syntaxes/er2cds.tmLanguage.json"
+    "languages": [
+        {
+            "id": "er2cds",
+            "grammar": "src/er2cds.langium",
+            "fileExtensions": [
+                ".er2cds"
+            ],
+            "textMate": {
+                "out": "../extension/syntaxes/er2cds.tmLanguage.json"
+            }
         }
-    }],
+    ],
     "out": "src/generated"
 }

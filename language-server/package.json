@@ -1,6 +1,7 @@
 {
     "name": "er2cds",
     "version": "0.0.1",
+    "type": "module",
     "files": [
         "out",
         "src"

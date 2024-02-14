@@ -95,19 +95,19 @@
         },
         {
           "command": "er2cds.diagram.fit",
-          "when": "states-diagram-focused"
+          "when": "er2cds-diagram-focused"
         },
         {
           "command": "er2cds.diagram.center",
-          "when": "states-diagram-focused"
+          "when": "er2cds-diagram-focused"
         },
         {
           "command": "er2cds.diagram.delete",
-          "when": "states-diagram-focused"
+          "when": "er2cds-diagram-focused"
         },
         {
           "command": "er2cds.diagram.export",
-          "when": "states-diagram-focused"
+          "when": "er2cds-diagram-focused"
         }
       ],
       "editor/context": [

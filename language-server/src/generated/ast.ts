@@ -8,74 +8,269 @@ import type { AstNode, Reference, ReferenceInfo, TypeMetaData } from 'langium';
 import { AbstractAstReflection } from 'langium';
 
 export const ER2CDSTerminals = {
-    WS: /\s+/,
     ID: /[_a-zA-Z][\w_]*/,
+    INT: /[0-9]+/,
+    STRING: /[A-Za-z]+/,
+    WS: /\s+/,
     ML_COMMENT: /\/\*[\s\S]*?\*\//,
     SL_COMMENT: /\/\/[^\n\r]*/,
 };
 
-export interface Event extends AstNode {
-    readonly $container: StateMachine;
-    readonly $type: 'Event';
+export type AGGREGATION_LEFT = 'o-';
+
+export function isAGGREGATION_LEFT(item: unknown): item is AGGREGATION_LEFT {
+    return item === 'o-';
+}
+
+export type AGGREGATION_RIGHT = '-o';
+
+export function isAGGREGATION_RIGHT(item: unknown): item is AGGREGATION_RIGHT {
+    return item === '-o';
+}
+
+export type AttributeType = 'derived' | 'key' | 'multivalued' | 'none' | 'optional' | 'partial-key';
+
+export type CardinalityType = '0..1' | '0..N' | '1' | '1..1' | '1..N' | 'N' | 'none';
+
+export type COMPOSITION_LEFT = '*-';
+
+export function isCOMPOSITION_LEFT(item: unknown): item is COMPOSITION_LEFT {
+    return item === '*-';
+}
+
+export type COMPOSITION_RIGHT = '-*';
+
+export function isCOMPOSITION_RIGHT(item: unknown): item is COMPOSITION_RIGHT {
+    return item === '-*';
+}
+
+export type DEFAULT = '->';
+
+export function isDEFAULT(item: unknown): item is DEFAULT {
+    return item === '->';
+}
+
+export type DERIVED = 'derived';
+
+export function isDERIVED(item: unknown): item is DERIVED {
+    return item === 'derived';
+}
+
+export type KEY = 'key';
+
+export function isKEY(item: unknown): item is KEY {
+    return item === 'key';
+}
+
+export type MANY = 'N';
+
+export function isMANY(item: unknown): item is MANY {
+    return item === 'N';
+}
+
+export type MULTIVALUED = 'multivalued';
+
+export function isMULTIVALUED(item: unknown): item is MULTIVALUED {
+    return item === 'multivalued';
+}
+
+export type NONE = 'none';
+
+export function isNONE(item: unknown): item is NONE {
+    return item === 'none';
+}
+
+export type ONE = '1';
+
+export function isONE(item: unknown): item is ONE {
+    return item === '1';
+}
+
+export type ONE_MANY = '1..N';
+
+export function isONE_MANY(item: unknown): item is ONE_MANY {
+    return item === '1..N';
+}
+
+export type ONE_ONE = '1..1';
+
+export function isONE_ONE(item: unknown): item is ONE_ONE {
+    return item === '1..1';
+}
+
+export type OPTIONAL = 'optional';
+
+export function isOPTIONAL(item: unknown): item is OPTIONAL {
+    return item === 'optional';
+}
+
+export type PACKAGE_STRING = 'package';
+
+export function isPACKAGE_STRING(item: unknown): item is PACKAGE_STRING {
+    return item === 'package';
+}
+
+export type PARTIAL_KEY = 'partial-key';
+
+export function isPARTIAL_KEY(item: unknown): item is PARTIAL_KEY {
+    return item === 'partial-key';
+}
+
+export type PRIVATE = '~';
+
+export function isPRIVATE(item: unknown): item is PRIVATE {
+    return item === '~';
+}
+
+export type PRIVATE_STRING = 'private';
+
+export function isPRIVATE_STRING(item: unknown): item is PRIVATE_STRING {
+    return item === 'private';
+}
+
+export type PROTECTED = '-';
+
+export function isPROTECTED(item: unknown): item is PROTECTED {
+    return item === '-';
+}
+
+export type PROTECTED_STRING = 'protected';
+
+export function isPROTECTED_STRING(item: unknown): item is PROTECTED_STRING {
+    return item === 'protected';
+}
+
+export type PUBLIC = '+';
+
+export function isPUBLIC(item: unknown): item is PUBLIC {
+    return item === '+';
+}
+
+export type PUBLIC_STRING = 'public';
+
+export function isPUBLIC_STRING(item: unknown): item is PUBLIC_STRING {
+    return item === 'public';
+}
+
+export type RelationshipType = '*-' | '-*' | '->' | '-o' | 'o-';
+
+export type VisibilityType = '#' | '+' | '-' | 'none' | 'package' | 'private' | 'protected' | 'public' | '~';
+
+export type ZERO_OR_MANY = '0..N';
+
+export function isZERO_OR_MANY(item: unknown): item is ZERO_OR_MANY {
+    return item === '0..N';
+}
+
+export type ZERO_OR_ONE = '0..1';
+
+export function isZERO_OR_ONE(item: unknown): item is ZERO_OR_ONE {
+    return item === '0..1';
+}
+
+export interface Attribute extends AstNode {
+    readonly $container: Entity | Relationship;
+    readonly $type: 'Attribute';
+    datatype?: DataType
     name: string
+    type?: AttributeType
+    visibility?: VisibilityType
 }
 
-export const Event = 'Event';
+export const Attribute = 'Attribute';
 
-export function isEvent(item: unknown): item is Event {
-    return reflection.isInstance(item, Event);
+export function isAttribute(item: unknown): item is Attribute {
+    return reflection.isInstance(item, Attribute);
 }
 
-export interface State extends AstNode {
-    readonly $container: StateMachine;
-    readonly $type: 'State';
+export interface DataType extends AstNode {
+    readonly $container: Attribute;
+    readonly $type: 'DataType';
+    d?: number
+    size?: number
+    type: string
+}
+
+export const DataType = 'DataType';
+
+export function isDataType(item: unknown): item is DataType {
+    return reflection.isInstance(item, DataType);
+}
+
+export interface Entity extends AstNode {
+    readonly $container: ER2CDS;
+    readonly $type: 'Entity';
+    attributes: Array<Attribute>
+    extends?: Reference<Entity>
     name: string
-    transitions: Array<Transition>
+    weak: boolean
 }
 
-export const State = 'State';
+export const Entity = 'Entity';
 
-export function isState(item: unknown): item is State {
-    return reflection.isInstance(item, State);
+export function isEntity(item: unknown): item is Entity {
+    return reflection.isInstance(item, Entity);
 }
 
-export interface StateMachine extends AstNode {
-    readonly $type: 'StateMachine';
-    events: Array<Event>
+export interface ER2CDS extends AstNode {
+    readonly $type: 'ER2CDS';
+    entities: Array<Entity>
     name: string
-    states: Array<State>
+    relationships: Array<Relationship>
 }
 
-export const StateMachine = 'StateMachine';
+export const ER2CDS = 'ER2CDS';
 
-export function isStateMachine(item: unknown): item is StateMachine {
-    return reflection.isInstance(item, StateMachine);
+export function isER2CDS(item: unknown): item is ER2CDS {
+    return reflection.isInstance(item, ER2CDS);
 }
 
-export interface Transition extends AstNode {
-    readonly $container: State;
-    readonly $type: 'Transition';
-    event: Reference<Event>
-    state: Reference<State>
+export interface Relationship extends AstNode {
+    readonly $container: ER2CDS;
+    readonly $type: 'Relationship';
+    attributes: Array<Attribute>
+    first?: RelationshipEntity
+    firstType?: RelationshipType
+    name: string
+    second?: RelationshipEntity
+    secondType?: RelationshipType
+    third?: RelationshipEntity
+    weak: boolean
 }
 
-export const Transition = 'Transition';
+export const Relationship = 'Relationship';
 
-export function isTransition(item: unknown): item is Transition {
-    return reflection.isInstance(item, Transition);
+export function isRelationship(item: unknown): item is Relationship {
+    return reflection.isInstance(item, Relationship);
+}
+
+export interface RelationshipEntity extends AstNode {
+    readonly $container: Relationship;
+    readonly $type: 'RelationshipEntity';
+    cardinality?: CardinalityType
+    role?: string
+    target: Reference<Entity>
+}
+
+export const RelationshipEntity = 'RelationshipEntity';
+
+export function isRelationshipEntity(item: unknown): item is RelationshipEntity {
+    return reflection.isInstance(item, RelationshipEntity);
 }
 
 export type ER2CDSAstType = {
-    Event: Event
-    State: State
-    StateMachine: StateMachine
-    Transition: Transition
+    Attribute: Attribute
+    DataType: DataType
+    ER2CDS: ER2CDS
+    Entity: Entity
+    Relationship: Relationship
+    RelationshipEntity: RelationshipEntity
 }
 
 export class ER2CDSAstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return ['Event', 'State', 'StateMachine', 'Transition'];
+        return ['Attribute', 'DataType', 'ER2CDS', 'Entity', 'Relationship', 'RelationshipEntity'];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
@@ -89,11 +284,9 @@ export class ER2CDSAstReflection extends AbstractAstReflection {
     getReferenceType(refInfo: ReferenceInfo): string {
         const referenceId = `${refInfo.container.$type}:${refInfo.property}`;
         switch (referenceId) {
-            case 'Transition:event': {
-                return Event;
-            }
-            case 'Transition:state': {
-                return State;
+            case 'Entity:extends':
+            case 'RelationshipEntity:target': {
+                return Entity;
             }
             default: {
                 throw new Error(`${referenceId} is not a valid reference id.`);
@@ -103,20 +296,30 @@ export class ER2CDSAstReflection extends AbstractAstReflection {
 
     getTypeMetaData(type: string): TypeMetaData {
         switch (type) {
-            case 'State': {
+            case 'Entity': {
                 return {
-                    name: 'State',
+                    name: 'Entity',
                     mandatory: [
-                        { name: 'transitions', type: 'array' }
+                        { name: 'attributes', type: 'array' },
+                        { name: 'weak', type: 'boolean' }
                     ]
                 };
             }
-            case 'StateMachine': {
+            case 'ER2CDS': {
                 return {
-                    name: 'StateMachine',
+                    name: 'ER2CDS',
                     mandatory: [
-                        { name: 'events', type: 'array' },
-                        { name: 'states', type: 'array' }
+                        { name: 'entities', type: 'array' },
+                        { name: 'relationships', type: 'array' }
+                    ]
+                };
+            }
+            case 'Relationship': {
+                return {
+                    name: 'Relationship',
+                    mandatory: [
+                        { name: 'attributes', type: 'array' },
+                        { name: 'weak', type: 'boolean' }
                     ]
                 };
             }

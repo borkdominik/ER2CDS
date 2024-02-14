@@ -4,19 +4,16 @@
 
 const path = require('path');
 
-const outputPath = path.resolve(__dirname, 'out');
-
 /**@type {import('webpack').Configuration}*/
 const config = {
     target: 'web',
 
-    entry: path.resolve(__dirname, 'src/webview.ts'),
+    entry: './src/webview.ts',
     output: {
+        path: path.resolve(__dirname, 'out'),
         filename: 'webview.js',
-        path: outputPath
     },
     devtool: 'source-map',
-
     resolve: {
         extensions: ['.ts', '.tsx', '.js']
     },
@@ -50,5 +47,4 @@ const config = {
     },
     ignoreWarnings: [/Failed to parse source map/]
 };
-
 module.exports = config;

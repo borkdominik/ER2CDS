@@ -11,7 +11,11 @@ const ctx = await esbuild.context({
     loader: { '.ts': 'ts' },
     external: ['vscode'],
     platform: 'node',
-    sourcemap: true
+    sourcemap: true,
+    format: 'cjs',
+    outExtension: {
+        '.js': '.cjs'
+    }
 });
 
 if (watch) {

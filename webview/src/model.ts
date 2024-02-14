@@ -1,25 +1,26 @@
 import {
-    CreatingOnDrag, ManhattanEdgeRouter, RectangularNode, RectangularPort,
+    CreatingOnDrag,
+    ManhattanEdgeRouter, RectangularNode,
+    RectangularPort,
     SEdgeImpl, SLabelImpl, SRoutableElementImpl
 } from 'sprotty';
-import { Action, CreateElementAction, SEdge, EdgePlacement } from 'sprotty-protocol';
+import { EdgePlacement, Action, CreateElementAction, SEdge } from 'sprotty-protocol';
 
-export class StatesEdge extends SEdgeImpl {
+export class ER2CDSEntity extends RectangularNode {
+    override canConnect(routable: SRoutableElementImpl, role: string) {
+        return true;
+    }
+}
+export class ER2CDSRelationship extends SEdgeImpl {
     override routerKind = ManhattanEdgeRouter.KIND;
     override targetAnchorCorrection = Math.sqrt(5);
 }
 
-export class StatesEdgeLabel extends SLabelImpl {
+export class ER2CDSRelationshipLabel extends SLabelImpl {
     override edgePlacement = <EdgePlacement>{
         rotate: true,
         position: 0.6
     };
-}
-
-export class StatesNode extends RectangularNode {
-    override canConnect(routable: SRoutableElementImpl, role: string) {
-        return true;
-    }
 }
 
 export class CreateTransitionPort extends RectangularPort implements CreatingOnDrag {

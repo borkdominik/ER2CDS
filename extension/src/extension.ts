@@ -34,7 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 function createLanguageClient(context: vscode.ExtensionContext): LanguageClient {
-    const serverModule = context.asAbsolutePath(path.join('..', 'language-server', 'out', 'server.js'));
+    const serverModule = context.asAbsolutePath(path.join('..', 'language-server', 'out', 'server.cjs'));
 
     // The debug options for the server
     // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging.

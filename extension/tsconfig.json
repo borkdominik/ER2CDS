@@ -8,9 +8,10 @@
         "outDir": "out"
     },
     "include": [
-        "src"
+        "src/**/*.ts"
     ],
     "exclude": [
+        "out",
         "node_modules",
         ".vscode-test"
     ]
