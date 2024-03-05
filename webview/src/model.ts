@@ -1,36 +1,38 @@
-import {
-    CreatingOnDrag,
-    ManhattanEdgeRouter, RectangularNode,
-    RectangularPort,
-    SEdgeImpl, SLabelImpl, SRoutableElementImpl
-} from 'sprotty';
-import { EdgePlacement, Action, CreateElementAction, SEdge } from 'sprotty-protocol';
+import { DiamondNode, PreRenderedElementImpl, RectangularNode, SGraphImpl, SLabelImpl } from 'sprotty';
+import { EdgePlacement } from 'sprotty-protocol';
 
-export class ER2CDSEntity extends RectangularNode {
-    override canConnect(routable: SRoutableElementImpl, role: string) {
-        return true;
-    }
-}
-export class ER2CDSRelationship extends SEdgeImpl {
-    override routerKind = ManhattanEdgeRouter.KIND;
-    override targetAnchorCorrection = Math.sqrt(5);
+export class ER2CDSModel extends SGraphImpl {
+    name: string;
 }
 
-export class ER2CDSRelationshipLabel extends SLabelImpl {
+export class EntityNode extends RectangularNode {
+    expanded: boolean;
+    weak: boolean;
+}
+
+export class RelationshipNode extends DiamondNode {
+    weak: boolean;
+}
+
+export class CardinalityLabel extends SLabelImpl {
     override edgePlacement = <EdgePlacement>{
-        rotate: true,
-        position: 0.6
+        position: 0.5,
+        side: 'top',
+        rotate: false,
+        offset: 10
     };
 }
 
-export class CreateTransitionPort extends RectangularPort implements CreatingOnDrag {
-    createAction(id: string): Action {
-        const edge: SEdge = {
-            id,
-            type: 'edge',
-            sourceId: this.parent.id,
-            targetId: this.id
-        };
-        return CreateElementAction.create(edge, { containerId: this.root.id });
-    }
+export class RoleLabel extends SLabelImpl {
+    override edgePlacement = <EdgePlacement>{
+        position: 0.5,
+        side: 'bottom',
+        rotate: false,
+        offset: 10
+    };
+}
+
+export class PopupButton extends PreRenderedElementImpl {
+    target: string;
+    kind: string;
 }

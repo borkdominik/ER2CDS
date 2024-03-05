@@ -4,10 +4,46 @@
         {
             "label": "Build ER2CDS",
             "dependsOn": [
+                "Extension Clean",
+                "Language Server Clean",
+                "Webview Clean",
                 "Extension Build",
                 "Language Server Build",
                 "Webview Build"
             ]
+        },
+        {
+            "label": "Extension Clean",
+            "command": "npm",
+            "args": [
+                "run",
+                "clean"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/extension"
+            }
+        },
+        {
+            "label": "Language Server Clean",
+            "command": "npm",
+            "args": [
+                "run",
+                "clean"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/language-server"
+            }
+        },
+        {
+            "label": "Webview Clean",
+            "command": "npm",
+            "args": [
+                "run",
+                "clean"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/webview"
+            }
         },
         {
             "label": "Extension Build",

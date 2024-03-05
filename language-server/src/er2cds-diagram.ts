@@ -1,6 +1,6 @@
 
 import { GeneratorContext, LangiumDiagramGenerator } from 'langium-sprotty';
-import { SEdge, SLabel, SModelRoot, SNode, SPort } from 'sprotty-protocol';
+import { SLabel, SModelRoot, SNode } from 'sprotty-protocol';
 import { ER2CDS, Entity, Relationship } from './generated/ast.js';
 
 export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
@@ -12,27 +12,23 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
             type: 'graph',
             id: sm.name ?? 'root',
             children: [
-                ...sm.entities.map(e => this.generateNode(e, args)),
-                ...sm.relationships.map(r => this.generateEdge(r, args))
+                ...sm.entities.map(e => this.generateEntity(e, args)),
+                ...sm.relationships.map(r => this.generateRelationship(r, args))
             ]
         };
     }
 
-    protected generateNode(entity: Entity, { idCache }: GeneratorContext<ER2CDS>): SNode {
-        const nodeId = idCache.uniqueId(entity.name, entity);
+    protected generateEntity(entity: Entity, { idCache }: GeneratorContext<ER2CDS>): SNode {
+        const entityId = idCache.uniqueId(entity.name, entity);
 
         return {
-            type: 'node',
-            id: nodeId,
+            type: 'node:entity',
+            id: entityId,
             children: [
                 <SLabel>{
-                    type: 'label',
-                    id: idCache.uniqueId(nodeId + '.label'),
+                    type: 'label:entity',
+                    id: idCache.uniqueId(entityId + '.label'),
                     text: entity.name
-                },
-                <SPort>{
-                    type: 'port',
-                    id: idCache.uniqueId(nodeId + '.newTransition')
                 }
             ],
             layout: 'stack',
@@ -45,24 +41,26 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
         };
     }
 
-    protected generateEdge(relationship: Relationship, { idCache }: GeneratorContext<ER2CDS>): SEdge {
-        const firstId = idCache.getId(relationship.first);
-        const secondId = idCache.getId(relationship.second);
-        const edgeId = idCache.uniqueId(`${firstId}:${relationship.first?.target.ref?.name}:${secondId}:${relationship.second?.target.ref?.name}`, relationship);
+    protected generateRelationship(relationship: Relationship, { idCache }: GeneratorContext<ER2CDS>): SNode {
+        const relationshipId = idCache.uniqueId(relationship.name, relationship);
 
         return {
-            type: 'edge',
-            id: edgeId,
-            sourceId: firstId!,
-            targetId: secondId!,
+            type: 'node:relationship',
+            id: relationshipId,
             children: [
                 <SLabel>{
-                    type: 'label:xref',
-                    id: idCache.uniqueId(edgeId + '.label'),
+                    type: 'label:relationship',
+                    id: idCache.uniqueId(relationshipId + '.label'),
                     text: relationship.name
                 }
-            ]
+            ],
+            layout: 'stack',
+            layoutOptions: {
+                paddingTop: 10.0,
+                paddingBottom: 10.0,
+                paddingLeft: 10.0,
+                paddingRight: 10.0
+            }
         };
     }
-
 }
