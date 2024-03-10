@@ -1,9 +1,8 @@
 /** @jsx svg */
 import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
-import { Diamond, DiamondNodeView, IViewArgs, PreRenderedView, RectangularNodeView, RenderingContext, SGraphView, SNodeImpl, SPortImpl, svg } from 'sprotty';
-import { ER2CDSModel, EntityNode, PopupButton, RelationshipNode } from './model';
-import { Point, Hoverable, Selectable } from 'sprotty-protocol';
+import { Diamond, DiamondNodeView, RectangularNodeView, RenderingContext, SGraphView, SNodeImpl, SPortImpl, svg } from 'sprotty';
+import { ER2CDSModel, EntityNode, RelationshipNode } from './model';
 
 @injectable()
 export class ER2CDSModelView extends SGraphView {
@@ -25,25 +24,24 @@ export class EntityNodeView extends RectangularNodeView {
 
         if (node.weak) {
             return <g>
-                <rect class-border-weak={true} x="-5" y="-5" rx="5" ry="5" width={node.bounds.width + 10} height={node.bounds.height + 10} />
-                <rect class-sprotty-node={true} class-mouseover={node.hoverFeedback} class-selected={node.selected} x="0" y="0" rx="5" ry="5" width={Math.max(node.bounds.width, 0)} height={Math.max(node.bounds.height, 0)} />
+                <rect class-border-weak={true} x='-5' y='-5' rx='5' ry='5' width={node.bounds.width + 10} height={node.bounds.height + 10} />
+                <rect class-sprotty-node={true} class-mouseover={node.hoverFeedback} class-selected={node.selected} x='0' y='0' rx='5' ry='5' width={Math.max(node.bounds.width, 0)} height={Math.max(node.bounds.height, 0)} />
                 {context.renderChildren(node)}
-                {(node.children[1] && node.children[1].children.length > 0) ? <path class-comp-separator={true} /> : ""}
+                {(node.children[1] && node.children[1].children.length > 0) ? <path class-comp-separator={true} /> : ''}
             </g>;
         } else {
             return <g>
-                <rect class-sprotty-node={true} class-mouseover={node.hoverFeedback} class-selected={node.selected} x="0" y="0" rx="5" ry="5" width={Math.max(node.bounds.width, 0)} height={Math.max(node.bounds.height, 0)} />
+                <rect class-sprotty-node={true} class-mouseover={node.hoverFeedback} class-selected={node.selected} x='0' y='0' rx='5' ry='5' width={Math.max(node.bounds.width, 0)} height={Math.max(node.bounds.height, 0)} />
                 {context.renderChildren(node)}
-                {(node.children[1] && node.children[1].children.length > 0) ? <path class-comp-separator={true} /> : ""}
+                {(node.children[1] && node.children[1].children.length > 0) ? <path class-comp-separator={true} /> : ''}
             </g>;
         }
-
     }
 }
 
 @injectable()
 export class RelationshipNodeView extends DiamondNodeView {
-    override render(node: Readonly<RelationshipNode & Hoverable & Selectable>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
+    override render(node: Readonly<RelationshipNode>, context: RenderingContext): VNode | undefined {
         if (!this.isVisible(node, context))
             return undefined;
 
@@ -65,13 +63,5 @@ export class RelationshipNodeView extends DiamondNodeView {
                 {context.renderChildren(node)}
             </g>;
         }
-    }
-}
-
-@injectable()
-export class PopupButtonView extends PreRenderedView {
-    render(model: Readonly<PopupButton>, context: RenderingContext): VNode | undefined {
-        const node = super.render(model, context);
-        return node;
     }
 }

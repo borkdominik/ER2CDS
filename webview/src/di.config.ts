@@ -1,27 +1,30 @@
 import { Container, ContainerModule } from 'inversify';
 import {
-    configureModelElement, editLabelFeature, expandFeature, HtmlRootImpl, HtmlRootView, loadDefaultModules, overrideViewerOptions, PreRenderedElementImpl,
-    PreRenderedView, SLabelImpl, SLabelView, SModelRootImpl, SRoutingHandleImpl, SRoutingHandleView
+    configureModelElement, ConsoleLogger, editLabelFeature, expandFeature, HtmlRootImpl, HtmlRootView, loadDefaultModules, LogLevel, overrideViewerOptions, PreRenderedElementImpl,
+    PreRenderedView, SLabelImpl, SLabelView, SModelRootImpl, SRoutingHandleImpl, SRoutingHandleView, TYPES
 } from 'sprotty';
-import { ER2CDSModel, EntityNode, RelationshipNode } from './model';
-
+import { ER2CDSModel, EntityNode, GRAPH, LABEL_ENTITY, LABEL_RELATIONSHIP, NODE_ENTITY, NODE_RELATIONSHIP, RelationshipNode } from './model';
 import '../css/diagram.css';
 import 'sprotty/css/sprotty.css';
 import { ER2CDSModelView, EntityNodeView, RelationshipNodeView } from './views';
 
 export default (containerId: string) => {
-    const myModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+    const DiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
+        rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
+        rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
+
         const context = { bind, unbind, isBound, rebind };
 
-        configureModelElement(context, 'graph', ER2CDSModel, ER2CDSModelView);
+        // Graph
+        configureModelElement(context, GRAPH, ER2CDSModel, ER2CDSModelView);
 
         // Nodes
-        configureModelElement(context, 'node:entity', EntityNode, EntityNodeView, { enable: [expandFeature] });
-        configureModelElement(context, 'node:relationship', RelationshipNode, RelationshipNodeView);
+        configureModelElement(context, NODE_ENTITY, EntityNode, EntityNodeView, { enable: [expandFeature] });
+        configureModelElement(context, NODE_RELATIONSHIP, RelationshipNode, RelationshipNodeView);
 
         // Labels
-        configureModelElement(context, 'label:entity', SLabelImpl, SLabelView, { enable: [editLabelFeature] });
-        configureModelElement(context, 'label:relationship', SLabelImpl, SLabelView, { enable: [editLabelFeature] });
+        configureModelElement(context, LABEL_ENTITY, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
+        configureModelElement(context, LABEL_RELATIONSHIP, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
 
         // Sprotty
         configureModelElement(context, 'html', HtmlRootImpl, HtmlRootView);
@@ -31,13 +34,17 @@ export default (containerId: string) => {
         configureModelElement(context, 'volatile-routing-point', SRoutingHandleImpl, SRoutingHandleView);
     });
 
-
     const container = new Container();
+
     loadDefaultModules(container);
-    container.load(myModule);
+    container.load(DiagramModule);
+
     overrideViewerOptions(container, {
         needsClientLayout: true,
-        needsServerLayout: true
+        needsServerLayout: true,
+        baseDiv: containerId,
+        hiddenDiv: containerId + '_hidden'
     });
+
     return container;
 }

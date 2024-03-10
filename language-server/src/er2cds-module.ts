@@ -1,11 +1,13 @@
 import type { DefaultSharedModuleContext, Module, PartialLangiumServices } from 'langium';
-import { createDefaultModule, createDefaultSharedModule, inject } from 'langium';
-import { LangiumSprottyServices, LangiumSprottySharedServices, SprottyDiagramServices, SprottySharedModule } from 'langium-sprotty';
+import type { DiagramOptions } from 'sprotty-protocol';
+import { URI, createDefaultModule, createDefaultSharedModule, inject } from 'langium';
+import { DefaultDiagramServerManager, DiagramActionNotification, LangiumSprottyServices, LangiumSprottySharedServices, SprottyDiagramServices, SprottySharedServices } from 'langium-sprotty';
 import { DefaultElementFilter, ElkFactory, ElkLayoutEngine, IElementFilter, ILayoutConfigurator } from 'sprotty-elk/lib/elk-layout.js';
 import { ER2CDSGeneratedModule, ER2CDSGeneratedSharedModule } from './generated/module.js';
 import { ER2CDSValidator, registerValidationChecks } from './er2cds-validator.js';
 import { ER2CDSDiagramGenerator } from './er2cds-diagram.js';
 import { ER2CDSLayoutConfigurator } from './er2cds-layout.js';
+import { ER2CDSDiagramServer } from './er2cds-diagram-server.js';
 
 const ElkConstructor = require('elkjs/lib/elk.bundled.js').default;
 
@@ -71,7 +73,7 @@ export function createER2CDSServices(context: DefaultSharedModuleContext): {
     const shared = inject(
         createDefaultSharedModule(context),
         ER2CDSGeneratedSharedModule,
-        SprottySharedModule
+        ER2CDSSprottySharedModule
     );
 
     const ER2CDS = inject(
@@ -85,3 +87,29 @@ export function createER2CDSServices(context: DefaultSharedModuleContext): {
 
     return { shared, ER2CDS };
 }
+
+const ER2CDSDiagramServerFactory = (services: LangiumSprottySharedServices): ((clientId: string, options?: DiagramOptions) => ER2CDSDiagramServer) => {
+    const connection = services.lsp.Connection;
+    const serviceRegistry = services.ServiceRegistry;
+
+    return (clientId, options) => {
+        const sourceUri = options?.sourceUri;
+
+        if (!sourceUri)
+            throw new Error("Missing 'sourceUri' option in request.");
+
+        const language = serviceRegistry.getServices(URI.parse(sourceUri as string)) as ER2CDSServices;
+
+        if (!language.diagram)
+            throw new Error(`The '${language.LanguageMetaData.languageId}' language does not support diagrams.`);
+
+        return new ER2CDSDiagramServer(async action => { connection?.sendNotification(DiagramActionNotification.type, { clientId, action }); }, language.diagram);
+    };
+};
+
+const ER2CDSSprottySharedModule: Module<LangiumSprottySharedServices, SprottySharedServices> = {
+    diagram: {
+        diagramServerFactory: ER2CDSDiagramServerFactory,
+        DiagramServerManager: (services) => new DefaultDiagramServerManager(services),
+    },
+};

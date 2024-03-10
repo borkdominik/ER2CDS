@@ -1,5 +1,13 @@
-import { DiamondNode, PreRenderedElementImpl, RectangularNode, SGraphImpl, SLabelImpl } from 'sprotty';
+import { DiamondNode, RectangularNode, SGraphImpl, SLabelImpl } from 'sprotty';
 import { EdgePlacement } from 'sprotty-protocol';
+
+export const GRAPH = 'graph';
+
+export const NODE_ENTITY = 'node:entity';
+export const NODE_RELATIONSHIP = 'node:relationship';
+
+export const LABEL_ENTITY = 'label:entity';
+export const LABEL_RELATIONSHIP = 'label:relationship';
 
 export class ER2CDSModel extends SGraphImpl {
     name: string;
@@ -30,9 +38,4 @@ export class RoleLabel extends SLabelImpl {
         rotate: false,
         offset: 10
     };
-}
-
-export class PopupButton extends PreRenderedElementImpl {
-    target: string;
-    kind: string;
 }

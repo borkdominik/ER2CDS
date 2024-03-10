@@ -1,9 +1,10 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { registerDefaultCommands } from 'sprotty-vscode';
+import { registerDefaultCommands, registerTextEditorSync } from 'sprotty-vscode';
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node';
-import { ER2CDSSprottyViewProvider } from './view-provider';
+import { ER2CDSWebViewPanelManager } from './web-view-panel-manager';
+import { Messenger } from 'vscode-messenger';
 
 let languageClient: LanguageClient;
 
@@ -18,22 +19,21 @@ export function activate(context: vscode.ExtensionContext) {
 
     languageClient = createLanguageClient(context);
 
-    const webviewViewProvider = new ER2CDSSprottyViewProvider({
-        extensionUri: context.extensionUri,
-        viewType: 'er2cds',
-        languageClient,
-        supportedFileExtensions: ['.er2cds']
-    });
-
-    context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider('er2cds', webviewViewProvider, {
-            webviewOptions: { retainContextWhenHidden: true }
-        })
+    const webviewPanelManager = new ER2CDSWebViewPanelManager(
+        {
+            extensionUri: context.extensionUri,
+            languageClient,
+            supportedFileExtensions: ['.er2cds'],
+            singleton: true,
+            messenger: new Messenger({ ignoreHiddenViews: false }),
+        }
     );
-    registerDefaultCommands(webviewViewProvider, context, { extensionPrefix: 'er2cds' });
+
+    registerDefaultCommands(webviewPanelManager, context, { extensionPrefix: 'er2cds' });
+    registerTextEditorSync(webviewPanelManager, context);
 }
 
-function createLanguageClient(context: vscode.ExtensionContext): LanguageClient {
+export function createLanguageClient(context: vscode.ExtensionContext): LanguageClient {
     const serverModule = context.asAbsolutePath(path.join('..', 'language-server', 'out', 'server.cjs'));
 
     // The debug options for the server
