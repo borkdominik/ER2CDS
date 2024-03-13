@@ -1,6 +1,6 @@
 import { postConstruct, injectable } from 'inversify';
 import { VscodeDiagramWidget } from 'sprotty-vscode-webview';
-import { DiagramServerProxy } from 'sprotty';
+import { DiagramServerProxy, SetUIExtensionVisibilityAction } from 'sprotty';
 import { FitToScreenAction } from 'sprotty-protocol';
 
 @injectable()
@@ -15,5 +15,7 @@ export class ER2CDSDiagramWidget extends VscodeDiagramWidget {
             this.modelSource.clientId = this.diagramIdentifier.clientId;
 
         this.requestModel().then(() => this.actionDispatcher.dispatch(FitToScreenAction.create([])));
+
+        this.actionDispatcher.dispatch(SetUIExtensionVisibilityAction.create({ extensionId: 'tool-palette', visible: true }));
     }
 }

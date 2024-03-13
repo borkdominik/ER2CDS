@@ -4,9 +4,12 @@ import {
     PreRenderedView, SLabelImpl, SLabelView, SModelRootImpl, SRoutingHandleImpl, SRoutingHandleView, TYPES
 } from 'sprotty';
 import { ER2CDSModel, EntityNode, GRAPH, LABEL_ENTITY, LABEL_RELATIONSHIP, NODE_ENTITY, NODE_RELATIONSHIP, RelationshipNode } from './model';
-import '../css/diagram.css';
-import 'sprotty/css/sprotty.css';
 import { ER2CDSModelView, EntityNodeView, RelationshipNodeView } from './views';
+import ToolPaletteModule from './tool-palette/di.config';
+
+import '../css/diagram.css';
+import '../css/tool-palette.css';
+import 'sprotty/css/sprotty.css';
 
 export default (containerId: string) => {
     const DiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
@@ -38,6 +41,7 @@ export default (containerId: string) => {
 
     loadDefaultModules(container);
     container.load(DiagramModule);
+    container.load(ToolPaletteModule);
 
     overrideViewerOptions(container, {
         needsClientLayout: true,
