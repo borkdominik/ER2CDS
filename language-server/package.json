@@ -7,10 +7,13 @@
         "src"
     ],
     "dependencies": {
+        "@types/vscode": "^1.87.0",
         "elkjs": "^0.9.1",
         "langium": "~2.1.0",
         "langium-sprotty": "^2.1.0",
-        "sprotty-elk": "^1.1.0"
+        "sprotty": "^1.1.1",
+        "sprotty-elk": "^1.1.0",
+        "sprotty-protocol": "^1.1.0"
     },
     "devDependencies": {
         "@types/node": "~16.18.41",

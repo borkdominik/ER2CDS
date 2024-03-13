@@ -4,6 +4,7 @@ import { Action } from 'sprotty-protocol';
 import { matchesKeystroke } from 'sprotty/lib/utils/keyboard';
 import { ToolPaletteItem } from './tool-palette-item';
 import { EnableToolsAction, EnableDefaultToolsAction } from './tool-palette-actions';
+import { CreateElementAction } from '../actions';
 
 const CLICKED_CSS_CLASS = 'clicked';
 const SEARCH_ICON_ID = 'search';
@@ -221,24 +222,25 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
     private createBody(): void {
         const bodyDiv = document.createElement('div');
         bodyDiv.classList.add('tool-palette-body');
-        let tabIndex = 0;
 
-        if (this.paletteItems && this.paletteItems.length > 0) {
-            this.paletteItems.sort(compare).forEach(item => {
-                if (item.children) {
-                    const group = createToolGroup(item);
-                    item.children.sort(compare).forEach(child => group.appendChild(this.createToolButton(child, tabIndex++)));
-                    bodyDiv.appendChild(group);
-                } else {
-                    bodyDiv.appendChild(this.createToolButton(item, tabIndex++));
-                }
-            });
-        } else {
-            const noResultsDiv = document.createElement('div');
-            noResultsDiv.innerText = 'No results found.';
-            noResultsDiv.classList.add('tool-button');
-            bodyDiv.appendChild(noResultsDiv);
+        const addEntityItem: ToolPaletteItem = {
+            id: 'tool-palette-add-entity',
+            label: 'Add Entity',
+            sortString: 'add-entity',
+            icon: 'debug-stop',
+            actions: [CreateElementAction.create('entity')]
         }
+        bodyDiv.appendChild(this.createToolButton(addEntityItem, 0));
+
+        const addRelationshipItem: ToolPaletteItem = {
+            id: 'tool-palette-add-relationship',
+            label: 'Add Relationship',
+            sortString: 'add-relationship',
+            icon: 'primitive-square',
+            actions: [CreateElementAction.create('relationship')]
+        }
+        bodyDiv.appendChild(this.createToolButton(addRelationshipItem, 0));
+
 
         // Remove existing body to refresh filtered entries
         if (this.bodyDiv) {
