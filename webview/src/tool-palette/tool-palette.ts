@@ -3,8 +3,9 @@ import { AbstractUIExtension, IActionHandler, ICommand, codiconCSSClasses, Actio
 import { Action } from 'sprotty-protocol';
 import { matchesKeystroke } from 'sprotty/lib/utils/keyboard';
 import { ToolPaletteItem } from './tool-palette-item';
-import { EnableToolsAction, EnableDefaultToolsAction } from './tool-palette-actions';
-import { CreateEntityAction, CreateRelationshipAction } from '../actions';
+import { EnableDeleteMouseToolAction } from './tool-palette-actions';
+import { CreateElementAction } from '../actions';
+import { NODE_ENTITY, NODE_RELATIONSHIP } from '../model';
 
 const CLICKED_CSS_CLASS = 'clicked';
 const SEARCH_ICON_ID = 'search';
@@ -122,41 +123,94 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
         const headerTools = document.createElement('div');
         headerTools.classList.add('header-tools');
 
-        this.defaultToolsButton = this.createDefaultToolButton();
-        headerTools.appendChild(this.defaultToolsButton);
+        // const selectionToolsButton = this.createSelectionToolButton();
+        // headerTools.appendChild(selectionToolsButton);
 
-        // const deleteToolButton = this.createMouseDeleteToolButton();
-        // headerTools.appendChild(deleteToolButton);
+        const deleteToolButton = this.createMouseDeleteToolButton();
+        headerTools.appendChild(deleteToolButton);
 
         // const marqueeToolButton = this.createMarqueeToolButton();
         // headerTools.appendChild(marqueeToolButton);
 
-        // const validateActionButton = this.createValidateButton();
-        // headerTools.appendChild(validateActionButton);
+        const validateActionButton = this.createValidateButton();
+        headerTools.appendChild(validateActionButton);
 
         const searchIcon = this.createSearchButton();
         headerTools.appendChild(searchIcon);
 
+        // this.defaultToolsButton = selectionToolsButton;
+
         return headerTools;
     }
 
-    private createDefaultToolButton(): HTMLElement {
-        const button = createIcon('inspect');
-        button.id = 'btn_default_tools';
-        button.title = 'Enable selection tool';
-        button.onclick = this.onClickStaticToolButton(button);
-        button.ariaLabel = button.title;
-        button.tabIndex = 1;
-        return button;
+    // private createSelectionToolButton(): HTMLElement {
+    //     const button = createIcon('inspect');
+    //     button.id = 'btn_default_tools';
+    //     button.title = 'Enable selection tool';
+    //     button.onclick = this.onSelectionToolButton(button);
+    //     button.ariaLabel = button.title;
+    //     button.tabIndex = 1;
+    //     return button;
+    // }
+
+    // private onSelectionToolButton(button: HTMLElement) {
+    //     return (_ev: MouseEvent) => {
+    //         const action = EnableSelectionToolAction.create();
+    //         this.actionDispatcher.dispatch(action);
+    //         this.changeActiveButton(button);
+    //         button.focus();
+    //     };
+    // }
+
+    private createMouseDeleteToolButton(): HTMLElement {
+        const deleteToolButton = createIcon('chrome-close');
+        deleteToolButton.title = 'Enable deletion tool';
+        deleteToolButton.onclick = this.onMouseDeleteToolButton(deleteToolButton);
+        deleteToolButton.ariaLabel = deleteToolButton.title;
+        deleteToolButton.tabIndex = 1;
+
+        return deleteToolButton;
     }
 
-    private onClickStaticToolButton(button: HTMLElement, toolId?: string) {
+    private onMouseDeleteToolButton(button: HTMLElement) {
         return (_ev: MouseEvent) => {
-            const action = toolId ? EnableToolsAction.create([toolId]) : EnableDefaultToolsAction.create();
+            const action = EnableDeleteMouseToolAction.create();
             this.actionDispatcher.dispatch(action);
             this.changeActiveButton(button);
             button.focus();
         };
+    }
+
+    // private createMarqueeToolButton(): HTMLElement {
+    //     const marqueeToolButton = createIcon('screen-full');
+    //     marqueeToolButton.title = 'Enable marquee tool';
+    //     marqueeToolButton.onclick = this.onMarqueeToolButton(marqueeToolButton);
+    //     marqueeToolButton.ariaLabel = marqueeToolButton.title;
+    //     marqueeToolButton.tabIndex = 1;
+
+    //     return marqueeToolButton;
+    // }
+
+    // private onMarqueeToolButton(button: HTMLElement) {
+    //     return (_ev: MouseEvent) => {
+    //         const action = EnableMarqueeToolButton.create();
+    //         this.actionDispatcher.dispatch(action);
+    //         this.changeActiveButton(button);
+    //         button.focus();
+    //     };
+    // }
+
+    protected createValidateButton(): HTMLElement {
+        const validateActionButton = createIcon('pass');
+        validateActionButton.title = 'Validate model';
+        validateActionButton.onclick = _event => {
+            // const modelIds: string[] = [this.modelRootId];
+            // this.actionDispatcher.dispatch(RequestMarkersAction.create(modelIds, { reason: MarkersReason.BATCH }));
+            // validateActionButton.focus();
+        };
+        validateActionButton.ariaLabel = validateActionButton.title;
+        validateActionButton.tabIndex = 1;
+        return validateActionButton;
     }
 
     private createHeaderSearchField(): HTMLInputElement {
@@ -191,41 +245,6 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
         return searchIcon;
     }
 
-
-    // protected createMouseDeleteToolButton(): HTMLElement {
-    //     const deleteToolButton = createIcon('chrome-close');
-    //     deleteToolButton.title = 'Enable deletion tool';
-    //     deleteToolButton.onclick = this.onClickStaticToolButton(deleteToolButton, MouseDeleteTool.ID);
-    //     deleteToolButton.ariaLabel = deleteToolButton.title;
-    //     deleteToolButton.tabIndex = 1;
-
-    //     return deleteToolButton;
-    // }
-
-    // protected createMarqueeToolButton(): HTMLElement {
-    //     const marqueeToolButton = createIcon('screen-full');
-    //     marqueeToolButton.title = 'Enable marquee tool';
-    //     marqueeToolButton.onclick = this.onClickStaticToolButton(marqueeToolButton, MarqueeMouseTool.ID);
-    //     marqueeToolButton.ariaLabel = marqueeToolButton.title;
-    //     marqueeToolButton.tabIndex = 1;
-
-    //     return marqueeToolButton;
-    // }
-
-    // protected createValidateButton(): HTMLElement {
-    //     const validateActionButton = createIcon('pass');
-    //     validateActionButton.title = 'Validate model';
-    //     validateActionButton.onclick = _event => {
-    //         const modelIds: string[] = [this.modelRootId];
-    //         this.actionDispatcher.dispatch(RequestMarkersAction.create(modelIds, { reason: MarkersReason.BATCH }));
-    //         validateActionButton.focus();
-    //     };
-
-    //     validateActionButton.ariaLabel = validateActionButton.title;
-    //     validateActionButton.tabIndex = 1;
-    //     return validateActionButton;
-    // }
-
     private initializeToolPaletteItems(): void {
         this.paletteItems = [];
 
@@ -243,7 +262,7 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
             label: 'Add Entity',
             sortString: 'add-entity',
             icon: '',
-            actions: [CreateEntityAction.create()]
+            actions: [CreateElementAction.create(NODE_ENTITY)]
         }
         nodeGroup.children.push(addEntityItem);
 
@@ -252,7 +271,7 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
             label: 'Add Relationship',
             sortString: 'add-relationship',
             icon: '',
-            actions: [CreateRelationshipAction.create()]
+            actions: [CreateElementAction.create(NODE_RELATIONSHIP)]
         }
         nodeGroup.children.push(addRelationshipItem);
 
