@@ -4,7 +4,7 @@ import { Action } from 'sprotty-protocol';
 import { matchesKeystroke } from 'sprotty/lib/utils/keyboard';
 import { ToolPaletteItem } from './tool-palette-item';
 import { EnableToolsAction, EnableDefaultToolsAction } from './tool-palette-actions';
-import { CreateElementAction } from '../actions';
+import { CreateEntityAction, CreateRelationshipAction } from '../actions';
 
 const CLICKED_CSS_CLASS = 'clicked';
 const SEARCH_ICON_ID = 'search';
@@ -228,7 +228,7 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
             label: 'Add Entity',
             sortString: 'add-entity',
             icon: 'debug-stop',
-            actions: [CreateElementAction.create('entity')]
+            actions: [CreateEntityAction.create()]
         }
         bodyDiv.appendChild(this.createToolButton(addEntityItem, 0));
 
@@ -237,9 +237,9 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
             label: 'Add Relationship',
             sortString: 'add-relationship',
             icon: 'primitive-square',
-            actions: [CreateElementAction.create('relationship')]
+            actions: [CreateRelationshipAction.create()]
         }
-        bodyDiv.appendChild(this.createToolButton(addRelationshipItem, 0));
+        bodyDiv.appendChild(this.createToolButton(addRelationshipItem, 1));
 
 
         // Remove existing body to refresh filtered entries

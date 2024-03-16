@@ -1,5 +1,5 @@
 import type { DefaultSharedModuleContext, Module, PartialLangiumServices } from 'langium';
-import type { DiagramOptions, DiagramServices } from 'sprotty-protocol';
+import type { DiagramOptions } from 'sprotty-protocol';
 import { URI, createDefaultModule, createDefaultSharedModule, inject } from 'langium';
 import { DefaultDiagramServerManager, DiagramActionNotification, LangiumSprottyServices, LangiumSprottySharedServices, SprottyDiagramServices, SprottySharedServices } from 'langium-sprotty';
 import { DefaultElementFilter, ElkFactory, ElkLayoutEngine, IElementFilter, ILayoutConfigurator } from 'sprotty-elk/lib/elk-layout.js';
@@ -103,7 +103,7 @@ const ER2CDSDiagramServerFactory = (services: LangiumSprottySharedServices): ((c
         if (!language.diagram)
             throw new Error(`The '${language.LanguageMetaData.languageId}' language does not support diagrams.`);
 
-        return new ER2CDSDiagramServer(async action => { connection?.sendNotification(DiagramActionNotification.type, { clientId, action }); }, language.diagram as DiagramServices);
+        return new ER2CDSDiagramServer(async action => { connection?.sendNotification(DiagramActionNotification.type, { clientId, action }); }, language);
     };
 };
 

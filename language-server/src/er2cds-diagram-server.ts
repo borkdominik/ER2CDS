@@ -1,10 +1,16 @@
 import { Action, DiagramServer, DiagramServices, RequestAction, ResponseAction } from 'sprotty-protocol';
-import { CreateElementAction } from './actions.js';
-import { CreateElementActionHandler } from './handler/CreateElementActionHandler.js';
+import { ER2CDSServices } from './er2cds-module.js';
+import { CreateEntityAction, CreateRelationshipAction } from './actions.js';
+import { CreateEntityActionHandler } from './handler/CreateEntityActionHandler.js';
+import { CreateRelationshipActionHandler } from './handler/CreateRelationshipActionHandler.js';
 
 export class ER2CDSDiagramServer extends DiagramServer {
-    constructor(dispatch: <A extends Action>(action: A) => Promise<void>, services: DiagramServices) {
-        super(dispatch, services);
+    private services: ER2CDSServices;
+
+    constructor(dispatch: <A extends Action>(action: A) => Promise<void>, services: ER2CDSServices) {
+        super(dispatch, services.diagram as DiagramServices);
+
+        this.services = services;
     }
 
     public override accept(action: Action): Promise<void> {
@@ -17,8 +23,11 @@ export class ER2CDSDiagramServer extends DiagramServer {
 
     protected override handleAction(action: Action): Promise<void> {
         switch (action.kind) {
-            case CreateElementAction.KIND:
-                new CreateElementActionHandler().handle(action as CreateElementAction, this);
+            case CreateEntityAction.KIND:
+                new CreateEntityActionHandler().handle(action as CreateEntityAction, this, this.services);
+
+            case CreateRelationshipAction.KIND:
+                new CreateRelationshipActionHandler().handle(action as CreateRelationshipAction, this, this.services);
         }
 
         return super.handleAction(action);

@@ -1,17 +1,27 @@
 import { Action } from 'sprotty-protocol';
 
-export interface CreateElementAction extends Action {
-    kind: typeof CreateElementAction.KIND
-    elementType: string
+export interface CreateEntityAction extends Action {
+    kind: typeof CreateEntityAction.KIND
+}
+export namespace CreateEntityAction {
+    export const KIND = 'createEntityAction';
+
+    export function create(): CreateEntityAction {
+        return {
+            kind: KIND
+        };
+    }
 }
 
-export namespace CreateElementAction {
-    export const KIND = 'createElementAction';
+export interface CreateRelationshipAction extends Action {
+    kind: typeof CreateRelationshipAction.KIND
+}
+export namespace CreateRelationshipAction {
+    export const KIND = 'createRelationshipAction';
 
-    export function create(elementType: string): CreateElementAction {
+    export function create(): CreateRelationshipAction {
         return {
-            kind: KIND,
-            elementType
+            kind: KIND
         };
     }
 }

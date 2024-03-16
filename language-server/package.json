@@ -13,7 +13,8 @@
         "langium-sprotty": "^2.1.0",
         "sprotty": "^1.1.1",
         "sprotty-elk": "^1.1.0",
-        "sprotty-protocol": "^1.1.0"
+        "sprotty-protocol": "^1.1.0",
+        "sprotty-vscode": "^1.0.0"
     },
     "devDependencies": {
         "@types/node": "~16.18.41",
