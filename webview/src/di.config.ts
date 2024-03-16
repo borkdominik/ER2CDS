@@ -7,9 +7,11 @@ import { ER2CDSModel, EntityNode, GRAPH, LABEL_ENTITY, LABEL_RELATIONSHIP, NODE_
 import { ER2CDSModelView, EntityNodeView, RelationshipNodeView } from './views';
 import ToolPaletteModule from './tool-palette/di.config';
 
+import 'sprotty/css/sprotty.css';
+import '@vscode/codicons/dist/codicon.css';
+
 import '../css/diagram.css';
 import '../css/tool-palette.css';
-import 'sprotty/css/sprotty.css';
 
 export default (containerId: string) => {
     const DiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {

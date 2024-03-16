@@ -7,9 +7,8 @@
         "sprotty-vscode-webview": "^1.0.0"
     },
     "devDependencies": {
+        "@vscode/codicons": "^0.0.35",
         "css-loader": "^6.10.0",
-        "esbuild": "^0.19.4",
-        "file-loader": "^6.2.0",
         "inversify": "^6.0.2",
         "snabbdom": "^3.6.2",
         "source-map-loader": "^5.0.0",

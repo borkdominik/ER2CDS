@@ -16,7 +16,7 @@ const PALETTE_HEIGHT = '500px';
 export class ToolPalette extends AbstractUIExtension implements IActionHandler {
     public static readonly ID = 'tool-palette';
 
-    private paletteItems: ToolPaletteItem[];
+    private paletteItems: ToolPaletteItem[] = [];
     private paletteItemsCopy: ToolPaletteItem[] = [];
 
     private bodyDiv?: HTMLElement;
@@ -50,13 +50,16 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
     }
 
     protected initializeContents(containerElement: HTMLElement): void {
-        this.createHeader();
-        this.createBody();
+        this.createToolPaletteHeader();
+
+        this.initializeToolPaletteItems();
+        this.createToolPaletteBody();
+
         this.lastActiveButton = this.defaultToolsButton;
         containerElement.setAttribute('aria-label', 'Tool-Palette');
     }
 
-    private createHeader(): void {
+    private createToolPaletteHeader(): void {
         this.addMinimizePaletteButton();
 
         const headerCompartment = document.createElement('div');
@@ -71,11 +74,14 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
     private addMinimizePaletteButton(): void {
         const baseDiv = document.getElementById(this.options.baseDiv);
         const minPaletteDiv = document.createElement('div');
+
         minPaletteDiv.classList.add('minimize-palette-button');
         this.containerElement.classList.add('collapsible-palette');
+
         if (baseDiv) {
             const insertedDiv = baseDiv.insertBefore(minPaletteDiv, baseDiv.firstChild);
             const minimizeIcon = createIcon(CHEVRON_DOWN_ICON_ID);
+
             this.updateMinimizePaletteButtonTooltip(minPaletteDiv);
             minimizeIcon.onclick = _event => {
                 if (this.isPaletteMaximized()) {
@@ -87,6 +93,7 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
                 changeCodiconClass(minimizeIcon, PALETTE_ICON_ID);
                 changeCodiconClass(minimizeIcon, CHEVRON_DOWN_ICON_ID);
             };
+
             insertedDiv.appendChild(minimizeIcon);
         }
     }
@@ -219,28 +226,53 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
     //     return validateActionButton;
     // }
 
-    private createBody(): void {
-        const bodyDiv = document.createElement('div');
-        bodyDiv.classList.add('tool-palette-body');
+    private initializeToolPaletteItems(): void {
+        this.paletteItems = [];
+
+        const nodeGroup: ToolPaletteItem = {
+            id: 'tool-palette-nodes',
+            label: 'Nodes',
+            sortString: 'nodes',
+            icon: 'symbol-property',
+            children: [],
+            actions: []
+        }
 
         const addEntityItem: ToolPaletteItem = {
             id: 'tool-palette-add-entity',
             label: 'Add Entity',
             sortString: 'add-entity',
-            icon: 'debug-stop',
+            icon: '',
             actions: [CreateEntityAction.create()]
         }
-        bodyDiv.appendChild(this.createToolButton(addEntityItem, 0));
+        nodeGroup.children.push(addEntityItem);
 
         const addRelationshipItem: ToolPaletteItem = {
             id: 'tool-palette-add-relationship',
             label: 'Add Relationship',
             sortString: 'add-relationship',
-            icon: 'primitive-square',
+            icon: '',
             actions: [CreateRelationshipAction.create()]
         }
-        bodyDiv.appendChild(this.createToolButton(addRelationshipItem, 1));
+        nodeGroup.children.push(addRelationshipItem);
 
+        this.paletteItems.push(nodeGroup);
+    }
+
+    private createToolPaletteBody(): void {
+        const bodyDiv = document.createElement('div');
+        bodyDiv.classList.add('tool-palette-body');
+
+        let tabIndex = 0;
+        this.paletteItems.sort(compare).forEach(item => {
+            if (item.children) {
+                const group = createToolGroup(item);
+                item.children.sort(compare).forEach(child => group.appendChild(this.createToolButton(child, tabIndex++)));
+                bodyDiv.appendChild(group);
+            } else {
+                bodyDiv.appendChild(this.createToolButton(item, tabIndex++));
+            }
+        });
 
         // Remove existing body to refresh filtered entries
         if (this.bodyDiv) {
@@ -301,24 +333,29 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
 
         // Reset the paletteItems before searching
         this.paletteItems = JSON.parse(JSON.stringify(this.paletteItemsCopy));
-        // Filter the entries
-        const filteredPaletteItems: ToolPaletteItem[] = [];
-        for (const itemGroup of this.paletteItems) {
-            if (itemGroup.children) {
-                // Fetch the labels according to the filter
-                const matchingChildren = itemGroup.children.filter(child => child.label.toLowerCase().includes(filter.toLowerCase()));
-                // Add the itemgroup containing the correct entries
-                if (matchingChildren.length > 0) {
-                    // Clear existing children
-                    itemGroup.children.splice(0, itemGroup.children.length);
-                    // Push the matching children
-                    matchingChildren.forEach(child => itemGroup.children!.push(child));
-                    filteredPaletteItems.push(itemGroup);
+
+        if (filter !== '') {
+            // Filter the entries
+            const filteredPaletteItems: ToolPaletteItem[] = [];
+            for (const itemGroup of this.paletteItems) {
+                if (itemGroup.children) {
+                    // Fetch the labels according to the filter
+                    const matchingChildren = itemGroup.children.filter(child => child.label.toLowerCase().includes(filter.toLowerCase()));
+                    // Add the itemgroup containing the correct entries
+                    if (matchingChildren.length > 0) {
+                        // Clear existing children
+                        itemGroup.children.splice(0, itemGroup.children.length);
+                        // Push the matching children
+                        matchingChildren.forEach(child => itemGroup.children!.push(child));
+                        filteredPaletteItems.push(itemGroup);
+                    }
                 }
             }
+
+            this.paletteItems = filteredPaletteItems;
         }
-        this.paletteItems = filteredPaletteItems;
-        this.createBody();
+
+        this.createToolPaletteBody();
     }
 }
 
@@ -340,11 +377,14 @@ export function createToolGroup(item: ToolPaletteItem): HTMLElement {
     const group = document.createElement('div');
     group.classList.add('tool-group');
     group.id = item.id;
+
     const header = document.createElement('div');
     header.classList.add('group-header');
+
     if (item.icon) {
         header.appendChild(createIcon(item.icon));
     }
+
     header.insertAdjacentText('beforeend', item.label);
     header.ondblclick = _ev => {
         const css = 'collapsed';
