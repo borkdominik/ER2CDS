@@ -3,7 +3,7 @@ import { AbstractUIExtension, IActionHandler, ICommand, codiconCSSClasses, Actio
 import { Action } from 'sprotty-protocol';
 import { matchesKeystroke } from 'sprotty/lib/utils/keyboard';
 import { ToolPaletteItem } from './tool-palette-item';
-import { EnableDeleteMouseToolAction } from './tool-palette-actions';
+import { EnableDefaultToolsAction, EnableDeleteMouseToolAction } from './tools/tool-actions';
 import { CreateElementAction } from '../actions';
 import { NODE_ENTITY, NODE_RELATIONSHIP } from '../model';
 
@@ -123,8 +123,8 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
         const headerTools = document.createElement('div');
         headerTools.classList.add('header-tools');
 
-        // const selectionToolsButton = this.createSelectionToolButton();
-        // headerTools.appendChild(selectionToolsButton);
+        this.defaultToolsButton = this.createDefaultToolButton();
+        headerTools.appendChild(this.defaultToolsButton);
 
         const deleteToolButton = this.createMouseDeleteToolButton();
         headerTools.appendChild(deleteToolButton);
@@ -138,29 +138,27 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
         const searchIcon = this.createSearchButton();
         headerTools.appendChild(searchIcon);
 
-        // this.defaultToolsButton = selectionToolsButton;
-
         return headerTools;
     }
 
-    // private createSelectionToolButton(): HTMLElement {
-    //     const button = createIcon('inspect');
-    //     button.id = 'btn_default_tools';
-    //     button.title = 'Enable selection tool';
-    //     button.onclick = this.onSelectionToolButton(button);
-    //     button.ariaLabel = button.title;
-    //     button.tabIndex = 1;
-    //     return button;
-    // }
+    private createDefaultToolButton(): HTMLElement {
+        const button = createIcon('inspect');
+        button.id = 'btn_default_tools';
+        button.title = 'Enable selection tool';
+        button.onclick = this.onCreateDefaultToolButton(button);
+        button.ariaLabel = button.title;
+        button.tabIndex = 1;
+        return button;
+    }
 
-    // private onSelectionToolButton(button: HTMLElement) {
-    //     return (_ev: MouseEvent) => {
-    //         const action = EnableSelectionToolAction.create();
-    //         this.actionDispatcher.dispatch(action);
-    //         this.changeActiveButton(button);
-    //         button.focus();
-    //     };
-    // }
+    private onCreateDefaultToolButton(button: HTMLElement) {
+        return (_ev: MouseEvent) => {
+            const action = EnableDefaultToolsAction.create();
+            this.actionDispatcher.dispatch(action);
+            this.changeActiveButton(button);
+            button.focus();
+        };
+    }
 
     private createMouseDeleteToolButton(): HTMLElement {
         const deleteToolButton = createIcon('chrome-close');
@@ -168,7 +166,7 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
         deleteToolButton.onclick = this.onMouseDeleteToolButton(deleteToolButton);
         deleteToolButton.ariaLabel = deleteToolButton.title;
         deleteToolButton.tabIndex = 1;
-
+        deleteToolButton.onkeydown = ev => this.clearToolOnEscape(ev);
         return deleteToolButton;
     }
 
@@ -200,29 +198,25 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
     //     };
     // }
 
-    protected createValidateButton(): HTMLElement {
+    private createValidateButton(): HTMLElement {
         const validateActionButton = createIcon('pass');
         validateActionButton.title = 'Validate model';
         validateActionButton.onclick = _event => {
             // const modelIds: string[] = [this.modelRootId];
             // this.actionDispatcher.dispatch(RequestMarkersAction.create(modelIds, { reason: MarkersReason.BATCH }));
             // validateActionButton.focus();
+            this.changeActiveButton(validateActionButton);
         };
         validateActionButton.ariaLabel = validateActionButton.title;
         validateActionButton.tabIndex = 1;
+        validateActionButton.onkeydown = ev => this.clearToolOnEscape(ev);
         return validateActionButton;
     }
 
-    private createHeaderSearchField(): HTMLInputElement {
-        const searchField = document.createElement('input');
-        searchField.classList.add('search-input');
-        searchField.id = this.containerElement.id + '_search_field';
-        searchField.type = 'text';
-        searchField.placeholder = ' Search...';
-        searchField.style.display = 'none';
-        searchField.onkeyup = () => this.requestFilterUpdate(this.searchField.value);
-        searchField.onkeydown = ev => this.clearOnEscape(ev);
-        return searchField;
+    private clearToolOnEscape(event: KeyboardEvent): void {
+        if (matchesKeystroke(event, 'Escape')) {
+            this.actionDispatcher.dispatch(EnableDefaultToolsAction.create());
+        }
     }
 
     private createSearchButton(): HTMLElement {
@@ -243,6 +237,59 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
         searchIcon.ariaLabel = searchIcon.title;
         searchIcon.tabIndex = 1;
         return searchIcon;
+    }
+
+    private createHeaderSearchField(): HTMLInputElement {
+        const searchField = document.createElement('input');
+        searchField.classList.add('search-input');
+        searchField.id = this.containerElement.id + '_search_field';
+        searchField.type = 'text';
+        searchField.placeholder = ' Search...';
+        searchField.style.display = 'none';
+        searchField.onkeyup = () => this.requestFilterUpdate(this.searchField.value);
+        searchField.onkeydown = ev => this.clearOnEscape(ev);
+        return searchField;
+    }
+
+    private clearOnEscape(event: KeyboardEvent): void {
+        if (matchesKeystroke(event, 'Escape')) {
+            this.searchField.value = '';
+            this.requestFilterUpdate('');
+        }
+    }
+
+    private requestFilterUpdate(filter: string): void {
+        // Initialize the copy if it's empty
+        if (this.paletteItemsCopy.length === 0) {
+            // Creating deep copy
+            this.paletteItemsCopy = JSON.parse(JSON.stringify(this.paletteItems));
+        }
+
+        // Reset the paletteItems before searching
+        this.paletteItems = JSON.parse(JSON.stringify(this.paletteItemsCopy));
+
+        if (filter !== '') {
+            // Filter the entries
+            const filteredPaletteItems: ToolPaletteItem[] = [];
+            for (const itemGroup of this.paletteItems) {
+                if (itemGroup.children) {
+                    // Fetch the labels according to the filter
+                    const matchingChildren = itemGroup.children.filter(child => child.label.toLowerCase().includes(filter.toLowerCase()));
+                    // Add the itemgroup containing the correct entries
+                    if (matchingChildren.length > 0) {
+                        // Clear existing children
+                        itemGroup.children.splice(0, itemGroup.children.length);
+                        // Push the matching children
+                        matchingChildren.forEach(child => itemGroup.children!.push(child));
+                        filteredPaletteItems.push(itemGroup);
+                    }
+                }
+            }
+
+            this.paletteItems = filteredPaletteItems;
+        }
+
+        this.createToolPaletteBody();
     }
 
     private initializeToolPaletteItems(): void {
@@ -293,7 +340,6 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
             }
         });
 
-        // Remove existing body to refresh filtered entries
         if (this.bodyDiv) {
             this.containerElement.removeChild(this.bodyDiv);
         }
@@ -311,7 +357,7 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
         }
         button.insertAdjacentText('beforeend', item.label);
         button.onclick = this.onClickCreateToolButton(button, item);
-        button.onkeydown = ev => this.clearOnEscape(ev);
+        button.onkeydown = ev => this.clearToolOnEscape(ev);
         return button;
     }
 
@@ -327,6 +373,7 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
         if (this.lastActiveButton) {
             this.lastActiveButton.classList.remove(CLICKED_CSS_CLASS);
         }
+
         if (button) {
             button.classList.add(CLICKED_CSS_CLASS);
             this.lastActiveButton = button;
@@ -334,47 +381,6 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
             this.defaultToolsButton.classList.add(CLICKED_CSS_CLASS);
             this.lastActiveButton = this.defaultToolsButton;
         }
-    }
-
-    private clearOnEscape(event: KeyboardEvent): void {
-        if (matchesKeystroke(event, 'Escape')) {
-            this.searchField.value = '';
-            this.requestFilterUpdate('');
-        }
-    }
-
-    private requestFilterUpdate(filter: string): void {
-        // Initialize the copy if it's empty
-        if (this.paletteItemsCopy.length === 0) {
-            // Creating deep copy
-            this.paletteItemsCopy = JSON.parse(JSON.stringify(this.paletteItems));
-        }
-
-        // Reset the paletteItems before searching
-        this.paletteItems = JSON.parse(JSON.stringify(this.paletteItemsCopy));
-
-        if (filter !== '') {
-            // Filter the entries
-            const filteredPaletteItems: ToolPaletteItem[] = [];
-            for (const itemGroup of this.paletteItems) {
-                if (itemGroup.children) {
-                    // Fetch the labels according to the filter
-                    const matchingChildren = itemGroup.children.filter(child => child.label.toLowerCase().includes(filter.toLowerCase()));
-                    // Add the itemgroup containing the correct entries
-                    if (matchingChildren.length > 0) {
-                        // Clear existing children
-                        itemGroup.children.splice(0, itemGroup.children.length);
-                        // Push the matching children
-                        matchingChildren.forEach(child => itemGroup.children!.push(child));
-                        filteredPaletteItems.push(itemGroup);
-                    }
-                }
-            }
-
-            this.paletteItems = filteredPaletteItems;
-        }
-
-        this.createToolPaletteBody();
     }
 }
 

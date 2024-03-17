@@ -19,17 +19,17 @@ export class CreateElementActionHandler {
         if (!sourceUri)
             return Promise.resolve();
 
-        const textDocument = services.shared.workspace.LangiumDocuments.getOrCreateDocument(sourceUri).textDocument;
-        if (!textDocument)
+        const document = services.shared.workspace.LangiumDocuments.getOrCreateDocument(sourceUri);
+        if (!document)
             return Promise.resolve();
 
         switch (action.elementType) {
             case NODE_ENTITY:
-                this.handleCreateEntity(server, sourceUri, textDocument);
+                this.handleCreateEntity(server, sourceUri, document.textDocument);
                 break;
 
             case NODE_RELATIONSHIP:
-                this.handleCreateRelationship(server, sourceUri, textDocument);
+                this.handleCreateRelationship(server, sourceUri, document.textDocument);
                 break;
         }
 

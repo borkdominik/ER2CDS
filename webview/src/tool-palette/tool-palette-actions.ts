@@ -10,16 +10,3 @@ export namespace EnableToolPaletteAction {
         return { kind: KIND };
     }
 }
-
-export interface EnableDeleteMouseToolAction extends Action {
-    kind: typeof EnableDeleteMouseToolAction.KIND;
-}
-export namespace EnableDeleteMouseToolAction {
-    export const KIND = 'enableDeleteMouseTool';
-
-    export function create(): EnableDeleteMouseToolAction {
-        return {
-            kind: KIND
-        };
-    }
-}

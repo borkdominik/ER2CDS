@@ -6,14 +6,17 @@ import {
 import { ER2CDSModel, EntityNode, GRAPH, LABEL_ENTITY, LABEL_RELATIONSHIP, NODE_ENTITY, NODE_RELATIONSHIP, RelationshipNode } from './model';
 import { ER2CDSModelView, EntityNodeView, RelationshipNodeView } from './views';
 
-import ToolPaletteModule from './tool-palette/di.config';
-import ToolsModule from './tool-palette/tools/di.config';
-
 import 'sprotty/css/sprotty.css';
 import '@vscode/codicons/dist/codicon.css';
 
 import '../css/diagram.css';
 import '../css/tool-palette.css';
+
+import ToolPaletteModule from './tool-palette/di.config';
+import ToolsModule from './tool-palette/tools/di.config';
+import MarqueeToolModule from './tool-palette/tools/marquee-tool/di.config';
+import DeleteToolModule from './tool-palette/tools/delete-tool/di.config';
+import ServicesModule from './services/di.config';
 
 export default (containerId: string) => {
     const DiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
@@ -44,10 +47,15 @@ export default (containerId: string) => {
     const container = new Container();
 
     loadDefaultModules(container);
+
     container.load(DiagramModule);
+
+    container.load(ServicesModule);
 
     container.load(ToolPaletteModule);
     container.load(ToolsModule);
+    container.load(MarqueeToolModule);
+    container.load(DeleteToolModule);
 
     overrideViewerOptions(container, {
         needsClientLayout: true,
