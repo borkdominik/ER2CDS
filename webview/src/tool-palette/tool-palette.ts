@@ -3,7 +3,7 @@ import { AbstractUIExtension, IActionHandler, ICommand, codiconCSSClasses, Actio
 import { Action } from 'sprotty-protocol';
 import { matchesKeystroke } from 'sprotty/lib/utils/keyboard';
 import { ToolPaletteItem } from './tool-palette-item';
-import { EnableDefaultToolsAction, EnableDeleteMouseToolAction } from './tools/tool-actions';
+import { EnableDefaultToolsAction, EnableDeleteMouseToolAction, EnableMarqueeMouseToolAction } from './tools/actions';
 import { CreateElementAction } from '../actions';
 import { NODE_ENTITY, NODE_RELATIONSHIP } from '../model';
 
@@ -129,8 +129,8 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
         const deleteToolButton = this.createMouseDeleteToolButton();
         headerTools.appendChild(deleteToolButton);
 
-        // const marqueeToolButton = this.createMarqueeToolButton();
-        // headerTools.appendChild(marqueeToolButton);
+        const marqueeToolButton = this.createMarqueeToolButton();
+        headerTools.appendChild(marqueeToolButton);
 
         const validateActionButton = this.createValidateButton();
         headerTools.appendChild(validateActionButton);
@@ -179,24 +179,24 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
         };
     }
 
-    // private createMarqueeToolButton(): HTMLElement {
-    //     const marqueeToolButton = createIcon('screen-full');
-    //     marqueeToolButton.title = 'Enable marquee tool';
-    //     marqueeToolButton.onclick = this.onMarqueeToolButton(marqueeToolButton);
-    //     marqueeToolButton.ariaLabel = marqueeToolButton.title;
-    //     marqueeToolButton.tabIndex = 1;
+    private createMarqueeToolButton(): HTMLElement {
+        const marqueeToolButton = createIcon('screen-full');
+        marqueeToolButton.title = 'Enable marquee tool';
+        marqueeToolButton.onclick = this.onMarqueeToolButton(marqueeToolButton);
+        marqueeToolButton.ariaLabel = marqueeToolButton.title;
+        marqueeToolButton.tabIndex = 1;
 
-    //     return marqueeToolButton;
-    // }
+        return marqueeToolButton;
+    }
 
-    // private onMarqueeToolButton(button: HTMLElement) {
-    //     return (_ev: MouseEvent) => {
-    //         const action = EnableMarqueeToolButton.create();
-    //         this.actionDispatcher.dispatch(action);
-    //         this.changeActiveButton(button);
-    //         button.focus();
-    //     };
-    // }
+    private onMarqueeToolButton(button: HTMLElement) {
+        return (_ev: MouseEvent) => {
+            const action = EnableMarqueeMouseToolAction.create();
+            this.actionDispatcher.dispatch(action);
+            this.changeActiveButton(button);
+            button.focus();
+        };
+    }
 
     private createValidateButton(): HTMLElement {
         const validateActionButton = createIcon('pass');

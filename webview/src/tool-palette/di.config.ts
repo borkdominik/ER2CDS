@@ -2,7 +2,7 @@ import { ContainerModule } from 'inversify';
 
 import { ToolPalette } from './tool-palette';
 import { TYPES, configureActionHandler } from 'sprotty';
-import { EnableToolPaletteAction } from './tool-palette-actions';
+import { EnableToolPaletteAction } from './actions';
 
 const ToolPaletteModule = new ContainerModule((bind, unbind, isBound, rebind) => {
     bind(ToolPalette).toSelf().inSingletonScope();

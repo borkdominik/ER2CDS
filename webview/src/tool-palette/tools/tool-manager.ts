@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { IActionHandler, ICommand } from 'sprotty';
 import { Action } from 'sprotty-protocol';
-import { EnableDefaultToolsAction, EnableDeleteMouseToolAction } from './tool-actions';
+import { EnableDefaultToolsAction, EnableDeleteMouseToolAction, EnableMarqueeMouseToolAction } from './actions';
 import { DeleteMouseTool } from './delete-tool/delete-mouse-tool';
 import { DeleteKeyTool } from './delete-tool/delete-key-tool';
 import { MarqueeKeyTool } from './marquee-tool/marquee-key-tool';
@@ -27,6 +27,10 @@ export class ToolManagerActionHandler implements IActionHandler {
         switch (action.kind) {
             case EnableDefaultToolsAction.KIND:
                 this.enableDefaultTools();
+                break;
+
+            case EnableMarqueeMouseToolAction.KIND:
+                this.marqueeMouseTool.enable();
                 break;
 
             case EnableDeleteMouseToolAction.KIND:

@@ -1,33 +1,42 @@
 import { inject, injectable } from 'inversify';
-import { InternalBoundsAware, MouseListener, MouseTool, SModelElementImpl, isSelectable, isSelected } from 'sprotty';
+import { InternalBoundsAware, MouseListener, SModelElementImpl, TYPES, isSelectable, isSelected } from 'sprotty';
 import { Action, SelectAction } from 'sprotty-protocol';
 import { DOMHelper } from 'sprotty/lib/base/views/dom-helper';
 import { MarqueeUtil, getAbsolutePosition, toAbsoluteBounds } from './marquee-util';
 import { DiagramEditorService } from '../../../services/diagram-editor-service';
 import { EntityNode, RelationshipNode } from '../../../model';
+import { RemoveMarqueeAction } from './actions';
+import { ER2CDSMouseTool } from '../mouse-tool';
 
 @injectable()
-export class MarqueeMouseTool extends MouseTool {
+export class MarqueeMouseTool {
+    @inject(ER2CDSMouseTool)
+    protected mouseTool: ER2CDSMouseTool;
+
+    @inject(DiagramEditorService)
+    protected diagramEditorService: DiagramEditorService
+
+    @inject(TYPES.DOMHelper)
+    protected domHelper: DOMHelper;
+
     protected marqueeMouseListener: MarqueeMouseListener;
 
     enable(): void {
         if (!this.marqueeMouseListener)
-            this.marqueeMouseListener = new MarqueeMouseListener(this.domHelper)
+            this.marqueeMouseListener = new MarqueeMouseListener(this.domHelper, this.diagramEditorService)
 
-        this.register(this.marqueeMouseListener);
+        this.mouseTool.register(this.marqueeMouseListener);
     }
 
     disable(): void {
-        this.deregister(this.marqueeMouseListener);
+        this.mouseTool.deregister(this.marqueeMouseListener);
     }
 }
 
 @injectable()
 export class MarqueeMouseListener extends MouseListener {
-    @inject(DiagramEditorService)
-    protected diagramEditorService: DiagramEditorService;
-
     protected domHelper: DOMHelper;
+    protected diagramEditorService: DiagramEditorService;
     protected marqueeUtil: MarqueeUtil;
 
     protected entities: (SModelElementImpl & InternalBoundsAware)[];
@@ -36,20 +45,22 @@ export class MarqueeMouseListener extends MouseListener {
     protected previouslySelected: string[];
     protected isActive = false;
 
-    constructor(domHelper: DOMHelper) {
+    constructor(domHelper: DOMHelper, diagramEditorService: DiagramEditorService) {
         super();
 
         this.domHelper = domHelper;
+        this.diagramEditorService = diagramEditorService;
         this.marqueeUtil = new MarqueeUtil();
 
         this.entities = Array.from(this.diagramEditorService.getModelRoot().index.all().map(e => e as SModelElementImpl & InternalBoundsAware).filter(e => isSelectable(e)).filter(e => e instanceof EntityNode));
         this.relationships = Array.from(this.diagramEditorService.getModelRoot().index.all().map(e => e as SModelElementImpl & InternalBoundsAware).filter(e => isSelectable(e)).filter(e => e instanceof RelationshipNode));
-
     }
 
     override mouseDown(target: SModelElementImpl, event: MouseEvent): Action[] {
         this.isActive = true;
         this.marqueeUtil.updateStartPoint(getAbsolutePosition(target, event));
+
+        console.log("mousedown");
 
         if (event.ctrlKey)
             this.previouslySelected = Array.from(target.root.index.all().map(e => e as SModelElementImpl & InternalBoundsAware).filter(e => isSelected(e)).map(e => e.id));
@@ -64,7 +75,7 @@ export class MarqueeMouseListener extends MouseListener {
             const entityIdsSelected = this.entities.filter(e => this.marqueeUtil.isNodeMarked(toAbsoluteBounds(e))).map(e => e.id);
             const relationshipIdsSelected = this.relationships.filter(e => this.marqueeUtil.isNodeMarked(toAbsoluteBounds(e))).map(e => e.id);
             const selected = entityIdsSelected.concat(relationshipIdsSelected);
-            return [SelectAction.create({ selectedElementsIDs: selected.concat(this.previouslySelected) })];
+            return [SelectAction.create({ selectedElementsIDs: selected.concat(this.previouslySelected) }), this.marqueeUtil.drawMarqueeAction()];
         }
 
         return [];
@@ -72,10 +83,10 @@ export class MarqueeMouseListener extends MouseListener {
 
     override mouseUp(_target: SModelElementImpl, event: MouseEvent): Action[] {
         this.isActive = false;
-        if (event.shiftKey) {
-            return [];
-        }
 
-        return [];
+        if (event.shiftKey)
+            return [RemoveMarqueeAction.create()];
+
+        return [RemoveMarqueeAction.create()];
     }
 }

@@ -21,7 +21,7 @@ import ServicesModule from './services/di.config';
 export default (containerId: string) => {
     const DiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
-        rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
+        rebind(TYPES.LogLevel).toConstantValue(LogLevel.info);
 
         const context = { bind, unbind, isBound, rebind };
 

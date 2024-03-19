@@ -1,9 +1,44 @@
-import { InternalBoundsAware, PointToPointLine, SModelElementImpl, findParentByFeature, isAlignable, isViewport, translateBounds } from 'sprotty';
+import { CommandExecutionContext, InternalBoundsAware, PointToPointLine, SChildElementImpl, SModelElementImpl, SModelRootImpl, findParentByFeature, isAlignable, isViewport, translateBounds } from 'sprotty';
 import { Bounds, Point, Viewport } from 'sprotty-protocol';
+import { DrawMarqueeAction } from './actions';
+
+export const MARQUEE = 'marquee';
 
 export class MarqueeUtil {
     protected startPoint: Point;
     protected currentPoint: Point;
+
+
+    marqueeId(root: SModelRootImpl): string {
+        return root.id + '_' + MARQUEE;
+    }
+
+    drawMarqueeAction(): DrawMarqueeAction {
+        return DrawMarqueeAction.create({ startPoint: this.startPoint, endPoint: this.currentPoint });
+    }
+
+    drawMarquee(context: CommandExecutionContext, startPoint: Point, endPoint: Point): void {
+        const root = context.root;
+
+        this.removeMarquee(root);
+
+        const marqueeNode = {
+            type: MARQUEE,
+            id: this.marqueeId(root),
+            startPoint: startPoint,
+            endPoint: endPoint
+        };
+        console.log(marqueeNode);
+        const marquee = context.modelFactory.createElement(marqueeNode);
+        root.add(marquee);
+    }
+
+    removeMarquee(root: SModelRootImpl): void {
+        const marquee = root.index.getById(this.marqueeId(root));
+        if (marquee instanceof SChildElementImpl) {
+            root.remove(marquee);
+        }
+    }
 
     updateStartPoint(position: Point): void {
         this.startPoint = position;

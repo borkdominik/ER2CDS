@@ -1,18 +1,22 @@
-import { injectable } from 'inversify';
-import { MouseListener, MouseTool, SModelElementImpl, findParentByFeature, isDeletable } from 'sprotty';
+import { inject, injectable } from 'inversify';
+import { MouseListener, SModelElementImpl, findParentByFeature, isDeletable } from 'sprotty';
 import { Action } from 'sprotty-protocol';
 import { DeleteElementAction } from '../../../actions';
+import { ER2CDSMouseTool } from '../mouse-tool';
 
 @injectable()
-export class DeleteMouseTool extends MouseTool {
+export class DeleteMouseTool {
+    @inject(ER2CDSMouseTool)
+    protected mouseTool: ER2CDSMouseTool;
+
     protected deleteMouseToolListener: DeleteMouseToolListener = new DeleteMouseToolListener();
 
     enable(): void {
-        this.register(this.deleteMouseToolListener);
+        this.mouseTool.register(this.deleteMouseToolListener);
     }
 
     disable(): void {
-        this.deregister(this.deleteMouseToolListener);
+        this.mouseTool.deregister(this.deleteMouseToolListener);
     }
 }
 
@@ -24,8 +28,6 @@ export class DeleteMouseToolListener extends MouseListener {
             return [];
         }
 
-        console.log("DLEETE");
-        
         const result: Action[] = [];
         result.push(DeleteElementAction.create([deletableParent.id]));
 

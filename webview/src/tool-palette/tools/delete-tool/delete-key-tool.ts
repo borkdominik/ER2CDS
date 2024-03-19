@@ -1,19 +1,23 @@
-import { injectable } from 'inversify';
-import { KeyTool, KeyListener, SModelElementImpl, isDeletable, isSelectable } from 'sprotty';
+import { inject, injectable } from 'inversify';
+import { KeyListener, SModelElementImpl, isDeletable, isSelectable } from 'sprotty';
 import { matchesKeystroke } from 'sprotty/lib/utils/keyboard';
 import { Action } from 'sprotty-protocol';
 import { DeleteElementAction } from '../../../actions';
+import { ER2CDSKeyTool } from '../key-tool';
 
 @injectable()
-export class DeleteKeyTool extends KeyTool {
+export class DeleteKeyTool {
+    @inject(ER2CDSKeyTool)
+    protected keyTool: ER2CDSKeyTool;
+
     protected deleteKeyListener: DeleteKeyListener = new DeleteKeyListener();
 
     enable(): void {
-        this.register(this.deleteKeyListener);
+        this.keyTool.register(this.deleteKeyListener);
     }
 
     disable(): void {
-        this.deregister(this.deleteKeyListener);
+        this.keyTool.deregister(this.deleteKeyListener);
     }
 }
 
