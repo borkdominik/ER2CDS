@@ -1,6 +1,7 @@
 import { ContainerModule } from 'inversify';
 import { configureCommand } from 'sprotty';
-import { SelectAllCommand, SelectCommand, DiagramEditorService, SetModelCommand } from './diagram-editor-service';
+import { DiagramEditorService } from './diagram-editor-service';
+import { SetModelCommand, SelectCommand, SelectAllCommand } from './actions';
 
 const ServicesModule = new ContainerModule((bind, unbind, isBound, rebind) => {
     bind(DiagramEditorService).toSelf().inSingletonScope();

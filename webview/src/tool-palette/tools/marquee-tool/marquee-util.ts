@@ -28,7 +28,7 @@ export class MarqueeUtil {
             startPoint: startPoint,
             endPoint: endPoint
         };
-        console.log(marqueeNode);
+
         const marquee = context.modelFactory.createElement(marqueeNode);
         root.add(marquee);
     }
