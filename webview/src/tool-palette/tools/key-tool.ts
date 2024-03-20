@@ -1,6 +1,5 @@
 import { injectable } from 'inversify';
-import { VNode } from 'snabbdom';
-import { KeyListener, KeyTool, SModelElementImpl, SModelRootImpl } from 'sprotty';
+import { KeyTool, SModelRootImpl } from 'sprotty';
 
 @injectable()
 export class ER2CDSKeyTool extends KeyTool {

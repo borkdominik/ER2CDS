@@ -1,7 +1,7 @@
 /** @jsx svg */
 import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
-import { Diamond, DiamondNodeView, RectangularNodeView, RenderingContext, SGraphView, SNodeImpl, SPortImpl, svg } from 'sprotty';
+import { Diamond, DiamondNodeView, RectangularNodeView, RenderingContext, SGraphView, SNodeImpl, SPortImpl, setAttr, svg } from 'sprotty';
 import { ER2CDSModel, EntityNode, RelationshipNode } from './model';
 
 @injectable()
@@ -9,10 +9,15 @@ export class ER2CDSModelView extends SGraphView {
     override render(model: Readonly<ER2CDSModel>, context: RenderingContext): VNode {
         const edgeRouting = this.edgeRouterRegistry.routeAllChildren(model);
         const transform = `scale(${model.zoom}) translate(${-model.scroll.x},${-model.scroll.y})`;
-
-        return <svg class-sprotty-graph={true}>
-            <g transform={transform}>{context.renderChildren(model, edgeRouting)}</g>
+        
+        const rootNode = <svg class-sprotty-graph={true}>
+            <g transform={transform}>
+                {context.renderChildren(model, { edgeRouting })}
+            </g>
         </svg>;
+
+        setAttr(rootNode, 'tabindex', -1); // make root div focus-able
+        return rootNode;
     }
 }
 
