@@ -10,10 +10,10 @@ import { MarqueeMouseTool } from './marquee-tool/marquee-mouse-tool';
 @injectable()
 export class ToolManagerActionHandler implements IActionHandler {
     @inject(MarqueeKeyTool)
-    private marqueeKeyTool: DeleteKeyTool;
+    private marqueeKeyTool: MarqueeKeyTool;
 
     @inject(MarqueeMouseTool)
-    private marqueeMouseTool: DeleteMouseTool;
+    private marqueeMouseTool: MarqueeMouseTool;
 
     @inject(DeleteKeyTool)
     private deleteKeyTool: DeleteKeyTool;
