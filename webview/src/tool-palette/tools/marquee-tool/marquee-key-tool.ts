@@ -37,9 +37,8 @@ export class MarqueeKeyListener extends KeyListener {
     }
 
     override keyDown(element: SModelElementImpl, event: KeyboardEvent): Action[] {
-        if (event.shiftKey && !this.diagramEditorService.hasSelectedElements()) {
+        if (event.shiftKey && !this.diagramEditorService.hasSelectedElements())
             return [EnableMarqueeMouseToolAction.create()];
-        }
 
         return [];
     }

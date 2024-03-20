@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { InternalBoundsAware, MouseListener, SModelElementImpl, TYPES, isSelectable, isSelected } from 'sprotty';
+import { InternalBoundsAware, KeyListener, MouseListener, SModelElementImpl, TYPES, isSelectable, isSelected } from 'sprotty';
 import { Action, SelectAction } from 'sprotty-protocol';
 import { DOMHelper } from 'sprotty/lib/base/views/dom-helper';
 import { MarqueeUtil, getAbsolutePosition, toAbsoluteBounds } from './marquee-util';
@@ -7,11 +7,15 @@ import { DiagramEditorService } from '../../../services/diagram-editor-service';
 import { EntityNode, RelationshipNode } from '../../../model';
 import { RemoveMarqueeAction } from './actions';
 import { ER2CDSMouseTool } from '../mouse-tool';
+import { ER2CDSKeyTool } from '../key-tool';
 
 @injectable()
 export class MarqueeMouseTool {
     @inject(ER2CDSMouseTool)
     protected mouseTool: ER2CDSMouseTool;
+
+    @inject(ER2CDSKeyTool)
+    protected keyTool: ER2CDSKeyTool;
 
     @inject(DiagramEditorService)
     protected diagramEditorService: DiagramEditorService
@@ -20,12 +24,17 @@ export class MarqueeMouseTool {
     protected domHelper: DOMHelper;
 
     protected marqueeMouseListener: MarqueeMouseListener;
+    protected shiftKeyListener: ShiftKeyListener;
 
     enable(): void {
         if (!this.marqueeMouseListener)
             this.marqueeMouseListener = new MarqueeMouseListener(this.domHelper, this.diagramEditorService)
 
+        if (!this.shiftKeyListener)
+            this.shiftKeyListener = new ShiftKeyListener();
+
         this.mouseTool.register(this.marqueeMouseListener);
+        this.keyTool.register(this.shiftKeyListener);
     }
 
     disable(): void {
@@ -73,6 +82,7 @@ export class MarqueeMouseListener extends MouseListener {
             const entityIdsSelected = this.entities.filter(e => this.marqueeUtil.isNodeMarked(toAbsoluteBounds(e))).map(e => e.id);
             const relationshipIdsSelected = this.relationships.filter(e => this.marqueeUtil.isNodeMarked(toAbsoluteBounds(e))).map(e => e.id);
             const selected = entityIdsSelected.concat(relationshipIdsSelected);
+
             return [SelectAction.create({ selectedElementsIDs: selected.concat(this.previouslySelected) }), this.marqueeUtil.drawMarqueeAction()];
         }
 
@@ -84,6 +94,16 @@ export class MarqueeMouseListener extends MouseListener {
 
         if (event.shiftKey)
             return [RemoveMarqueeAction.create()];
+
+        return [RemoveMarqueeAction.create()];
+    }
+}
+
+@injectable()
+export class ShiftKeyListener extends KeyListener {
+    override keyUp(element: SModelElementImpl, event: KeyboardEvent): Action[] {
+        if (event.shiftKey)
+            return [];
 
         return [RemoveMarqueeAction.create()];
     }

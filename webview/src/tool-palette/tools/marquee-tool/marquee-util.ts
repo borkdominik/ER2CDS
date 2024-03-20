@@ -8,7 +8,6 @@ export class MarqueeUtil {
     protected startPoint: Point;
     protected currentPoint: Point;
 
-
     marqueeId(root: SModelRootImpl): string {
         return root.id + '_' + MARQUEE;
     }
@@ -149,6 +148,7 @@ export function getAbsolutePosition(target: SModelElementImpl, mouseEvent: Mouse
 export function getAbsolutePositionByPoint(target: SModelElementImpl, point: Point): Point {
     let xPos = point.x;
     let yPos = point.y;
+    
     const canvasBounds = target.root.canvasBounds;
     xPos -= canvasBounds.x;
     yPos -= canvasBounds.y;
