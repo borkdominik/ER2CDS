@@ -7,7 +7,7 @@ import { ER2CDS } from '../generated/ast.js';
 import { Range } from 'vscode-languageserver'
 import { WorkspaceEdit } from 'vscode-languageserver-protocol';
 import { WorkspaceEditAction } from 'sprotty-vscode-protocol/lib/lsp/editing';
-import { NODE_ENTITY, NODE_RELATIONSHIP } from '../er2cds-diagram.js';
+import { NODE_ENTITY, NODE_RELATIONSHIP } from '../model.js';
 
 
 export class DeleteElementActionHandler {

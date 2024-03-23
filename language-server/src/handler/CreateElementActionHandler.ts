@@ -7,7 +7,7 @@ import { CreateElementAction } from '../actions.js';
 import { ER2CDSServices } from '../er2cds-module.js';
 import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
 import { SModelElement } from 'sprotty-protocol';
-import { NODE_ENTITY, NODE_RELATIONSHIP } from '../er2cds-diagram.js';
+import { NODE_ENTITY, NODE_RELATIONSHIP } from '../model.js';
 
 export class CreateElementActionHandler {
     public handle(action: CreateElementAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {

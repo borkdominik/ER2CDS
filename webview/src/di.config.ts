@@ -9,6 +9,7 @@ import { ER2CDSRootView, EdgeInheritanceView, EdgeView, EntityNodeView, Relation
 import 'sprotty/css/sprotty.css';
 import '@vscode/codicons/dist/codicon.css';
 
+import '../css/er2cds.css';
 import '../css/diagram.css';
 import '../css/tool-palette.css';
 
