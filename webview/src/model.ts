@@ -1,4 +1,4 @@
-import { DiamondNode, RectangularNode, SGraphImpl, SLabelImpl } from 'sprotty';
+import { DiamondNode, RectangularNode, SGraphImpl, SEdgeImpl, SLabelImpl } from 'sprotty';
 import { EdgePlacement } from 'sprotty-protocol';
 
 export const GRAPH = 'graph';
@@ -6,10 +6,21 @@ export const GRAPH = 'graph';
 export const NODE_ENTITY = 'node:entity';
 export const NODE_RELATIONSHIP = 'node:relationship';
 
+export const EDGE = 'edge';
+export const EDGE_INHERITANCE = 'edge:inheritance';
+export const EDGE_PARTIAL = 'edge:partial';
+
 export const LABEL_ENTITY = 'label:entity';
 export const LABEL_RELATIONSHIP = 'label:relationship';
 
-export class ER2CDSModel extends SGraphImpl {
+export const LABEL_TOP = 'label:top';
+export const LABEL_TOP_LEFT = 'label:top-left';
+export const LABEL_TOP_RIGHT = 'label:top-right';
+export const LABEL_BOTTOM = 'label:bottom';
+export const LABEL_BOTTOM_LEFT = 'label:bottom-left';
+export const LABEL_BOTTOM_RIGHT = 'label:bottom-right';
+
+export class ER2CDSRoot extends SGraphImpl {
     name: string;
 }
 
@@ -22,6 +33,14 @@ export class RelationshipNode extends DiamondNode {
     weak: boolean;
 }
 
+export class Edge extends SEdgeImpl {
+    cardinality: string;
+}
+
+export class EdgeInheritance extends SEdgeImpl {
+
+}
+
 export class CardinalityLabel extends SLabelImpl {
     override edgePlacement = <EdgePlacement>{
         position: 0.5,
@@ -31,9 +50,45 @@ export class CardinalityLabel extends SLabelImpl {
     };
 }
 
+export class LeftCardinalityLabel extends SLabelImpl {
+    override edgePlacement = <EdgePlacement>{
+        position: 0.2,
+        side: 'top',
+        rotate: false,
+        offset: 10
+    };
+}
+
+export class RightCardinalityLabel extends SLabelImpl {
+    override edgePlacement = <EdgePlacement>{
+        position: 0.8,
+        side: 'top',
+        rotate: false,
+        offset: 10
+    };
+}
+
 export class RoleLabel extends SLabelImpl {
     override edgePlacement = <EdgePlacement>{
         position: 0.5,
+        side: 'bottom',
+        rotate: false,
+        offset: 10
+    };
+}
+
+export class LeftRoleLabel extends SLabelImpl {
+    override edgePlacement = <EdgePlacement>{
+        position: 0.2,
+        side: 'bottom',
+        rotate: false,
+        offset: 10
+    };
+}
+
+export class RightRoleLabel extends SLabelImpl {
+    override edgePlacement = <EdgePlacement>{
+        position: 0.8,
         side: 'bottom',
         rotate: false,
         offset: 10

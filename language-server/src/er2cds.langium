@@ -11,7 +11,7 @@ Entity:
 
 Relationship:
 	(weak?='weak')? 'relationship' name=ID '{'
-		(first=RelationshipEntity ((firstType=RelationshipType second=RelationshipEntity) (secondType=RelationshipType third=RelationshipEntity)?)?)?
+		(first=RelationshipEntity (('->' second=RelationshipEntity))?)?
 		(attributes+=Attribute)*
 	'}';
 
@@ -23,20 +23,6 @@ RelationshipEntity:
 Attribute:
 	(visibility=VisibilityType)? name=ID (':' datatype=DataType)? (type=AttributeType)?;
 
-type RelationshipType = '->' | 'o-' | '-o' | '*-' | '-*';
-RelationshipType returns RelationshipType:
-	DEFAULT | AGGREGATION_LEFT | AGGREGATION_RIGHT | COMPOSITION_LEFT | COMPOSITION_RIGHT
-;
-DEFAULT returns string:
-	'->';
-AGGREGATION_LEFT returns string:
-	'o-';
-AGGREGATION_RIGHT returns string:
-	'-o';
-COMPOSITION_LEFT returns string:
-	'*-';
-COMPOSITION_RIGHT returns string:
-	'-*';
 
 type CardinalityType = 'none' | '0..1' | '0..N' | '1' | '1..1' | '1..N' | 'N';
 CardinalityType returns CardinalityType:
@@ -55,6 +41,7 @@ ONE_MANY returns string:
 MANY returns string:
 	'N';
 
+
 type AttributeType = 'none' | 'key' | 'partial-key' | 'optional' | 'derived' | 'multivalued';
 AttributeType returns AttributeType:
 	NONE | KEY | PARTIAL_KEY | OPTIONAL | DERIVED | MULTIVALUED
@@ -69,6 +56,7 @@ DERIVED returns string:
 	'derived';
 MULTIVALUED returns string:
 	'multivalued';
+
 
 type VisibilityType = 'none' | '+' | '#' | '-' | '~' | 'public' | 'protected' | 'private' | 'package';
 VisibilityType returns VisibilityType:
@@ -88,16 +76,18 @@ PRIVATE_STRING returns string:
 	'private';
 PACKAGE_STRING returns string:
 	'package';
-
 NONE returns string:
 	'none';
+
 
 DataType:
 	type=ID ('(' size=INT (',' d=INT)? ')')?;
 
+
 terminal ID: /[_a-zA-Z][\w_]*/;
 terminal INT returns number: /[0-9]+/;
 terminal STRING returns string: /[A-Za-z]+/;
+
 
 hidden terminal WS: /\s+/;
 hidden terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;

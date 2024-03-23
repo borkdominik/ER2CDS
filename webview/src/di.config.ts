@@ -3,8 +3,8 @@ import {
     configureModelElement, ConsoleLogger, editLabelFeature, expandFeature, HtmlRootImpl, HtmlRootView, loadDefaultModules, LogLevel, overrideViewerOptions, PreRenderedElementImpl,
     PreRenderedView, SLabelImpl, SLabelView, SModelRootImpl, SRoutingHandleImpl, SRoutingHandleView, TYPES
 } from 'sprotty';
-import { ER2CDSModel, EntityNode, GRAPH, LABEL_ENTITY, LABEL_RELATIONSHIP, NODE_ENTITY, NODE_RELATIONSHIP, RelationshipNode } from './model';
-import { ER2CDSModelView, EntityNodeView, RelationshipNodeView } from './views';
+import { CardinalityLabel, EDGE, EDGE_INHERITANCE, EDGE_PARTIAL, ER2CDSRoot, Edge, EdgeInheritance, EntityNode, GRAPH, LABEL_BOTTOM, LABEL_BOTTOM_LEFT, LABEL_BOTTOM_RIGHT, LABEL_ENTITY, LABEL_RELATIONSHIP, LABEL_TOP, LABEL_TOP_LEFT, LABEL_TOP_RIGHT, LeftCardinalityLabel, LeftRoleLabel, NODE_ENTITY, NODE_RELATIONSHIP, RelationshipNode, RightCardinalityLabel, RightRoleLabel, RoleLabel } from './model';
+import { ER2CDSRootView, EdgeInheritanceView, EdgeView, EntityNodeView, RelationshipNodeView } from './views';
 
 import 'sprotty/css/sprotty.css';
 import '@vscode/codicons/dist/codicon.css';
@@ -26,15 +26,27 @@ export default (containerId: string) => {
         const context = { bind, unbind, isBound, rebind };
 
         // Graph
-        configureModelElement(context, GRAPH, ER2CDSModel, ER2CDSModelView);
+        configureModelElement(context, GRAPH, ER2CDSRoot, ER2CDSRootView);
 
         // Nodes
         configureModelElement(context, NODE_ENTITY, EntityNode, EntityNodeView, { enable: [expandFeature] });
         configureModelElement(context, NODE_RELATIONSHIP, RelationshipNode, RelationshipNodeView);
 
+        // Edges
+        configureModelElement(context, EDGE, Edge, EdgeView);
+        configureModelElement(context, EDGE_PARTIAL, Edge, EdgeView);
+        configureModelElement(context, EDGE_INHERITANCE, EdgeInheritance, EdgeInheritanceView);
+
         // Labels
         configureModelElement(context, LABEL_ENTITY, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
         configureModelElement(context, LABEL_RELATIONSHIP, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
+
+        configureModelElement(context, LABEL_TOP, CardinalityLabel, SLabelView);
+        configureModelElement(context, LABEL_TOP_LEFT, LeftCardinalityLabel, SLabelView);
+        configureModelElement(context, LABEL_TOP_RIGHT, RightCardinalityLabel, SLabelView);
+        configureModelElement(context, LABEL_BOTTOM, RoleLabel, SLabelView);
+        configureModelElement(context, LABEL_BOTTOM_LEFT, LeftRoleLabel, SLabelView);
+        configureModelElement(context, LABEL_BOTTOM_RIGHT, RightRoleLabel, SLabelView);
 
         // Sprotty
         configureModelElement(context, 'html', HtmlRootImpl, HtmlRootView);

@@ -1,15 +1,16 @@
 /** @jsx svg */
 import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
-import { Diamond, DiamondNodeView, RectangularNodeView, RenderingContext, SGraphView, SNodeImpl, SPortImpl, setAttr, svg } from 'sprotty';
-import { ER2CDSModel, EntityNode, RelationshipNode } from './model';
+import { Diamond, DiamondNodeView, IViewArgs, PolylineEdgeView, RectangularNodeView, RenderingContext, SEdgeImpl, SGraphView, SNodeImpl, SPortImpl, setAttr, svg } from 'sprotty';
+import { ER2CDSRoot, Edge, EntityNode, RelationshipNode } from './model';
+import { Point, toDegrees } from 'sprotty-protocol';
 
 @injectable()
-export class ER2CDSModelView extends SGraphView {
-    override render(model: Readonly<ER2CDSModel>, context: RenderingContext): VNode {
+export class ER2CDSRootView extends SGraphView {
+    override render(model: Readonly<ER2CDSRoot>, context: RenderingContext): VNode {
         const edgeRouting = this.edgeRouterRegistry.routeAllChildren(model);
         const transform = `scale(${model.zoom}) translate(${-model.scroll.x},${-model.scroll.y})`;
-        
+
         const rootNode = <svg class-sprotty-graph={true}>
             <g transform={transform}>
                 {context.renderChildren(model, { edgeRouting })}
@@ -68,5 +69,48 @@ export class RelationshipNodeView extends DiamondNodeView {
                 {context.renderChildren(node)}
             </g>;
         }
+    }
+}
+
+@injectable()
+export class EdgeView extends PolylineEdgeView {
+    override render(edge: Readonly<Edge>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
+        const route = this.edgeRouterRegistry.route(edge, { args });
+        if (route.length === 0) {
+            if (edge.children.length === 0)
+                return undefined;
+
+            return <g>{context.renderChildren(edge, { route })}</g>;
+        }
+
+        if (!this.isVisible(edge, route, context)) {
+            if (edge.children.length === 0)
+                return undefined;
+
+            return <g>{context.renderChildren(edge, { route })}</g>;
+        }
+
+        return <g class-sprotty-edge={true} class-mouseover={edge.hoverFeedback}>
+            {this.renderLine(edge, route, context, args)}
+            {this.renderAdditionals(edge, route, context)}
+            {context.renderChildren(edge, { route })}
+        </g>;
+    }
+}
+
+@injectable()
+export class EdgeInheritanceView extends PolylineEdgeView {
+    override renderAdditionals(edge: SEdgeImpl, segments: Point[], context: RenderingContext): VNode[] {
+        const p1 = segments[segments.length - 2];
+        const p2 = segments[segments.length - 1];
+        
+        return [
+            <path class-sprotty-edge-arrow={true} d='M 6,-3 L 0,0 L 6,3 Z'
+                transform={`rotate(${this.angle(p2, p1)} ${p2.x} ${p2.y}) translate(${p2.x} ${p2.y})`} />
+        ];
+    }
+
+    private angle(x0: Point, x1: Point): number {
+        return toDegrees(Math.atan2(x1.y - x0.y, x1.x - x0.x));
     }
 }

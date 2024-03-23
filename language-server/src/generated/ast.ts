@@ -16,39 +16,9 @@ export const ER2CDSTerminals = {
     SL_COMMENT: /\/\/[^\n\r]*/,
 };
 
-export type AGGREGATION_LEFT = 'o-';
-
-export function isAGGREGATION_LEFT(item: unknown): item is AGGREGATION_LEFT {
-    return item === 'o-';
-}
-
-export type AGGREGATION_RIGHT = '-o';
-
-export function isAGGREGATION_RIGHT(item: unknown): item is AGGREGATION_RIGHT {
-    return item === '-o';
-}
-
 export type AttributeType = 'derived' | 'key' | 'multivalued' | 'none' | 'optional' | 'partial-key';
 
 export type CardinalityType = '0..1' | '0..N' | '1' | '1..1' | '1..N' | 'N' | 'none';
-
-export type COMPOSITION_LEFT = '*-';
-
-export function isCOMPOSITION_LEFT(item: unknown): item is COMPOSITION_LEFT {
-    return item === '*-';
-}
-
-export type COMPOSITION_RIGHT = '-*';
-
-export function isCOMPOSITION_RIGHT(item: unknown): item is COMPOSITION_RIGHT {
-    return item === '-*';
-}
-
-export type DEFAULT = '->';
-
-export function isDEFAULT(item: unknown): item is DEFAULT {
-    return item === '->';
-}
 
 export type DERIVED = 'derived';
 
@@ -152,8 +122,6 @@ export function isPUBLIC_STRING(item: unknown): item is PUBLIC_STRING {
     return item === 'public';
 }
 
-export type RelationshipType = '*-' | '-*' | '->' | '-o' | 'o-';
-
 export type VisibilityType = '#' | '+' | '-' | 'none' | 'package' | 'private' | 'protected' | 'public' | '~';
 
 export type ZERO_OR_MANY = '0..N';
@@ -230,11 +198,8 @@ export interface Relationship extends AstNode {
     readonly $type: 'Relationship';
     attributes: Array<Attribute>
     first?: RelationshipEntity
-    firstType?: RelationshipType
     name: string
     second?: RelationshipEntity
-    secondType?: RelationshipType
-    third?: RelationshipEntity
     weak: boolean
 }
 
