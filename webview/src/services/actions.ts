@@ -1,42 +1,7 @@
 import { injectable, inject } from 'inversify';
-import { Command, SModelRootImpl, TYPES, CommandExecutionContext, InitializeCanvasBoundsCommand, SChildElementImpl, isSelectable, SModelElementImpl, SParentElementImpl } from 'sprotty';
-import { Action, SetModelAction, SelectAction, SelectAllAction, Selectable } from 'sprotty-protocol'
+import { Command, SModelRootImpl, TYPES, CommandExecutionContext, SChildElementImpl, isSelectable, SModelElementImpl, SParentElementImpl } from 'sprotty';
+import { SelectAction, SelectAllAction, Selectable } from 'sprotty-protocol'
 import { DiagramEditorService } from './diagram-editor-service';
-
-@injectable()
-export class SetModelCommand extends Command {
-    static readonly KIND = SetModelAction.KIND;
-
-    protected oldRoot: SModelRootImpl;
-    protected newRoot: SModelRootImpl;
-
-    constructor(
-        @inject(TYPES.Action) protected readonly action: SetModelAction,
-        @inject(DiagramEditorService) public diagramEditorService: DiagramEditorService
-    ) {
-        super();
-    }
-
-    execute(context: CommandExecutionContext): SModelRootImpl {
-        this.oldRoot = context.modelFactory.createRoot(context.root);
-        this.newRoot = context.modelFactory.createRoot(this.action.newRoot);
-
-        this.diagramEditorService.modelRootChanged(this.newRoot);
-        return this.newRoot;
-    }
-
-    undo(context: CommandExecutionContext): SModelRootImpl {
-        return this.oldRoot;
-    }
-
-    redo(context: CommandExecutionContext): SModelRootImpl {
-        return this.newRoot;
-    }
-
-    get blockUntil(): (action: Action) => boolean {
-        return action => action.kind === InitializeCanvasBoundsCommand.KIND;
-    }
-}
 
 @injectable()
 export class SelectCommand extends Command {

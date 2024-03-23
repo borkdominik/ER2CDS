@@ -1,7 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { ILogger, ModelIndexImpl, SModelElementImpl, SModelRootImpl, TYPES, isSelectable } from 'sprotty';
 
-
 @injectable()
 export class DiagramEditorService {
     protected root: SModelRootImpl;
@@ -13,10 +12,6 @@ export class DiagramEditorService {
 
     @inject(TYPES.ILogger)
     protected logger: ILogger;
-
-    modelRootChanged(root: Readonly<SModelRootImpl>): void {
-        this.updateSelection(root, [], []);
-    }
 
     updateSelection(newRoot: Readonly<SModelRootImpl>, select: string[], deselect: string[]): void {
         if (newRoot === undefined && select.length === 0 && deselect.length === 0) {
@@ -55,6 +50,10 @@ export class DiagramEditorService {
                     deselectedElementIDs.add(id);
             }
         }
+    }
+
+    modelRootChanged(root: Readonly<SModelRootImpl>): void {
+        this.updateSelection(root, [], []);
     }
 
     getModelRoot(): Readonly<SModelRootImpl> {

@@ -26,10 +26,12 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
         graph.children?.push(...sm.entities.map(e => this.generateEntity(e, args)));
         graph.children?.push(...sm.entities.map(e => this.generateInheritanceEdges(e, args)).filter((e): e is Edge => !!e));
 
-        sm.relationships.forEach(r => {
-            graph.children?.push(this.generateRelationship(r, args));
-            graph.children?.push(...this.generateEdges(r, args).flat().filter((e): e is Edge => !!e));
-        });
+        if (sm.relationships) {
+            sm.relationships.forEach(r => {
+                graph.children?.push(this.generateRelationship(r, args));
+                graph.children?.push(...this.generateEdges(r, args).flat().filter((e): e is Edge => !!e));
+            });
+        }
 
         return graph;
     }
