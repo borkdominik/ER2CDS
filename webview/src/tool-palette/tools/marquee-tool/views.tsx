@@ -4,9 +4,6 @@ import { VNode } from 'snabbdom';
 import { RectangularNodeView, RenderingContext, svg } from 'sprotty';
 import { MarqueeNode } from './model';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const JSX = { createElement: svg };
-
 injectable()
 export class MarqueeView extends RectangularNodeView {
     override render(node: MarqueeNode, context: RenderingContext): VNode {

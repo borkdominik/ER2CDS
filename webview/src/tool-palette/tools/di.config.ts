@@ -1,6 +1,6 @@
 import { ContainerModule } from 'inversify';
 import { KeyTool, MouseTool, ScrollMouseListener, configureActionHandler } from 'sprotty';
-import { EnableDefaultToolsAction, EnableDeleteMouseToolAction, EnableMarqueeMouseToolAction } from './actions';
+import { EnableCreateEdgeToolAction, EnableDefaultToolsAction, EnableDeleteMouseToolAction, EnableMarqueeMouseToolAction } from './actions';
 import { ToolManagerActionHandler } from './tool-manager';
 import { ER2CDSKeyTool } from './key-tool';
 import { ER2CDSMouseTool } from './mouse-tool';
@@ -20,9 +20,10 @@ const ToolsModule = new ContainerModule((bind, unbind, isBound, rebind) => {
     configureActionHandler(context, EnableDefaultToolsAction.KIND, ToolManagerActionHandler);
     configureActionHandler(context, EnableMarqueeMouseToolAction.KIND, ToolManagerActionHandler);
     configureActionHandler(context, EnableDeleteMouseToolAction.KIND, ToolManagerActionHandler);
+    configureActionHandler(context, EnableCreateEdgeToolAction.KIND, ToolManagerActionHandler);
 
-    configureActionHandler(context, EnableMarqueeMouseToolAction.KIND, ER2CDSScrollMouseListener);
     configureActionHandler(context, EnableDefaultToolsAction.KIND, ER2CDSScrollMouseListener);
+    configureActionHandler(context, EnableMarqueeMouseToolAction.KIND, ER2CDSScrollMouseListener);
 });
 
 export default ToolsModule;

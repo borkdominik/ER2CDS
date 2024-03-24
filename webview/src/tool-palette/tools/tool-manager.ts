@@ -1,11 +1,12 @@
 import { inject, injectable } from 'inversify';
 import { IActionHandler, ICommand } from 'sprotty';
 import { Action } from 'sprotty-protocol';
-import { EnableDefaultToolsAction, EnableDeleteMouseToolAction, EnableMarqueeMouseToolAction } from './actions';
+import { EnableCreateEdgeToolAction, EnableDefaultToolsAction, EnableDeleteMouseToolAction, EnableMarqueeMouseToolAction } from './actions';
 import { DeleteMouseTool } from './delete-tool/delete-mouse-tool';
 import { DeleteKeyTool } from './delete-tool/delete-key-tool';
 import { MarqueeKeyTool } from './marquee-tool/marquee-key-tool';
 import { MarqueeMouseTool } from './marquee-tool/marquee-mouse-tool';
+import { EdgeCreateTool } from './edge-create-tool/edge-create-tool';
 
 @injectable()
 export class ToolManagerActionHandler implements IActionHandler {
@@ -20,6 +21,9 @@ export class ToolManagerActionHandler implements IActionHandler {
 
     @inject(DeleteMouseTool)
     private deleteMouseTool: DeleteMouseTool;
+
+    @inject(EdgeCreateTool)
+    private edgeCreateTool: EdgeCreateTool;
 
     handle(action: Action): void | ICommand | Action {
         this.disableAllTools();
@@ -36,6 +40,10 @@ export class ToolManagerActionHandler implements IActionHandler {
             case EnableDeleteMouseToolAction.KIND:
                 this.deleteMouseTool.enable();
                 break;
+
+            case EnableCreateEdgeToolAction.KIND:
+                this.edgeCreateTool.enable();
+                break;
         }
     }
 
@@ -50,5 +58,7 @@ export class ToolManagerActionHandler implements IActionHandler {
 
         this.deleteKeyTool.disable();
         this.deleteMouseTool.disable();
+
+        this.edgeCreateTool.disable();
     }
 }

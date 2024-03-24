@@ -3,6 +3,7 @@ import { ActionHandlerRegistry } from 'sprotty';
 import { Action } from 'sprotty-protocol';
 import { VscodeLspEditDiagramServer } from 'sprotty-vscode-webview/lib/lsp/editing';
 import { CreateElementAction, DeleteElementAction } from './actions';
+import { CreateEdgeAction } from './tool-palette/tools/edge-create-tool/actions';
 
 @injectable()
 export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
@@ -12,6 +13,7 @@ export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
 
         registry.register(CreateElementAction.KIND, this);
         registry.register(DeleteElementAction.KIND, this);
+        registry.register(CreateEdgeAction.KIND, this);
     }
 
     public override handleLocally(action: Action): boolean {
@@ -20,6 +22,9 @@ export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
                 return true;
 
             case DeleteElementAction.KIND:
+                return true;
+
+            case CreateEdgeAction.KIND:
                 return true;
 
             default:

@@ -18,6 +18,7 @@ import ToolsModule from './tool-palette/tools/di.config';
 import MarqueeToolModule from './tool-palette/tools/marquee-tool/di.config';
 import DeleteToolModule from './tool-palette/tools/delete-tool/di.config';
 import ServicesModule from './services/di.config';
+import EdgeCreateToolModule from './tool-palette/tools/edge-create-tool/di.config';
 
 export default (containerId: string) => {
     const DiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
@@ -69,6 +70,7 @@ export default (containerId: string) => {
     container.load(ToolsModule);
     container.load(MarqueeToolModule);
     container.load(DeleteToolModule);
+    container.load(EdgeCreateToolModule);
 
     overrideViewerOptions(container, {
         needsClientLayout: true,

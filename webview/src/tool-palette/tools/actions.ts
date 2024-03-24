@@ -38,3 +38,16 @@ export namespace EnableDeleteMouseToolAction {
         };
     }
 }
+
+export interface EnableCreateEdgeToolAction extends Action {
+    kind: typeof EnableCreateEdgeToolAction.KIND;
+}
+export namespace EnableCreateEdgeToolAction {
+    export const KIND = 'enableCreateEdgeTool';
+
+    export function create(): EnableCreateEdgeToolAction {
+        return {
+            kind: KIND
+        };
+    }
+}

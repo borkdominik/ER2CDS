@@ -3,7 +3,7 @@ import { AbstractUIExtension, IActionHandler, ICommand, codiconCSSClasses, Actio
 import { Action } from 'sprotty-protocol';
 import { matchesKeystroke } from 'sprotty/lib/utils/keyboard';
 import { ToolPaletteItem } from './tool-palette-item';
-import { EnableDefaultToolsAction, EnableDeleteMouseToolAction, EnableMarqueeMouseToolAction } from './tools/actions';
+import { EnableCreateEdgeToolAction, EnableDefaultToolsAction, EnableDeleteMouseToolAction, EnableMarqueeMouseToolAction } from './tools/actions';
 import { CreateElementAction } from '../actions';
 import { NODE_ENTITY, NODE_RELATIONSHIP } from '../model';
 
@@ -295,10 +295,11 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
     private initializeToolPaletteItems(): void {
         this.paletteItems = [];
 
+        // Nodes
         const nodeGroup: ToolPaletteItem = {
             id: 'tool-palette-nodes',
             label: 'Nodes',
-            sortString: 'nodes',
+            sortString: '1-nodes',
             icon: 'symbol-property',
             children: [],
             actions: []
@@ -323,6 +324,28 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
         nodeGroup.children.push(addRelationshipItem);
 
         this.paletteItems.push(nodeGroup);
+
+        //Edges
+        const edgeGroup: ToolPaletteItem = {
+            id: 'tool-palette-edge',
+            label: 'Egde',
+            sortString: '2-edge',
+            icon: 'symbol-property',
+            children: [],
+            actions: []
+        }
+
+        const addEdgeItem: ToolPaletteItem = {
+            id: 'tool-palette-add-edge',
+            label: 'Add Edge',
+            sortString: 'add-edge',
+            icon: '',
+            actions: [EnableCreateEdgeToolAction.create()]
+        }
+        edgeGroup.children.push(addEdgeItem);
+
+        this.paletteItems.push(edgeGroup);
+
     }
 
     private createToolPaletteBody(): void {
