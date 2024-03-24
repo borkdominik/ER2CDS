@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { Command, CommandExecutionContext, CommandReturn, TYPES } from 'sprotty';
 import { Action } from 'sprotty-protocol';
-import { drawCreateEdge, removeDanglingCreateEdge } from './edge-create-utils';
+import { drawCreateEdgeEnd, removeDanglingCreateEdgeEnd } from './edge-create-utils';
 
 export interface CreateEdgeAction extends Action {
     kind: typeof CreateEdgeAction.KIND;
@@ -19,14 +19,14 @@ export namespace CreateEdgeAction {
     }
 }
 
-export interface DrawCreateEdgeAction extends Action {
-    kind: typeof DrawCreateEdgeAction.KIND;
+export interface DrawCreateEdgeEndAction extends Action {
+    kind: typeof DrawCreateEdgeEndAction.KIND;
     sourceId: string;
 }
-export namespace DrawCreateEdgeAction {
-    export const KIND = 'drawCreateEdge';
+export namespace DrawCreateEdgeEndAction {
+    export const KIND = 'drawCreateEdgeEnd';
 
-    export function create(options: { sourceId: string; }): DrawCreateEdgeAction {
+    export function create(options: { sourceId: string; }): DrawCreateEdgeEndAction {
         return {
             kind: KIND,
             ...options
@@ -35,16 +35,15 @@ export namespace DrawCreateEdgeAction {
 }
 
 @injectable()
-export class DrawCreateEdgeCommand extends Command {
-    static readonly KIND = DrawCreateEdgeAction.KIND;
+export class DrawCreateEdgeEndCommand extends Command {
+    static readonly KIND = DrawCreateEdgeEndAction.KIND;
 
-    constructor(@inject(TYPES.Action) protected action: DrawCreateEdgeAction) {
+    constructor(@inject(TYPES.Action) protected action: DrawCreateEdgeEndAction) {
         super();
     }
 
     execute(context: CommandExecutionContext): CommandReturn {
-        console.log("DRAW");
-        drawCreateEdge(context, this.action.sourceId);
+        drawCreateEdgeEnd(context, this.action.sourceId);
         return context.root;
     }
 
@@ -57,23 +56,23 @@ export class DrawCreateEdgeCommand extends Command {
     }
 }
 
-export interface RemoveCreateEdgeAction extends Action {
-    kind: typeof RemoveCreateEdgeAction.KIND;
+export interface RemoveCreateEdgeEndAction extends Action {
+    kind: typeof RemoveCreateEdgeEndAction.KIND;
 }
-export namespace RemoveCreateEdgeAction {
-    export const KIND = 'removeCreateEdgeCommand';
+export namespace RemoveCreateEdgeEndAction {
+    export const KIND = 'removeCreateEdgeEnd';
 
-    export function create(): RemoveCreateEdgeAction {
+    export function create(): RemoveCreateEdgeEndAction {
         return { kind: KIND };
     }
 }
 
 @injectable()
-export class RemoveCreateEdgeCommand extends Command {
-    static readonly KIND = RemoveCreateEdgeAction.KIND;
+export class RemoveCreateEdgeEndCommand extends Command {
+    static readonly KIND = RemoveCreateEdgeEndAction.KIND;
 
     execute(context: CommandExecutionContext): CommandReturn {
-        removeDanglingCreateEdge(context.root);
+        removeDanglingCreateEdgeEnd(context.root);
         return context.root;
     }
 

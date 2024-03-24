@@ -2,7 +2,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES, isCtrlOrCmd, findParentByFeature, isConnectable, ActionDispatcher, MouseTool, MouseListener, SModelElementImpl, SEdgeImpl, AnchorComputerRegistry } from 'sprotty';
 import { EnableDefaultToolsAction } from '../actions';
 import { Action } from 'sprotty-protocol';
-import { CreateEdgeAction, DrawCreateEdgeAction, RemoveCreateEdgeAction } from './actions';
+import { CreateEdgeAction, DrawCreateEdgeEndAction, RemoveCreateEdgeEndAction } from './actions';
 import { EdgeCreateEndMovingMouseListener } from './edge-create-end-listener';
 
 @injectable()
@@ -62,7 +62,7 @@ export class EdgeCreateToolMouseListener extends MouseListener {
         this.currentTarget = undefined;
         this.allowedTarget = false;
 
-        RemoveCreateEdgeAction.create();
+        this.actionDispatcher.dispatch(RemoveCreateEdgeEndAction.create());
     }
 
     override mouseDown(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
@@ -91,7 +91,8 @@ export class EdgeCreateToolMouseListener extends MouseListener {
             if (!this.isSourceSelected()) {
                 if (this.currentTarget && this.allowedTarget) {
                     this.source = this.currentTarget.id;
-                    DrawCreateEdgeAction.create({ sourceId: this.source })
+
+                    result.push(DrawCreateEdgeEndAction.create({ sourceId: this.source }));
                 }
 
             } else if (this.currentTarget && this.allowedTarget) {
@@ -99,12 +100,7 @@ export class EdgeCreateToolMouseListener extends MouseListener {
             }
 
             if (this.source && this.target) {
-                result.push(
-                    CreateEdgeAction.create({
-                        sourceElementId: this.source,
-                        targetElementId: this.target
-                    })
-                );
+                result.push(CreateEdgeAction.create({ sourceElementId: this.source, targetElementId: this.target }));
 
                 if (!isCtrlOrCmd(event)) {
                     result.push(EnableDefaultToolsAction.create());

@@ -1,6 +1,7 @@
-import { CommandExecutionContext, InternalBoundsAware, SChildElementImpl, SDanglingAnchorImpl, SModelElementImpl, SModelRootImpl, SRoutableElementImpl, findParentByFeature, isAlignable, isBoundsAware, isConnectable, translateBounds } from 'sprotty';
-import { Edge } from '../../../model';
-import { Point, Bounds } from 'sprotty-protocol';
+import { CommandExecutionContext, SChildElementImpl, SDanglingAnchorImpl, SModelElementImpl, SModelRootImpl, SRoutableElementImpl, findParentByFeature, isBoundsAware, isConnectable } from 'sprotty';
+import { EDGE } from '../../../model';
+import { toAbsolutePosition } from '../../../utils/viewpoint-utils';
+import { SEdge } from 'sprotty-protocol';
 
 export class CreateEdgeEnd extends SDanglingAnchorImpl {
     static readonly TYPE = 'create-edge-end';
@@ -11,14 +12,19 @@ export class CreateEdgeEnd extends SDanglingAnchorImpl {
 }
 
 export function createEdgeId(root: SModelRootImpl): string {
-    return root.id + '_create_edge';
+    return root.id + '_create_edge_end_edge';
 }
 
 export function createEdgeEndId(root: SModelRootImpl): string {
-    return root.id + '_create_anchor';
+    return root.id + '_create_edge_end_anchor';
 }
 
-export function drawCreateEdge(context: CommandExecutionContext, sourceId: string): void {
+export const defaultFeedbackEdgeSchema: Partial<SEdge> = {
+    cssClasses: ['feedback-edge'],
+    opacity: 0.3
+};
+
+export function drawCreateEdgeEnd(context: CommandExecutionContext, sourceId: string): void {
     const root = context.root;
     const sourceChild = root.index.getById(sourceId);
 
@@ -33,7 +39,16 @@ export function drawCreateEdge(context: CommandExecutionContext, sourceId: strin
     edgeEnd.id = createEdgeEndId(root);
     edgeEnd.position = toAbsolutePosition(source);
 
-    const createEdge = context.modelFactory.createElement(new Edge());
+    const edgeSchema: SEdge = {
+        id: createEdgeId(root),
+        type: EDGE,
+        sourceId: source.id,
+        targetId: edgeEnd.id,
+        ...defaultFeedbackEdgeSchema
+    };
+
+    const createEdge = context.modelFactory.createElement(edgeSchema);
+
     if (isRoutable(createEdge)) {
         edgeEnd.createEdge = createEdge;
         root.add(edgeEnd);
@@ -41,7 +56,7 @@ export function drawCreateEdge(context: CommandExecutionContext, sourceId: strin
     }
 }
 
-export function removeDanglingCreateEdge(root: SModelRootImpl): void {
+export function removeDanglingCreateEdgeEnd(root: SModelRootImpl): void {
     const createEdge = root.index.getById(createEdgeId(root));
     const createEdgeEnd = root.index.getById(createEdgeEndId(root));
 
@@ -50,19 +65,6 @@ export function removeDanglingCreateEdge(root: SModelRootImpl): void {
 
     if (createEdgeEnd instanceof SChildElementImpl)
         root.remove(createEdgeEnd);
-}
-
-export function toAbsolutePosition(target: SModelElementImpl & InternalBoundsAware): Point {
-    return toAbsoluteBounds(target);
-}
-
-export function toAbsoluteBounds(element: SModelElementImpl & InternalBoundsAware): Bounds {
-    const location = isAlignable(element) ? element.alignment : Point.ORIGIN;
-    const x = location.x;
-    const y = location.y;
-    const width = element.bounds.width;
-    const height = element.bounds.height;
-    return translateBounds({ x, y, width, height }, element, element.root);
 }
 
 export function isRoutable<T extends SModelElementImpl>(element: T): element is T & SRoutableElementImpl {

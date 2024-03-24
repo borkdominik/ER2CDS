@@ -5,9 +5,9 @@ import { RectangularNodeView, RenderingContext, svg } from 'sprotty';
 import { MarqueeNode } from './model';
 
 injectable()
-export class MarqueeView extends RectangularNodeView {
+export class MarqueeNodeView extends RectangularNodeView {
     override render(node: MarqueeNode, context: RenderingContext): VNode {
-        const graph = (
+        return (
             <g>
                 <rect
                     class-sprotty-node={true}
@@ -21,6 +21,5 @@ export class MarqueeView extends RectangularNodeView {
                 ></rect>
             </g>
         );
-        return graph;
     }
 }

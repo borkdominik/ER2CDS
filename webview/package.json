@@ -2,11 +2,15 @@
     "name": "er2cds",
     "dependencies": {
         "@vscode/webview-ui-toolkit": "^1.4.0",
+        "lodash": "^4.17.21",
         "reflect-metadata": "^0.2.1",
         "sprotty": "^1.0.0",
-        "sprotty-vscode-webview": "^1.0.0"
+        "sprotty-vscode-webview": "^1.0.0",
+        "uuid": "^9.0.1"
     },
     "devDependencies": {
+        "@types/lodash": "^4.17.0",
+        "@types/uuid": "^9.0.8",
         "@vscode/codicons": "^0.0.35",
         "css-loader": "^6.10.0",
         "inversify": "^6.0.2",

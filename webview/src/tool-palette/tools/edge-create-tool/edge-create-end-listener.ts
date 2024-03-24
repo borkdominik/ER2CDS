@@ -1,7 +1,9 @@
-import { AnchorComputerRegistry, InternalBoundsAware, MouseListener, PolylineEdgeRouter, SChildElementImpl, SConnectableElementImpl, SModelElementImpl, findChildrenAtPosition, findParentByFeature, isBoundsAware, isConnectable } from 'sprotty';
-import { Action, Point, Bounds, MoveAction } from 'sprotty-protocol';
-import { getAbsolutePosition } from '../marquee-tool/marquee-util';
-import { createEdgeEndId, CreateEdgeEnd, toAbsoluteBounds } from './edge-create-utils';
+import { AnchorComputerRegistry, MouseListener, PolylineEdgeRouter, SConnectableElementImpl, SModelElementImpl, findChildrenAtPosition, findParentByFeature, isBoundsAware, isConnectable } from 'sprotty';
+import { Action, Point, Bounds } from 'sprotty-protocol';
+import { absoluteToParent, getAbsolutePosition, toAbsoluteBounds } from '../../../utils/viewpoint-utils';
+import { createEdgeEndId, CreateEdgeEnd } from './edge-create-utils';
+import { DrawHelperLinesAction } from '../../../helper-lines/actions';
+import { DEFAULT_HELPER_LINE_OPTIONS } from '../../../helper-lines/helper-lines';
 
 export class EdgeCreateEndMovingMouseListener extends MouseListener {
     constructor(protected anchorRegistry: AnchorComputerRegistry) {
@@ -22,11 +24,14 @@ export class EdgeCreateEndMovingMouseListener extends MouseListener {
         if (endAtMousePosition instanceof SConnectableElementImpl && edge.source && isBoundsAware(edge.source)) {
             const anchor = this.computeAbsoluteAnchor(endAtMousePosition, Bounds.center(toAbsoluteBounds(edge.source)));
 
-            if (Point.euclideanDistance(anchor, edgeEnd.position) > 1)
-                MoveAction.create([{ elementId: edgeEnd.id, toPosition: anchor }], { animate: false });
+            if (Point.euclideanDistance(anchor, edgeEnd.position) > 1) {
+                // const elementIds = [edge.id, endAtMousePosition.id];
+                // return [DrawHelperLinesAction.create({ elementIds, ...DEFAULT_HELPER_LINE_OPTIONS })];
+            }
 
         } else {
-            MoveAction.create([{ elementId: edgeEnd.id, toPosition: position }], { animate: false })
+            // const elementIds = [edge.id, edgeEnd.id];
+            // return [DrawHelperLinesAction.create({ elementIds, ...DEFAULT_HELPER_LINE_OPTIONS })];
         }
 
         return [];
@@ -49,16 +54,4 @@ export class EdgeCreateEndMovingMouseListener extends MouseListener {
 
         return anchor;
     }
-}
-
-export function absoluteToParent(element: SModelElementImpl & InternalBoundsAware & SChildElementImpl, absolutePoint: Point): Point {
-    if (isBoundsAware(element.parent))
-        return absoluteToLocal(element.parent, absolutePoint);
-
-    return absoluteToLocal(element, absolutePoint);
-}
-
-export function absoluteToLocal(element: SModelElementImpl & InternalBoundsAware, absolutePoint: Point): Point {
-    const absoluteElementBounds = toAbsoluteBounds(element);
-    return { x: absolutePoint.x - absoluteElementBounds.x, y: absolutePoint.y - absoluteElementBounds.y };
 }

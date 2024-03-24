@@ -2,12 +2,13 @@ import { inject, injectable } from 'inversify';
 import { InternalBoundsAware, KeyListener, MouseListener, SModelElementImpl, TYPES, isSelectable, isSelected } from 'sprotty';
 import { Action, SelectAction } from 'sprotty-protocol';
 import { DOMHelper } from 'sprotty/lib/base/views/dom-helper';
-import { MarqueeUtil, getAbsolutePosition, toAbsoluteBounds } from './marquee-util';
+import { getAbsolutePosition, toAbsoluteBounds } from '../../../utils/viewpoint-utils';
 import { DiagramEditorService } from '../../../services/diagram-editor-service';
 import { EntityNode, RelationshipNode } from '../../../model';
 import { RemoveMarqueeAction } from './actions';
 import { ER2CDSMouseTool } from '../mouse-tool';
 import { ER2CDSKeyTool } from '../key-tool';
+import { MarqueeUtil } from './marquee-util';
 
 @injectable()
 export class MarqueeMouseTool {
@@ -81,7 +82,7 @@ export class MarqueeMouseListener extends MouseListener {
         if (this.isActive) {
             if (this.reinitialize) {
                 this.reinitialize = false;
-                
+
                 this.entities = Array.from(this.diagramEditorService.getModelRoot().index.all().map(e => e as SModelElementImpl & InternalBoundsAware).filter(e => isSelectable(e)).filter(e => e instanceof EntityNode));
                 this.relationships = Array.from(this.diagramEditorService.getModelRoot().index.all().map(e => e as SModelElementImpl & InternalBoundsAware).filter(e => isSelectable(e)).filter(e => e instanceof RelationshipNode));
             }

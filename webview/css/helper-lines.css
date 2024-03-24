@@ -1,0 +1,6 @@
+.helper-line {
+    pointer-events: none;
+    stroke: red;
+    stroke-width: 1px;
+    opacity: 1;
+}

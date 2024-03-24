@@ -1,5 +1,5 @@
-import { CommandExecutionContext, InternalBoundsAware, PointToPointLine, SChildElementImpl, SModelElementImpl, SModelRootImpl, findParentByFeature, isAlignable, isViewport, translateBounds } from 'sprotty';
-import { Bounds, Point, Viewport } from 'sprotty-protocol';
+import { CommandExecutionContext, PointToPointLine, SChildElementImpl, SModelRootImpl } from 'sprotty';
+import { Bounds, Point } from 'sprotty-protocol';
 import { DrawMarqueeAction } from './actions';
 
 export const MARQUEE = 'marquee';
@@ -139,42 +139,4 @@ export class MarqueeUtil {
     protected isBetween(x: number, lower: number, upper: number): boolean {
         return lower <= x && x <= upper;
     }
-}
-
-export function getAbsolutePosition(target: SModelElementImpl, mouseEvent: MouseEvent): Point {
-    return getAbsolutePositionByPoint(target, { x: mouseEvent.pageX, y: mouseEvent.pageY });
-}
-
-export function getAbsolutePositionByPoint(target: SModelElementImpl, point: Point): Point {
-    let xPos = point.x;
-    let yPos = point.y;
-    
-    const canvasBounds = target.root.canvasBounds;
-    xPos -= canvasBounds.x;
-    yPos -= canvasBounds.y;
-
-    const viewport: Viewport | undefined = findParentByFeature(target, isViewport);
-    const zoom = viewport ? viewport.zoom : 1;
-    if (viewport) {
-        const scroll: Point = { x: viewport.scroll.x, y: viewport.scroll.y };
-        xPos += scroll.x * zoom;
-        yPos += scroll.y * zoom;
-
-        xPos /= zoom;
-        yPos /= zoom;
-    }
-
-    return {
-        x: xPos,
-        y: yPos
-    };
-}
-
-export function toAbsoluteBounds(element: SModelElementImpl & InternalBoundsAware): Bounds {
-    const location = isAlignable(element) ? element.alignment : Point.ORIGIN;
-    const x = location.x;
-    const y = location.y;
-    const width = element.bounds.width;
-    const height = element.bounds.height;
-    return translateBounds({ x, y, width, height }, element, element.root);
 }
