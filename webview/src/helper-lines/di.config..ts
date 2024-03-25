@@ -1,8 +1,10 @@
-import { configureModelElement, configureCommand, TYPES, configureActionHandler } from 'sprotty';
+import { configureModelElement, configureCommand, configureActionHandler } from 'sprotty';
 import { DrawHelperLinesCommand, RemoveHelperLinesCommand } from './actions';
 import { HELPER_LINE, HelperLine, SELECTION_BOUNDS, SelectionBounds } from './model';
 import { HelperLineView, SelectionBoundsView } from './view';
 import { ContainerModule } from 'inversify';
+import { MoveAction, SetBoundsAction } from 'sprotty-protocol';
+import { HelperLineManager } from './helper-lines';
 
 const HelperLineModule = new ContainerModule((bind, unbind, isBound, rebind) => {
     const context = { bind, unbind, isBound, rebind };
@@ -11,6 +13,9 @@ const HelperLineModule = new ContainerModule((bind, unbind, isBound, rebind) => 
 
     configureCommand(context, DrawHelperLinesCommand);
     configureCommand(context, RemoveHelperLinesCommand);
+
+    configureActionHandler(context, MoveAction.KIND, HelperLineManager);
+    configureActionHandler(context, SetBoundsAction.KIND, HelperLineManager);
 });
 
 export default HelperLineModule;

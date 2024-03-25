@@ -1,8 +1,10 @@
-import { InternalBoundsAware, SLabelImpl, SModelElementImpl, SModelRootImpl, isDecoration } from 'sprotty';
+import { ActionDispatcher, IActionHandler, InternalBoundsAware, SLabelImpl, SModelElementImpl, SModelRootImpl, TYPES, isDecoration } from 'sprotty';
 import { isRoutable } from '../tool-palette/tools/edge-create-tool/edge-create-utils';
 import { HelperLineType } from './model';
 import { isVisibleOnCanvas } from '../utils/model-utils';
-
+import { Action, MoveAction, SetBoundsAction } from 'sprotty-protocol';
+import { inject, injectable } from 'inversify';
+import { DrawHelperLinesAction, RemoveHelperLinesAction } from './actions';
 
 export const DEFAULT_MOVE_DELTA = { x: 1, y: 1 };
 
@@ -28,4 +30,32 @@ export function helperLineEdgeId(root: SModelRootImpl): string {
 
 export function helperLineEdgeEndId(root: SModelRootImpl): string {
     return root.id + '_helper_line_anchor';
+}
+
+@injectable()
+export class HelperLineManager implements IActionHandler {
+    @inject(TYPES.IActionDispatcher)
+    protected actionDispatcher: ActionDispatcher;
+
+    handle(action: Action): void {
+        if (action.kind === MoveAction.KIND) {
+            this.handleMoveAction(action as MoveAction);
+        } else if (action.kind === SetBoundsAction.KIND) {
+            this.handleSetBoundsAction(action as SetBoundsAction);
+        }
+    }
+
+    protected handleMoveAction(action: MoveAction): void {
+        if (action.finished) {
+            this.actionDispatcher.dispatch(RemoveHelperLinesAction.create());
+        } else {
+            const elementIds = action.moves.map(move => move.elementId);
+            this.actionDispatcher.dispatch(DrawHelperLinesAction.create({ elementIds, ...DEFAULT_HELPER_LINE_OPTIONS }));
+        }
+    }
+
+    protected handleSetBoundsAction(action: SetBoundsAction): void {
+        const elementIds = action.bounds.map(bound => bound.elementId);
+        this.actionDispatcher.dispatch(DrawHelperLinesAction.create({ elementIds, ...DEFAULT_HELPER_LINE_OPTIONS }));
+    }
 }
