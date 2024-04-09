@@ -29,23 +29,25 @@ export class DeleteElementActionHandler {
         const modelIndex = new SModelIndex();
         modelIndex.add(server.state.currentRoot);
 
-        action.elementIds.forEach(id => {
-            const element = modelIndex.getById(id);
+        if (action.elementIds) {
+            action.elementIds.forEach(id => {
+                const element = modelIndex.getById(id);
 
-            if (element?.type === NODE_ENTITY) {
-                model.entities.forEach((e) => {
-                    if (e.name === element?.id && e.$cstNode?.range)
-                        server.dispatch(this.createWorkspaceEditDeleteAction(sourceUri, e.$cstNode?.range));
-                });
-            }
+                if (element?.type === NODE_ENTITY) {
+                    model.entities.forEach((e) => {
+                        if (e.name === element?.id && e.$cstNode?.range)
+                            server.dispatch(this.createWorkspaceEditDeleteAction(sourceUri, e.$cstNode?.range));
+                    });
+                }
 
-            if (element?.type === NODE_RELATIONSHIP) {
-                model.relationships.forEach((r) => {
-                    if (r.name === element?.id && r.$cstNode?.range)
-                        server.dispatch(this.createWorkspaceEditDeleteAction(sourceUri, r.$cstNode?.range));
-                });
-            }
-        });
+                if (element?.type === NODE_RELATIONSHIP) {
+                    model.relationships.forEach((r) => {
+                        if (r.name === element?.id && r.$cstNode?.range)
+                            server.dispatch(this.createWorkspaceEditDeleteAction(sourceUri, r.$cstNode?.range));
+                    });
+                }
+            });
+        }
 
         return Promise.resolve();
     }

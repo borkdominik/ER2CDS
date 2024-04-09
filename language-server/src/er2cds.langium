@@ -11,7 +11,7 @@ Entity:
 
 Relationship:
 	(weak?='weak')? 'relationship' name=ID '{'
-		(first=RelationshipEntity (('->' second=RelationshipEntity))?)?
+		((first=RelationshipEntity)? (('->' second=RelationshipEntity))?)?
 		(attributes+=Attribute)*
 	'}';
 

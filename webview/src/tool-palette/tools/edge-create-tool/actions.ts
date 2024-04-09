@@ -3,22 +3,6 @@ import { Command, CommandExecutionContext, CommandReturn, TYPES } from 'sprotty'
 import { Action } from 'sprotty-protocol';
 import { drawCreateEdgeEnd, removeDanglingCreateEdgeEnd } from './edge-create-utils';
 
-export interface CreateEdgeAction extends Action {
-    kind: typeof CreateEdgeAction.KIND;
-    sourceElementId: string;
-    targetElementId: string;
-}
-export namespace CreateEdgeAction {
-    export const KIND = 'createEdge';
-
-    export function create(options: { sourceElementId: string; targetElementId: string; }): CreateEdgeAction {
-        return {
-            kind: KIND,
-            ...options
-        };
-    }
-}
-
 export interface DrawCreateEdgeAction extends Action {
     kind: typeof DrawCreateEdgeAction.KIND;
     sourceId: string;

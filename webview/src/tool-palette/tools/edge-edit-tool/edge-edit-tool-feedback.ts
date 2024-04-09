@@ -1,20 +1,20 @@
-import { AnchorComputerRegistry, MouseListener, findChildrenAtPosition, isConnectable, isBoundsAware, PolylineEdgeRouter, findParentByFeature, EdgeRouterRegistry, ElementMove, isSelected, SModelElementImpl, SConnectableElementImpl, SRoutingHandleImpl, ISnapper } from "sprotty";
+import { AnchorComputerRegistry, MouseListener, findChildrenAtPosition, isConnectable, isBoundsAware, PolylineEdgeRouter, findParentByFeature, EdgeRouterRegistry, ElementMove, isSelected, SModelElementImpl, SConnectableElementImpl, SRoutingHandleImpl, ISnapper, IActionDispatcher } from "sprotty";
 import { getAbsolutePosition, toAbsoluteBounds } from "../../../utils/viewpoint-utils";
 import { CreateEdgeEnd, createEdgeEndId, isRoutable } from "../edge-create-tool/edge-create-utils";
 import { EdgeCreateEndMovingMouseListener } from "../edge-create-tool/edge-create-end-listener";
 import { SwitchRoutingModeAction } from "./actions";
-import { Action, Bounds, Point } from 'sprotty-protocol';
+import { Action, MoveAction, Bounds, Point } from 'sprotty-protocol';
 import { isRoutingHandle } from "../../../utils/model-utils";
 import { PointPositionUpdater } from "../../../services/point-position-updater";
 
 export class EditEdgeTargetMovingMouseListener extends EdgeCreateEndMovingMouseListener {
-    constructor(anchorRegistry: AnchorComputerRegistry) {
-        super(anchorRegistry);
+    constructor(protected anchorRegistry: AnchorComputerRegistry, protected actionDispatcher: IActionDispatcher) {
+        super(anchorRegistry, actionDispatcher);
     }
 }
 
 export class EditEdgeSourceMovingMouseListener extends MouseListener {
-    constructor(protected anchorRegistry: AnchorComputerRegistry) {
+    constructor(protected anchorRegistry: AnchorComputerRegistry, protected actionDispatcher: IActionDispatcher) {
         super();
     }
 
@@ -36,10 +36,10 @@ export class EditEdgeSourceMovingMouseListener extends MouseListener {
         if (endAtMousePosition instanceof SConnectableElementImpl && edge.target && isBoundsAware(edge.target)) {
             const anchor = this.computeAbsoluteAnchor(endAtMousePosition, Bounds.center(edge.target.bounds));
             if (Point.euclideanDistance(anchor, edgeEnd.position) > 1) {
-                // MoveAction.create([{ elementId: edgeEnd.id, toPosition: anchor }], { animate: false })
+                this.actionDispatcher.dispatch(MoveAction.create([{ elementId: edgeEnd.id, toPosition: anchor }], { animate: false }));
             }
         } else {
-            // MoveAction.create([{ elementId: edgeEnd.id, toPosition: position }], { animate: false })
+            this.actionDispatcher.dispatch(MoveAction.create([{ elementId: edgeEnd.id, toPosition: position }], { animate: false }));
         }
 
         return [];
@@ -120,7 +120,7 @@ export class EditEdgeRouteMovingMouseListener extends MouseListener {
             });
 
         if (handleMoves.length > 0) {
-            // return [MoveAction.create(handleMoves, { animate: false })];
+            return [MoveAction.create(handleMoves, { animate: false })];
         }
 
         return [];

@@ -206,7 +206,8 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
                     "$ref": "#/rules@3"
                   },
                   "arguments": []
-                }
+                },
+                "cardinality": "?"
               },
               {
                 "$type": "Group",

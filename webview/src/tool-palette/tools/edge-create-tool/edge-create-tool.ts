@@ -2,8 +2,9 @@ import { injectable, inject } from 'inversify';
 import { TYPES, isCtrlOrCmd, findParentByFeature, isConnectable, ActionDispatcher, MouseTool, MouseListener, SModelElementImpl, SEdgeImpl, AnchorComputerRegistry } from 'sprotty';
 import { EnableDefaultToolsAction } from '../actions';
 import { Action } from 'sprotty-protocol';
-import { CreateEdgeAction, DrawCreateEdgeAction, RemoveCreateEdgeAction } from './actions';
+import { DrawCreateEdgeAction, RemoveCreateEdgeAction } from './actions';
 import { EdgeCreateEndMovingMouseListener } from './edge-create-end-listener';
+import { CreateEdgeAction } from '../../../actions';
 
 @injectable()
 export class EdgeCreateTool {
@@ -24,7 +25,7 @@ export class EdgeCreateTool {
             this.edgeCreateMouseToolListener = new EdgeCreateToolMouseListener(this.actionDispatcher, this);
 
         if (!this.edgeCreateEndMovingMouseListener)
-            this.edgeCreateEndMovingMouseListener = new EdgeCreateEndMovingMouseListener(this.anchorRegistry);
+            this.edgeCreateEndMovingMouseListener = new EdgeCreateEndMovingMouseListener(this.anchorRegistry, this.actionDispatcher);
 
         this.edgeCreateMouseToolListener.reinitialize();
 

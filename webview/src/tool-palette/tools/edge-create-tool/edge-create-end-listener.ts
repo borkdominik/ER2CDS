@@ -1,12 +1,10 @@
-import { AnchorComputerRegistry, MouseListener, PolylineEdgeRouter, SConnectableElementImpl, SModelElementImpl, findChildrenAtPosition, findParentByFeature, isBoundsAware, isConnectable } from 'sprotty';
-import { Action, Point, Bounds } from 'sprotty-protocol';
+import { AnchorComputerRegistry, IActionDispatcher, MouseListener, PolylineEdgeRouter, SConnectableElementImpl, SModelElementImpl, findChildrenAtPosition, findParentByFeature, isBoundsAware, isConnectable } from 'sprotty';
+import { Action, MoveAction, Point, Bounds } from 'sprotty-protocol';
 import { absoluteToParent, getAbsolutePosition, toAbsoluteBounds } from '../../../utils/viewpoint-utils';
 import { createEdgeEndId, CreateEdgeEnd } from './edge-create-utils';
-import { DrawHelperLinesAction } from '../../../helper-lines/actions';
-import { DEFAULT_HELPER_LINE_OPTIONS } from '../../../helper-lines/helper-lines';
 
 export class EdgeCreateEndMovingMouseListener extends MouseListener {
-    constructor(protected anchorRegistry: AnchorComputerRegistry) {
+    constructor(protected anchorRegistry: AnchorComputerRegistry, protected actionDispatcher: IActionDispatcher) {
         super();
     }
 
@@ -25,13 +23,11 @@ export class EdgeCreateEndMovingMouseListener extends MouseListener {
             const anchor = this.computeAbsoluteAnchor(endAtMousePosition, Bounds.center(toAbsoluteBounds(edge.source)));
 
             if (Point.euclideanDistance(anchor, edgeEnd.position) > 1) {
-                // const elementIds = [edge.id, endAtMousePosition.id];
-                // return [DrawHelperLinesAction.create({ elementIds, ...DEFAULT_HELPER_LINE_OPTIONS })];
+                this.actionDispatcher.dispatch(MoveAction.create([{ elementId: edgeEnd.id, toPosition: anchor }], { animate: false }));
             }
 
         } else {
-            // const elementIds = [edge.id, edgeEnd.id];
-            // return [DrawHelperLinesAction.create({ elementIds, ...DEFAULT_HELPER_LINE_OPTIONS })];
+            this.actionDispatcher.dispatch(MoveAction.create([{ elementId: edgeEnd.id, toPosition: position }], { animate: false }));
         }
 
         return [];

@@ -51,8 +51,8 @@ export class EdgeEditTool {
         this.edgeEditListener = new EdgeEditListener(this.actionDispatcher, this);
 
         // install feedback move mouse listener for client-side move updates
-        this.feedbackEdgeSourceMovingListener = new EditEdgeSourceMovingMouseListener(this.anchorRegistry);
-        this.feedbackEdgeTargetMovingListener = new EditEdgeTargetMovingMouseListener(this.anchorRegistry);
+        this.feedbackEdgeSourceMovingListener = new EditEdgeSourceMovingMouseListener(this.anchorRegistry, this.actionDispatcher);
+        this.feedbackEdgeTargetMovingListener = new EditEdgeTargetMovingMouseListener(this.anchorRegistry, this.actionDispatcher);
         this.feedbackMovingListener = new EditEdgeRouteMovingMouseListener(this.snapper, this.edgeRouterRegistry);
 
         this.mouseTool.register(this.edgeEditListener);

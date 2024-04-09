@@ -2,8 +2,7 @@ import { injectable } from 'inversify';
 import { ActionHandlerRegistry } from 'sprotty';
 import { Action } from 'sprotty-protocol';
 import { VscodeLspEditDiagramServer } from 'sprotty-vscode-webview/lib/lsp/editing';
-import { CreateElementAction, DeleteElementAction } from './actions';
-import { CreateEdgeAction } from './tool-palette/tools/edge-create-tool/actions';
+import { CreateElementAction, DeleteElementAction, CreateEdgeAction } from './actions';
 
 @injectable()
 export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
