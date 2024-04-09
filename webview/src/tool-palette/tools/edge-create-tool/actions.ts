@@ -19,14 +19,14 @@ export namespace CreateEdgeAction {
     }
 }
 
-export interface DrawCreateEdgeEndAction extends Action {
-    kind: typeof DrawCreateEdgeEndAction.KIND;
+export interface DrawCreateEdgeAction extends Action {
+    kind: typeof DrawCreateEdgeAction.KIND;
     sourceId: string;
 }
-export namespace DrawCreateEdgeEndAction {
-    export const KIND = 'drawCreateEdgeEnd';
+export namespace DrawCreateEdgeAction {
+    export const KIND = 'drawCreateEdge';
 
-    export function create(options: { sourceId: string; }): DrawCreateEdgeEndAction {
+    export function create(options: { sourceId: string; }): DrawCreateEdgeAction {
         return {
             kind: KIND,
             ...options
@@ -35,10 +35,10 @@ export namespace DrawCreateEdgeEndAction {
 }
 
 @injectable()
-export class DrawCreateEdgeEndCommand extends Command {
-    static readonly KIND = DrawCreateEdgeEndAction.KIND;
+export class DrawCreateEdgeCommand extends Command {
+    static readonly KIND = DrawCreateEdgeAction.KIND;
 
-    constructor(@inject(TYPES.Action) protected action: DrawCreateEdgeEndAction) {
+    constructor(@inject(TYPES.Action) protected action: DrawCreateEdgeAction) {
         super();
     }
 
@@ -56,20 +56,20 @@ export class DrawCreateEdgeEndCommand extends Command {
     }
 }
 
-export interface RemoveCreateEdgeEndAction extends Action {
-    kind: typeof RemoveCreateEdgeEndAction.KIND;
+export interface RemoveCreateEdgeAction extends Action {
+    kind: typeof RemoveCreateEdgeAction.KIND;
 }
-export namespace RemoveCreateEdgeEndAction {
+export namespace RemoveCreateEdgeAction {
     export const KIND = 'removeCreateEdgeEnd';
 
-    export function create(): RemoveCreateEdgeEndAction {
+    export function create(): RemoveCreateEdgeAction {
         return { kind: KIND };
     }
 }
 
 @injectable()
-export class RemoveCreateEdgeEndCommand extends Command {
-    static readonly KIND = RemoveCreateEdgeEndAction.KIND;
+export class RemoveCreateEdgeCommand extends Command {
+    static readonly KIND = RemoveCreateEdgeAction.KIND;
 
     execute(context: CommandExecutionContext): CommandReturn {
         removeDanglingCreateEdgeEnd(context.root);

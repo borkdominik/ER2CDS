@@ -7,6 +7,7 @@ import { DeleteKeyTool } from './delete-tool/delete-key-tool';
 import { MarqueeKeyTool } from './marquee-tool/marquee-key-tool';
 import { MarqueeMouseTool } from './marquee-tool/marquee-mouse-tool';
 import { EdgeCreateTool } from './edge-create-tool/edge-create-tool';
+import { EdgeEditTool } from './edge-edit-tool/edge-edit-tool';
 
 @injectable()
 export class ToolManagerActionHandler implements IActionHandler {
@@ -24,6 +25,9 @@ export class ToolManagerActionHandler implements IActionHandler {
 
     @inject(EdgeCreateTool)
     private edgeCreateTool: EdgeCreateTool;
+
+    // @inject(EdgeEditTool)
+    // private edgeEditTool: EdgeEditTool;
 
     handle(action: Action): void | ICommand | Action {
         this.disableAllTools();
@@ -50,6 +54,7 @@ export class ToolManagerActionHandler implements IActionHandler {
     private enableDefaultTools() {
         this.marqueeKeyTool.enable();
         this.deleteKeyTool.enable();
+        // this.edgeEditTool.enable();
     }
 
     private disableAllTools() {
@@ -60,5 +65,6 @@ export class ToolManagerActionHandler implements IActionHandler {
         this.deleteMouseTool.disable();
 
         this.edgeCreateTool.disable();
+        // this.edgeEditTool.disable();
     }
 }

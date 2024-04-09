@@ -2,7 +2,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES, isCtrlOrCmd, findParentByFeature, isConnectable, ActionDispatcher, MouseTool, MouseListener, SModelElementImpl, SEdgeImpl, AnchorComputerRegistry } from 'sprotty';
 import { EnableDefaultToolsAction } from '../actions';
 import { Action } from 'sprotty-protocol';
-import { CreateEdgeAction, DrawCreateEdgeEndAction, RemoveCreateEdgeEndAction } from './actions';
+import { CreateEdgeAction, DrawCreateEdgeAction, RemoveCreateEdgeAction } from './actions';
 import { EdgeCreateEndMovingMouseListener } from './edge-create-end-listener';
 
 @injectable()
@@ -34,6 +34,7 @@ export class EdgeCreateTool {
 
     disable(): void {
         this.mouseTool.deregister(this.edgeCreateMouseToolListener);
+        this.mouseTool.deregister(this.edgeCreateEndMovingMouseListener);
     }
 }
 
@@ -62,7 +63,7 @@ export class EdgeCreateToolMouseListener extends MouseListener {
         this.currentTarget = undefined;
         this.allowedTarget = false;
 
-        this.actionDispatcher.dispatch(RemoveCreateEdgeEndAction.create());
+        this.actionDispatcher.dispatch(RemoveCreateEdgeAction.create());
     }
 
     override mouseDown(target: SModelElementImpl, event: MouseEvent): (Action | Promise<Action>)[] {
@@ -92,7 +93,7 @@ export class EdgeCreateToolMouseListener extends MouseListener {
                 if (this.currentTarget && this.allowedTarget) {
                     this.source = this.currentTarget.id;
 
-                    result.push(DrawCreateEdgeEndAction.create({ sourceId: this.source }));
+                    result.push(DrawCreateEdgeAction.create({ sourceId: this.source }));
                 }
 
             } else if (this.currentTarget && this.allowedTarget) {
