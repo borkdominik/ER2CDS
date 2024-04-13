@@ -28,13 +28,16 @@ export class EntityNodeView extends RectangularNodeView {
         if (!this.isVisible(node, context))
             return undefined;
 
+        const height = 35;
+        const rhombStr = "M 0," + height + "  L " + node.bounds.width + "," + height;
+
         if (node.weak) {
             return (
                 <g>
                     <rect class-border-weak={true} x='-5' y='-5' rx='5' ry='5' width={node.bounds.width + 10} height={node.bounds.height + 10} />
                     <rect class-sprotty-node={true} class-mouseover={node.hoverFeedback} class-selected={node.selected} x='0' y='0' rx='5' ry='5' width={Math.max(node.bounds.width, 0)} height={Math.max(node.bounds.height, 0)} />
                     {context.renderChildren(node)}
-                    {(node.children[1] && node.children[1].children.length > 0) ? <path class-comp-separator={true} /> : ''}
+                    {(node.children[1] && node.children[1].children.length > 0) ? <path class-comp-separator={true} d={rhombStr} /> : ''}
                 </g>
             );
         } else {
@@ -42,7 +45,7 @@ export class EntityNodeView extends RectangularNodeView {
                 <g>
                     <rect class-sprotty-node={true} class-mouseover={node.hoverFeedback} class-selected={node.selected} x='0' y='0' rx='5' ry='5' width={Math.max(node.bounds.width, 0)} height={Math.max(node.bounds.height, 0)} />
                     {context.renderChildren(node)}
-                    {(node.children[1] && node.children[1].children.length > 0) ? <path class-comp-separator={true} /> : ''}
+                    {(node.children[1] && node.children[1].children.length > 0) ? <path class-comp-separator={true} d={rhombStr} /> : ''}
                 </g>
             );
         }

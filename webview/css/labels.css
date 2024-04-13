@@ -1,0 +1,18 @@
+.visibility {
+    fill: #569cd6;
+}
+
+.key {
+    font-style: italic;
+    text-decoration: underline;
+}
+
+.partial-key {
+    font-style: italic;
+    text-decoration: underline;
+    fill: gray;
+}
+
+.derived {
+    fill: gray;
+}

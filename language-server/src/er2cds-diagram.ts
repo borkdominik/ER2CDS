@@ -1,14 +1,15 @@
 
 import { GeneratorContext, IdCache, LangiumDiagramGenerator } from 'langium-sprotty';
-import { SLabel } from 'sprotty-protocol';
-import { ER2CDS, Entity, Relationship, RelationshipEntity } from './generated/ast.js';
+import { SCompartment, SLabel } from 'sprotty-protocol';
+import { Attribute, ER2CDS, Entity, Relationship, RelationshipEntity } from './generated/ast.js';
 import { ER2CDSServices } from './er2cds-module.js';
 import { AstNode } from 'langium';
-import { EDGE, EDGE_INHERITANCE, ER2CDSRoot, Edge, EntityNode, GRAPH, LABEL_BOTTOM, LABEL_BOTTOM_LEFT, LABEL_BOTTOM_RIGHT, LABEL_ENTITY, LABEL_RELATIONSHIP, LABEL_TOP, LABEL_TOP_LEFT, LABEL_TOP_RIGHT, NODE_ENTITY, NODE_RELATIONSHIP, RelationshipNode } from './model.js';
+import { COMP_ATTRIBUTES, COMP_ATTRIBUTES_ROW, COMP_ENTITY_HEADER, EDGE, EDGE_INHERITANCE, ER2CDSRoot, Edge, EntityNode, GRAPH, LABEL_BOTTOM, LABEL_BOTTOM_LEFT, LABEL_BOTTOM_RIGHT, LABEL_DERIVED, LABEL_ENTITY, LABEL_KEY, LABEL_PARTIAL_KEY, LABEL_RELATIONSHIP, LABEL_TEXT, LABEL_TOP, LABEL_TOP_LEFT, LABEL_TOP_RIGHT, LABEL_VISIBILITY, NODE_ENTITY, NODE_RELATIONSHIP, RelationshipNode } from './model.js';
+import { LayoutOptions } from 'elkjs';
 
 export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
 
-    constructor(services: ER2CDSServices) {
+    constructor(protected services: ER2CDSServices) {
         super(services);
     }
 
@@ -36,29 +37,47 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
         return graph;
     }
 
-    protected generateEntity(entity: Entity, { idCache }: GeneratorContext<ER2CDS>): EntityNode {
+    protected generateEntity(entity: Entity, { idCache, state }: GeneratorContext<ER2CDS>): EntityNode {
         const entityId = idCache.uniqueId(entity.name, entity);
 
-        return {
+        const node = <EntityNode>{
             type: NODE_ENTITY,
             id: entityId,
             weak: entity.weak,
-            expanded: false,
+            layout: 'vbox',
+            layoutOptions: {
+                VGap: 10.0,
+            },
+            children: []
+        };
+
+        const headerCompartment = <SCompartment>{
+            type: COMP_ENTITY_HEADER,
+            id: idCache.uniqueId(entityId + '.header-comp'),
+            layout: 'hbox',
             children: [
                 <SLabel>{
                     type: LABEL_ENTITY,
                     id: idCache.uniqueId(entityId + '.label'),
                     text: entity.name
                 }
-            ],
-            layout: 'stack',
-            layoutOptions: {
-                paddingTop: 10.0,
-                paddingBottom: 10.0,
-                paddingLeft: 10.0,
-                paddingRight: 10.0
-            }
+            ]
         };
+        node.children?.push(headerCompartment);
+
+        const attributesCompartment = <SCompartment>{
+            type: COMP_ATTRIBUTES,
+            id: entityId + '.attributes',
+            layout: 'vbox',
+            layoutOptions: <LayoutOptions>{
+                HAlign: 'left',
+                VGap: '1.0'
+            },
+            children: entity.attributes.map(a => this.generateAttributeLabels(a, entityId, idCache))
+        };
+        node.children?.push(attributesCompartment);
+
+        return node;
     }
 
     protected generateRelationship(relationship: Relationship, { idCache }: GeneratorContext<ER2CDS>): RelationshipNode {
@@ -75,12 +94,9 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
                     text: relationship.name
                 }
             ],
-            layout: 'stack',
+            layout: 'vbox',
             layoutOptions: {
-                paddingTop: 10.0,
-                paddingBottom: 10.0,
-                paddingLeft: 10.0,
-                paddingRight: 10.0
+                paddingFactor: 2.0
             }
         };
     }
@@ -117,6 +133,23 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
             cardinality: this.getCardinality(sourceRelationshipEntity),
             children: this.generateLabels(sourceRelationshipEntity, targetRelationshipEntity, edgeId, idCache)
         }
+    }
+
+    protected generateInheritanceEdges(entity: Entity, { idCache }: GeneratorContext<ER2CDS>): Edge | undefined {
+        const sourceId = idCache.getId(entity);
+        const targetId = idCache.getId(entity.extends?.ref);
+
+        if (sourceId && targetId) {
+            return {
+                type: EDGE_INHERITANCE,
+                id: idCache.uniqueId(entity + sourceId + ':extends:' + targetId),
+                sourceId: sourceId,
+                targetId: targetId,
+                children: []
+            };
+        }
+
+        return;
     }
 
     protected generateLabels(sourceRelationshipEntity: RelationshipEntity, targetRelationshipEntity: RelationshipEntity | undefined, edgeId: string, idCache: IdCache<AstNode>): SLabel[] {
@@ -162,27 +195,74 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
         return labels;
     }
 
-    protected generateInheritanceEdges(entity: Entity, { idCache }: GeneratorContext<ER2CDS>): Edge | undefined {
-        const sourceId = idCache.getId(entity);
-        const targetId = idCache.getId(entity.extends?.ref);
-
-        if (sourceId && targetId) {
-            return {
-                type: EDGE_INHERITANCE,
-                id: idCache.uniqueId(entity + sourceId + ':extends:' + targetId),
-                sourceId: sourceId,
-                targetId: targetId,
-                children: []
-            };
-        }
-
-        return;
-    }
-
     protected getCardinality(relationshipEntity: RelationshipEntity): string {
         if (relationshipEntity.cardinality && relationshipEntity.cardinality !== 'none')
             return relationshipEntity.cardinality;
 
         return ' '
+    }
+
+    protected generateAttributeLabels(attribute: Attribute, entityId: string, idCache: IdCache<AstNode>): SCompartment {
+        const attributeId = idCache.uniqueId(entityId + '.' + attribute.name, attribute);
+        const labelType = this.getAttributeLabelType(attribute);
+
+        return <SCompartment>{
+            type: COMP_ATTRIBUTES_ROW,
+            id: attributeId,
+            layout: 'hbox',
+            layoutOptions: <LayoutOptions>{
+                VAlign: 'middle',
+                HGap: '5.0'
+            },
+            children: [
+                <SLabel>{
+                    id: attributeId + '.visibility',
+                    text: attribute.visibility,
+                    type: LABEL_VISIBILITY
+                },
+                <SLabel>{
+                    id: attributeId + '.name',
+                    text: attribute.name,
+                    type: labelType
+                },
+                <SLabel>{
+                    id: attributeId + '.datatype',
+                    text: this.getAttributeDatatypeString(attribute),
+                    type: labelType
+                }
+            ]
+        }
+    }
+
+    protected getAttributeLabelType(attribute: Attribute): string {
+        switch (attribute.type) {
+            case 'key':
+                return LABEL_KEY;
+
+            case 'partial-key':
+                return LABEL_PARTIAL_KEY;
+
+            case 'derived':
+                return LABEL_DERIVED;
+
+            default:
+                return LABEL_TEXT;
+        }
+    }
+
+    protected getAttributeDatatypeString(attribute: Attribute) {
+        if (attribute.datatype) {
+            if (attribute.datatype?.size && attribute.datatype?.d) {
+                return attribute.datatype?.type + '(' + attribute.datatype?.size + ', ' + attribute.datatype?.d + ')';
+
+            } else if (attribute.datatype.size && !attribute.datatype.d) {
+                return attribute.datatype.type + '(' + attribute.datatype.size + ')';
+
+            }
+
+            return attribute.datatype.type;
+        }
+
+        return ' ';
     }
 }

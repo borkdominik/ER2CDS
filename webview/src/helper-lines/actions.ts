@@ -7,8 +7,6 @@ import { getMatchingElements, forEachElement } from '../utils/model-utils';
 import { center, topCenter, bottomCenter, middle, middleLeft, middleRight, left, bottomLeft, topLeft, right, bottomRight, topRight, bottom, isAbove, isBefore, sortBy, top } from '../utils/geometry-utils';
 import { getViewportBounds, toAbsoluteBounds } from '../utils/viewpoint-utils';
 
-import '../../css/helper-lines.css';
-
 export interface DrawHelperLinesAction extends Action {
     kind: typeof DrawHelperLinesAction.KIND;
     elementIds: string[];

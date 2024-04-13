@@ -1,0 +1,4 @@
+.comp-separator {
+    stroke-width: 1;
+    stroke: var(--vscode-list-deemphasizedForeground);
+}

@@ -20,12 +20,21 @@ export const LABEL_BOTTOM = 'label:bottom';
 export const LABEL_BOTTOM_LEFT = 'label:bottom-left';
 export const LABEL_BOTTOM_RIGHT = 'label:bottom-right';
 
+export const LABEL_KEY = 'label:key';
+export const LABEL_PARTIAL_KEY = 'label:partial-key';
+export const LABEL_DERIVED = 'label:derived';
+export const LABEL_TEXT = 'label:text';
+export const LABEL_VISIBILITY = 'label:visibility';
+
+export const COMP_ENTITY_HEADER = 'comp:entity-header';
+export const COMP_ATTRIBUTES = 'comp:attributes';
+export const COMP_ATTRIBUTES_ROW = 'comp:attributes-row';
+
 export class ER2CDSRoot extends SGraphImpl {
     name: string;
 }
 
 export class EntityNode extends RectangularNode {
-    expanded: boolean;
     weak: boolean;
 }
 
