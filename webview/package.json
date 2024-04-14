@@ -24,6 +24,7 @@
     },
     "scripts": {
         "clean": "rm -rf out",
-        "build": "webpack --mode=development"
+        "build": "webpack --mode=development",
+        "watch": "webpack watch --mode=development"
     }
 }

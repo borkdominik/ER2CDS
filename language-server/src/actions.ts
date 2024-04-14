@@ -15,21 +15,6 @@ export namespace CreateElementAction {
     }
 }
 
-export interface DeleteElementAction extends Action {
-    kind: typeof DeleteElementAction.KIND;
-    elementIds: string[];
-}
-export namespace DeleteElementAction {
-    export const KIND = 'deleteElementAction';
-
-    export function create(elementIds: string[]): DeleteElementAction {
-        return {
-            kind: KIND,
-            elementIds
-        };
-    }
-}
-
 export interface CreateEdgeAction extends Action {
     kind: typeof CreateEdgeAction.KIND;
     sourceElementId: string;
@@ -42,6 +27,21 @@ export namespace CreateEdgeAction {
         return {
             kind: KIND,
             ...options
+        };
+    }
+}
+
+export interface DeleteElementAction extends Action {
+    kind: typeof DeleteElementAction.KIND;
+    elementIds: string[];
+}
+export namespace DeleteElementAction {
+    export const KIND = 'deleteElementAction';
+
+    export function create(elementIds: string[]): DeleteElementAction {
+        return {
+            kind: KIND,
+            elementIds
         };
     }
 }

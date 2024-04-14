@@ -27,11 +27,12 @@ export class ER2CDSDiagramServer extends DiagramServer {
             case CreateElementAction.KIND:
                 new CreateElementActionHandler().handle(action as CreateElementAction, this, this.services);
 
+            case CreateEdgeAction.KIND:
+                new CreateEdgeActionHandler().handle(action as CreateEdgeAction, this, this.services);
+
             case DeleteElementAction.KIND:
                 new DeleteElementActionHandler().handle(action as DeleteElementAction, this, this.services);
 
-            case CreateEdgeAction.KIND:
-                new CreateEdgeActionHandler().handle(action as CreateEdgeAction, this, this.services);
         }
 
         return super.handleAction(action);

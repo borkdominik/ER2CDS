@@ -7,7 +7,7 @@ import { ER2CDS } from '../generated/ast.js';
 import { Range } from 'vscode-languageserver'
 import { WorkspaceEdit } from 'vscode-languageserver-protocol';
 import { WorkspaceEditAction } from 'sprotty-vscode-protocol/lib/lsp/editing';
-import { NODE_ENTITY, NODE_RELATIONSHIP } from '../model.js';
+import { EDGE, Edge, NODE_ENTITY, NODE_RELATIONSHIP } from '../model.js';
 
 
 export class DeleteElementActionHandler {
@@ -44,6 +44,20 @@ export class DeleteElementActionHandler {
                     model.relationships.forEach((r) => {
                         if (r.name === element?.id && r.$cstNode?.range)
                             server.dispatch(this.createWorkspaceEditDeleteAction(sourceUri, r.$cstNode?.range));
+                    });
+                }
+
+                if (element?.type === EDGE) {
+                    const edge = element as Edge;
+
+                    model.relationships.forEach((r) => {
+                        if (r.name === edge.sourceId || r.name === edge.targetId) {
+                            if ((r.first?.target.$refText === edge.sourceId || r.first?.target.$refText === edge.targetId) && r.first?.$cstNode?.range)
+                                server.dispatch(this.createWorkspaceEditDeleteAction(sourceUri, r.first.$cstNode?.range));
+
+                            if ((r.second?.target.$refText === edge.sourceId || r.second?.target.$refText === edge.targetId) && r.second.$cstNode?.range)
+                                server.dispatch(this.createWorkspaceEditDeleteAction(sourceUri, r.second.$cstNode?.range));
+                        }
                     });
                 }
             });

@@ -25,6 +25,7 @@
     "scripts": {
         "clean": "rm -rf out",
         "build": "node esbuild.mjs",
+        "watch": "node --watch esbuild.mjs",
         "langium:generate": "langium generate"
     }
 }
