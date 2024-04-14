@@ -2,8 +2,7 @@ import * as vscode from 'vscode';
 import { WebviewContainer, createFileUri, getBasename } from 'sprotty-vscode';
 import { SprottyDiagramIdentifier } from 'sprotty-vscode-protocol';
 import { LspWebviewEndpoint, LspWebviewPanelManager, LspWebviewPanelManagerOptions } from 'sprotty-vscode/lib/lsp';
-import { WorkspaceEditAction } from 'sprotty-vscode-protocol/lib/lsp/editing';
-import { convertWorkspaceEdit } from 'sprotty-vscode/lib/lsp/';
+import { addLspLabelEditActionHandler, addWorkspaceEditActionHandler } from 'sprotty-vscode/lib/lsp/editing';
 import { ER2CDSWebviewEndpoint } from './web-view-endpoint';
 
 import path = require('path');
@@ -25,14 +24,10 @@ export class ER2CDSWebViewPanelManager extends LspWebviewPanelManager {
             identifier,
         });
 
-        webview.addActionHandler(WorkspaceEditAction.KIND, this.handleWorkspaceEditAction);
+        addWorkspaceEditActionHandler(webview);
+        addLspLabelEditActionHandler(webview);
 
         return webview;
-    }
-
-    private async handleWorkspaceEditAction(action: WorkspaceEditAction) {
-        await vscode.workspace.applyEdit(convertWorkspaceEdit(action.workspaceEdit));
-        await vscode.workspace.saveAll();
     }
 
     protected override createWebview(identifier: SprottyDiagramIdentifier): vscode.WebviewPanel {

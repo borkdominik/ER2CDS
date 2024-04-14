@@ -1,7 +1,7 @@
 import { configureModelElement, configureCommand, configureActionHandler } from 'sprotty';
 import { DrawHelperLinesCommand, RemoveHelperLinesCommand } from './actions';
 import { HELPER_LINE, HelperLine, SELECTION_BOUNDS, SelectionBounds } from './model';
-import { HelperLineView, SelectionBoundsView } from './view';
+import { HelperLineView, SelectionBoundsView } from './views';
 import { ContainerModule } from 'inversify';
 import { MoveAction, SetBoundsAction } from 'sprotty-protocol';
 import { HelperLineManager } from './helper-lines';

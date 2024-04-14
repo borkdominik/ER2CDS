@@ -20,10 +20,10 @@ export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
             case CreateElementAction.KIND:
                 return true;
 
-            case DeleteElementAction.KIND:
+            case CreateEdgeAction.KIND:
                 return true;
 
-            case CreateEdgeAction.KIND:
+            case DeleteElementAction.KIND:
                 return true;
 
             default:
