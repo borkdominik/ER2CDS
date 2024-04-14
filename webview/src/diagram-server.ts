@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 import { ActionHandlerRegistry } from 'sprotty';
-import { Action } from 'sprotty-protocol';
+import { Action, ApplyLabelEditAction } from 'sprotty-protocol';
 import { VscodeLspEditDiagramServer } from 'sprotty-vscode-webview/lib/lsp/editing';
 import { CreateElementAction, DeleteElementAction, CreateEdgeAction } from './actions';
 
@@ -11,8 +11,9 @@ export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
         super.initialize(registry);
 
         registry.register(CreateElementAction.KIND, this);
-        registry.register(DeleteElementAction.KIND, this);
         registry.register(CreateEdgeAction.KIND, this);
+        registry.register(DeleteElementAction.KIND, this);
+        registry.register(ApplyLabelEditAction.KIND, this);
     }
 
     public override handleLocally(action: Action): boolean {
@@ -24,6 +25,9 @@ export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
                 return true;
 
             case DeleteElementAction.KIND:
+                return true;
+
+            case ApplyLabelEditAction.KIND:
                 return true;
 
             default:

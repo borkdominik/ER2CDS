@@ -2,8 +2,9 @@ import * as vscode from 'vscode';
 import { WebviewContainer, createFileUri, getBasename } from 'sprotty-vscode';
 import { SprottyDiagramIdentifier } from 'sprotty-vscode-protocol';
 import { LspWebviewEndpoint, LspWebviewPanelManager, LspWebviewPanelManagerOptions } from 'sprotty-vscode/lib/lsp';
-import { addLspLabelEditActionHandler, addWorkspaceEditActionHandler } from 'sprotty-vscode/lib/lsp/editing';
 import { ER2CDSWebviewEndpoint } from './web-view-endpoint';
+import { WorkspaceEditAction } from 'sprotty-vscode-protocol/lib/lsp/editing';
+import { convertWorkspaceEdit } from 'sprotty-vscode/lib/lsp/lsp-utils';
 
 import path = require('path');
 
@@ -24,8 +25,7 @@ export class ER2CDSWebViewPanelManager extends LspWebviewPanelManager {
             identifier,
         });
 
-        addWorkspaceEditActionHandler(webview);
-        addLspLabelEditActionHandler(webview);
+        webview.addActionHandler(WorkspaceEditAction.KIND, this.handleWorkspaceEditAction);
 
         return webview;
     }
@@ -36,6 +36,17 @@ export class ER2CDSWebViewPanelManager extends LspWebviewPanelManager {
             localResourceRoots: [createFileUri(extensionPath, '..', 'webview', 'out')],
             scriptUri: createFileUri(extensionPath, '..', 'webview', 'out', 'webview.js')
         });
+    }
+
+    protected async handleWorkspaceEditAction(action: WorkspaceEditAction) {
+        await vscode.workspace.applyEdit(convertWorkspaceEdit(action.workspaceEdit));
+
+        const changes = action.workspaceEdit.changes;
+        if (changes) {
+            for (const uri in changes) {
+                await vscode.workspace.save(vscode.Uri.parse(uri));
+            }
+        }
     }
 
     private createWebviewPanel(identifier: SprottyDiagramIdentifier, options: { localResourceRoots: vscode.Uri[], scriptUri: vscode.Uri, cssUri?: vscode.Uri }): vscode.WebviewPanel {
