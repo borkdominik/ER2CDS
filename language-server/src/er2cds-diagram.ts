@@ -4,7 +4,7 @@ import { SCompartment, SLabel } from 'sprotty-protocol';
 import { Attribute, ER2CDS, Entity, Relationship, RelationshipEntity } from './generated/ast.js';
 import { ER2CDSServices } from './er2cds-module.js';
 import { AstNode } from 'langium';
-import { COMP_ATTRIBUTES, COMP_ATTRIBUTES_ROW, COMP_ENTITY_HEADER, EDGE, EDGE_INHERITANCE, ER2CDSRoot, Edge, EntityNode, GRAPH, LABEL_BOTTOM, LABEL_BOTTOM_LEFT, LABEL_BOTTOM_RIGHT, LABEL_DERIVED, LABEL_ENTITY, LABEL_KEY, LABEL_PARTIAL_KEY, LABEL_RELATIONSHIP, LABEL_TEXT, LABEL_TOP, LABEL_TOP_LEFT, LABEL_TOP_RIGHT, LABEL_VISIBILITY, NODE_ENTITY, NODE_RELATIONSHIP, RelationshipNode } from './model.js';
+import { COMP_ATTRIBUTES, COMP_ATTRIBUTES_ROW, COMP_ENTITY_HEADER, EDGE, EDGE_INHERITANCE, ER2CDSRoot, Edge, EntityNode, GRAPH, LABEL_BOTTOM, LABEL_BOTTOM_LEFT, LABEL_BOTTOM_RIGHT, LABEL_DERIVED, LABEL_ENTITY, LABEL_KEY, LABEL_PARTIAL_KEY, LABEL_RELATIONSHIP, LABEL_SEPARATOR, LABEL_TEXT, LABEL_TOP, LABEL_TOP_LEFT, LABEL_TOP_RIGHT, NODE_ENTITY, NODE_RELATIONSHIP, RelationshipNode } from './model.js';
 import { LayoutOptions } from 'elkjs';
 
 export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
@@ -216,14 +216,14 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
             },
             children: [
                 <SLabel>{
-                    id: attributeId + '.visibility',
-                    text: attribute.visibility,
-                    type: LABEL_VISIBILITY
-                },
-                <SLabel>{
                     id: attributeId + '.name',
                     text: attribute.name,
                     type: labelType
+                },
+                <SLabel>{
+                    id: attributeId + '.separator',
+                    text: ':',
+                    type: LABEL_SEPARATOR
                 },
                 <SLabel>{
                     id: attributeId + '.datatype',

@@ -74,55 +74,11 @@ export function isOPTIONAL(item: unknown): item is OPTIONAL {
     return item === 'optional';
 }
 
-export type PACKAGE_STRING = 'package';
-
-export function isPACKAGE_STRING(item: unknown): item is PACKAGE_STRING {
-    return item === 'package';
-}
-
 export type PARTIAL_KEY = 'partial-key';
 
 export function isPARTIAL_KEY(item: unknown): item is PARTIAL_KEY {
     return item === 'partial-key';
 }
-
-export type PRIVATE = '~';
-
-export function isPRIVATE(item: unknown): item is PRIVATE {
-    return item === '~';
-}
-
-export type PRIVATE_STRING = 'private';
-
-export function isPRIVATE_STRING(item: unknown): item is PRIVATE_STRING {
-    return item === 'private';
-}
-
-export type PROTECTED = '-';
-
-export function isPROTECTED(item: unknown): item is PROTECTED {
-    return item === '-';
-}
-
-export type PROTECTED_STRING = 'protected';
-
-export function isPROTECTED_STRING(item: unknown): item is PROTECTED_STRING {
-    return item === 'protected';
-}
-
-export type PUBLIC = '+';
-
-export function isPUBLIC(item: unknown): item is PUBLIC {
-    return item === '+';
-}
-
-export type PUBLIC_STRING = 'public';
-
-export function isPUBLIC_STRING(item: unknown): item is PUBLIC_STRING {
-    return item === 'public';
-}
-
-export type VisibilityType = '#' | '+' | '-' | 'none' | 'package' | 'private' | 'protected' | 'public' | '~';
 
 export type ZERO_OR_MANY = '0..N';
 
@@ -142,7 +98,6 @@ export interface Attribute extends AstNode {
     datatype?: DataType
     name: string
     type?: AttributeType
-    visibility?: VisibilityType
 }
 
 export const Attribute = 'Attribute';

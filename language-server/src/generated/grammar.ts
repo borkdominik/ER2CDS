@@ -30,7 +30,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@28"
+                "$ref": "#/rules@20"
               },
               "arguments": []
             }
@@ -100,7 +100,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@28"
+                "$ref": "#/rules@20"
               },
               "arguments": []
             }
@@ -184,7 +184,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@28"
+                "$ref": "#/rules@20"
               },
               "arguments": []
             }
@@ -311,7 +311,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@30"
+                        "$ref": "#/rules@22"
                       },
                       "arguments": []
                     }
@@ -343,25 +343,12 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
         "elements": [
           {
             "$type": "Assignment",
-            "feature": "visibility",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@18"
-              },
-              "arguments": []
-            },
-            "cardinality": "?"
-          },
-          {
-            "$type": "Assignment",
             "feature": "name",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@28"
+                "$ref": "#/rules@20"
               },
               "arguments": []
             }
@@ -380,7 +367,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@27"
+                    "$ref": "#/rules@19"
                   },
                   "arguments": []
                 }
@@ -422,7 +409,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@26"
+              "$ref": "#/rules@18"
             },
             "arguments": []
           },
@@ -579,7 +566,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@26"
+              "$ref": "#/rules@18"
             },
             "arguments": []
           },
@@ -704,185 +691,6 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
     },
     {
       "$type": "ParserRule",
-      "name": "VisibilityType",
-      "returnType": {
-        "$ref": "#/types@2"
-      },
-      "definition": {
-        "$type": "Alternatives",
-        "elements": [
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@26"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@19"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@20"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@21"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@22"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@23"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@24"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@25"
-            },
-            "arguments": []
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "PUBLIC",
-      "dataType": "string",
-      "definition": {
-        "$type": "Keyword",
-        "value": "+"
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "PROTECTED",
-      "dataType": "string",
-      "definition": {
-        "$type": "Keyword",
-        "value": "-"
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "PRIVATE",
-      "dataType": "string",
-      "definition": {
-        "$type": "Keyword",
-        "value": "~"
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "PUBLIC_STRING",
-      "dataType": "string",
-      "definition": {
-        "$type": "Keyword",
-        "value": "public"
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "PROTECTED_STRING",
-      "dataType": "string",
-      "definition": {
-        "$type": "Keyword",
-        "value": "protected"
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "PRIVATE_STRING",
-      "dataType": "string",
-      "definition": {
-        "$type": "Keyword",
-        "value": "private"
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "PACKAGE_STRING",
-      "dataType": "string",
-      "definition": {
-        "$type": "Keyword",
-        "value": "package"
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
       "name": "NONE",
       "dataType": "string",
       "definition": {
@@ -909,7 +717,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@28"
+                "$ref": "#/rules@20"
               },
               "arguments": []
             }
@@ -928,7 +736,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@29"
+                    "$ref": "#/rules@21"
                   },
                   "arguments": []
                 }
@@ -947,7 +755,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@29"
+                        "$ref": "#/rules@21"
                       },
                       "arguments": []
                     }
@@ -1107,51 +915,6 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
           {
             "$type": "SimpleType",
             "stringType": "multivalued"
-          }
-        ]
-      }
-    },
-    {
-      "$type": "Type",
-      "name": "VisibilityType",
-      "type": {
-        "$type": "UnionType",
-        "types": [
-          {
-            "$type": "SimpleType",
-            "stringType": "none"
-          },
-          {
-            "$type": "SimpleType",
-            "stringType": "+"
-          },
-          {
-            "$type": "SimpleType",
-            "stringType": "#"
-          },
-          {
-            "$type": "SimpleType",
-            "stringType": "-"
-          },
-          {
-            "$type": "SimpleType",
-            "stringType": "~"
-          },
-          {
-            "$type": "SimpleType",
-            "stringType": "public"
-          },
-          {
-            "$type": "SimpleType",
-            "stringType": "protected"
-          },
-          {
-            "$type": "SimpleType",
-            "stringType": "private"
-          },
-          {
-            "$type": "SimpleType",
-            "stringType": "package"
           }
         ]
       }

@@ -24,7 +24,7 @@ export const LABEL_KEY = 'label:key';
 export const LABEL_PARTIAL_KEY = 'label:partial-key';
 export const LABEL_DERIVED = 'label:derived';
 export const LABEL_TEXT = 'label:text';
-export const LABEL_VISIBILITY = 'label:visibility';
+export const LABEL_SEPARATOR = 'label:separator';
 
 export const COMP_ENTITY_HEADER = 'comp:entity-header';
 export const COMP_ATTRIBUTES = 'comp:attributes';

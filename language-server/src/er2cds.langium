@@ -21,7 +21,7 @@ RelationshipEntity:
 	']')?;
 
 Attribute:
-	(visibility=VisibilityType)? name=ID (':' datatype=DataType)? (type=AttributeType)?;
+	name=ID (':' datatype=DataType)? (type=AttributeType)?;
 
 
 type CardinalityType = 'none' | '0..1' | '0..N' | '1' | '1..1' | '1..N' | 'N';
@@ -56,26 +56,6 @@ DERIVED returns string:
 	'derived';
 MULTIVALUED returns string:
 	'multivalued';
-
-
-type VisibilityType = 'none' | '+' | '#' | '-' | '~' | 'public' | 'protected' | 'private' | 'package';
-VisibilityType returns VisibilityType:
-	NONE | PUBLIC | PROTECTED | PRIVATE | PUBLIC_STRING | PROTECTED_STRING | PRIVATE_STRING | PACKAGE_STRING
-;
-PUBLIC returns string:
-	'+';
-PROTECTED returns string:
-	'-';
-PRIVATE returns string:
-	'~';
-PUBLIC_STRING returns string:
-	'public';
-PROTECTED_STRING returns string:
-	'protected';
-PRIVATE_STRING returns string:
-	'private';
-PACKAGE_STRING returns string:
-	'package';
 NONE returns string:
 	'none';
 

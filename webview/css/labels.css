@@ -1,18 +1,15 @@
-.visibility {
-    fill: #569cd6;
-}
-
 .key {
-    font-style: italic;
+    font-weight: bold;
     text-decoration: underline;
+    fill: var(--vscode-button-foreground)
 }
 
 .partial-key {
-    font-style: italic;
     text-decoration: underline;
-    fill: gray;
+    fill: var(--vscode-button-foreground)
 }
 
 .derived {
-    fill: gray;
+    font-style: italic;
+    fill: var(--vscode-button-foreground)
 }
