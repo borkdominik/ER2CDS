@@ -90,14 +90,21 @@ export class EdgeView extends PolylineEdgeView {
         if (route.length === 0) {
             return this.renderDanglingEdge('Cannot compute route', edge, context);
         }
+
+        if (route.some(p => !p.x || !p.y)) {
+            return undefined;
+        }
+
         if (!this.isVisible(edge, route, context)) {
             if (edge.children.length === 0) {
                 return undefined;
             }
+
             // The children of an edge are not necessarily inside the bounding box of the route,
             // so we need to render a group to ensure the children have a chance to be rendered.
             return <g>{context.renderChildren(edge, { route })}</g>;
         }
+
 
         return <g class-sprotty-edge={true} class-mouseover={edge.hoverFeedback}>
             {this.renderLine(edge, route, context, args)}
