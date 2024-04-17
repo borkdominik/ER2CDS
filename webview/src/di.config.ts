@@ -22,7 +22,7 @@ import DeleteToolModule from './tool-palette/tools/delete-tool/di.config';
 import ServicesModule from './services/di.config';
 import EdgeCreateToolModule from './tool-palette/tools/edge-create-tool/di.config';
 import HelperLineModule from './helper-lines/di.config';
-import EdgeEditToolModule from './tool-palette/tools/edge-edit-tool/di.config';
+import AttributeToolModule from './tool-palette/tools/attribute-create-tool/di.config';
 
 export default (containerId: string) => {
     const DiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
@@ -86,7 +86,8 @@ export default (containerId: string) => {
     container.load(MarqueeToolModule);
     container.load(DeleteToolModule);
     container.load(EdgeCreateToolModule);
-    // container.load(EdgeEditToolModule);
+    container.load(AttributeToolModule);
+
     container.load(HelperLineModule);
 
     overrideViewerOptions(container, {

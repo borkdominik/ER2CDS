@@ -1,4 +1,4 @@
-import { SChildElementImpl, SModelElementImpl, SShapeElementImpl } from "sprotty";
+import { SChildElementImpl, SModelElementImpl, SShapeElementImpl } from 'sprotty';
 import { Point, Bounds } from 'sprotty-protocol';
 import { v4 as uuid } from 'uuid';
 

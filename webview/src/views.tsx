@@ -29,7 +29,7 @@ export class EntityNodeView extends RectangularNodeView {
             return undefined;
 
         const height = 35;
-        const rhombStr = "M 0," + height + "  L " + node.bounds.width + "," + height;
+        const rhombStr = 'M 0,' + height + '  L ' + node.bounds.width + ',' + height;
 
         if (node.weak) {
             return (
@@ -88,7 +88,7 @@ export class EdgeView extends PolylineEdgeView {
     override render(edge: Readonly<Edge>, context: RenderingContext, args?: IViewArgs): VNode | undefined {
         const route = this.edgeRouterRegistry.route(edge, args);
         if (route.length === 0) {
-            return this.renderDanglingEdge("Cannot compute route", edge, context);
+            return this.renderDanglingEdge('Cannot compute route', edge, context);
         }
         if (!this.isVisible(edge, route, context)) {
             if (edge.children.length === 0) {

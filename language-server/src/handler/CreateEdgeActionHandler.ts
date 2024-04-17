@@ -65,7 +65,7 @@ export class CreateEdgeActionHandler {
                     {
                         range: range,
                         newText: 'relationship' + ' ' + this.getNewName(NODE_RELATIONSHIP, 'Relationship', server.state.currentRoot.children) + '{\n' +
-                            source.id + ' -> ' + ' ' +
+                            '\t' + source.id + ' -> ' + ' ' +
                             '\n}'
                     }
                 ]
@@ -87,7 +87,7 @@ export class CreateEdgeActionHandler {
                     {
                         range: range,
                         newText: 'relationship' + ' ' + this.getNewName(NODE_RELATIONSHIP, 'Relationship', server.state.currentRoot.children) + '{\n' +
-                            ' ' + ' -> ' + element.id +
+                            '\t' + ' ' + ' -> ' + element.id +
                             '\n}'
                     }
                 ]
@@ -108,7 +108,7 @@ export class CreateEdgeActionHandler {
                 [sourceUri.toString()]: [
                     {
                         range: Range.create(Position.create(range.start.line, 0), Position.create(range.start.line, source.id.length + 4 + targetText.length)),
-                        newText: source.id + ' -> ' + targetText
+                        newText: '\t' + source.id + ' -> ' + targetText
                     }
                 ]
             }
@@ -128,7 +128,7 @@ export class CreateEdgeActionHandler {
                 [sourceUri.toString()]: [
                     {
                         range: Range.create(Position.create(range.start.line, 0), Position.create(range.start.line, sourceText.length + 4 + target.id.length)),
-                        newText: sourceText + ' -> ' + target.id
+                        newText: '\t' + sourceText + ' -> ' + target.id
                     }
                 ]
             }

@@ -1,5 +1,5 @@
-import { EdgeRouterRegistry, InternalBoundsAware, ModelIndexImpl, RoutedPoint, SModelElementImpl, SRoutableElementImpl, SRoutingHandleImpl, getAbsoluteBounds, getZoom } from "sprotty";
-import { FluentIterable } from "sprotty/lib/utils/iterable";
+import { EdgeRouterRegistry, InternalBoundsAware, ModelIndexImpl, RoutedPoint, SModelElementImpl, SRoutableElementImpl, SRoutingHandleImpl, getAbsoluteBounds, getZoom } from 'sprotty';
+import { FluentIterable } from 'sprotty/lib/utils/iterable';
 import { Selectable, Point } from 'sprotty-protocol';
 
 export type ModelFilterPredicate<T> = (modelElement: SModelElementImpl) => modelElement is SModelElementImpl & T;

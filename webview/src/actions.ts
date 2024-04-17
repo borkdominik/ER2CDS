@@ -31,6 +31,21 @@ export namespace CreateEdgeAction {
     }
 }
 
+export interface CreateAttributeAction extends Action {
+    kind: typeof CreateAttributeAction.KIND;
+    elementId: string;
+}
+export namespace CreateAttributeAction {
+    export const KIND = 'createAttribute';
+
+    export function create(elementId: string): CreateAttributeAction {
+        return {
+            kind: KIND,
+            elementId
+        };
+    }
+}
+
 export interface DeleteElementAction extends Action {
     kind: typeof DeleteElementAction.KIND;
     elementIds: string[];

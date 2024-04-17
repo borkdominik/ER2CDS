@@ -1,7 +1,7 @@
-import { ISnapper, SModelElementImpl } from "sprotty";
-import { Point } from "sprotty-protocol";
-import { Direction, getDirectionOf } from "../helper-lines/model";
-import { calculateDeltaBetweenPoints } from "../utils/model-utils";
+import { ISnapper, SModelElementImpl } from 'sprotty';
+import { Point } from 'sprotty-protocol';
+import { Direction, getDirectionOf } from '../helper-lines/model';
+import { calculateDeltaBetweenPoints } from '../utils/model-utils';
 
 export type Writable<T> = { -readonly [P in keyof T]: Writable<T[P]> };
 

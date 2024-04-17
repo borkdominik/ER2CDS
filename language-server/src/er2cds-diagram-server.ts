@@ -1,10 +1,11 @@
 import { Action, ApplyLabelEditAction, DiagramServer, DiagramServices, RequestAction, ResponseAction } from 'sprotty-protocol';
 import { ER2CDSServices } from './er2cds-module.js';
-import { CreateEdgeAction, CreateElementAction, DeleteElementAction } from './actions.js';
+import { CreateAttributeAction, CreateEdgeAction, CreateElementAction, DeleteElementAction } from './actions.js';
 import { CreateElementActionHandler } from './handler/CreateElementActionHandler.js';
 import { DeleteElementActionHandler } from './handler/DeleteElementActionHandler.js';
 import { CreateEdgeActionHandler } from './handler/CreateEdgeActionHandler.js';
 import { ApplyLabelEditActionHandler } from './handler/ApplyLabelEditActionHandler.js';
+import { CreateAttributeActionHandler } from './handler/CreateAttributeActionHandler.js';
 
 export class ER2CDSDiagramServer extends DiagramServer {
     private services: ER2CDSServices;
@@ -32,6 +33,9 @@ export class ER2CDSDiagramServer extends DiagramServer {
             case CreateEdgeAction.KIND:
                 new CreateEdgeActionHandler().handle(action as CreateEdgeAction, this, this.services);
                 break;
+
+            case CreateAttributeAction.KIND:
+                new CreateAttributeActionHandler().handle(action as CreateAttributeAction, this, this.services);
 
             case DeleteElementAction.KIND:
                 new DeleteElementActionHandler().handle(action as DeleteElementAction, this, this.services);

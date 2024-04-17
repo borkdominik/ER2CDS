@@ -1,13 +1,13 @@
 import { inject, injectable } from 'inversify';
 import { IActionHandler, ICommand } from 'sprotty';
 import { Action } from 'sprotty-protocol';
-import { EnableCreateEdgeToolAction, EnableDefaultToolsAction, EnableDeleteMouseToolAction, EnableMarqueeMouseToolAction } from './actions';
+import { EnableCreateAttributeToolAction, EnableCreateEdgeToolAction, EnableDefaultToolsAction, EnableDeleteMouseToolAction, EnableMarqueeMouseToolAction } from './actions';
 import { DeleteMouseTool } from './delete-tool/delete-mouse-tool';
 import { DeleteKeyTool } from './delete-tool/delete-key-tool';
 import { MarqueeKeyTool } from './marquee-tool/marquee-key-tool';
 import { MarqueeMouseTool } from './marquee-tool/marquee-mouse-tool';
 import { EdgeCreateTool } from './edge-create-tool/edge-create-tool';
-import { EdgeEditTool } from './edge-edit-tool/edge-edit-tool';
+import { AttributeCreateMouseTool } from './attribute-create-tool/attribute-create-mouse-tool';
 
 @injectable()
 export class ToolManagerActionHandler implements IActionHandler {
@@ -26,8 +26,8 @@ export class ToolManagerActionHandler implements IActionHandler {
     @inject(EdgeCreateTool)
     private edgeCreateTool: EdgeCreateTool;
 
-    // @inject(EdgeEditTool)
-    // private edgeEditTool: EdgeEditTool;
+    @inject(AttributeCreateMouseTool)
+    private attributeCreateMouseTool: AttributeCreateMouseTool;
 
     handle(action: Action): void | ICommand | Action {
         this.disableAllTools();
@@ -48,13 +48,16 @@ export class ToolManagerActionHandler implements IActionHandler {
             case EnableCreateEdgeToolAction.KIND:
                 this.edgeCreateTool.enable();
                 break;
+
+            case EnableCreateAttributeToolAction.KIND:
+                this.attributeCreateMouseTool.enable();
+                break;
         }
     }
 
     private enableDefaultTools() {
         this.marqueeKeyTool.enable();
         this.deleteKeyTool.enable();
-        // this.edgeEditTool.enable();
     }
 
     private disableAllTools() {
@@ -65,6 +68,7 @@ export class ToolManagerActionHandler implements IActionHandler {
         this.deleteMouseTool.disable();
 
         this.edgeCreateTool.disable();
-        // this.edgeEditTool.disable();
+
+        this.attributeCreateMouseTool.disable();
     }
 }

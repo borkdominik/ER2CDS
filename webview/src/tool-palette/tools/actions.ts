@@ -51,3 +51,16 @@ export namespace EnableCreateEdgeToolAction {
         };
     }
 }
+
+export interface EnableCreateAttributeToolAction extends Action {
+    kind: typeof EnableCreateAttributeToolAction.KIND;
+}
+export namespace EnableCreateAttributeToolAction {
+    export const KIND = 'enableCreateAttributeTool';
+
+    export function create(): EnableCreateAttributeToolAction {
+        return {
+            kind: KIND
+        };
+    }
+}

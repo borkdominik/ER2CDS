@@ -1,11 +1,11 @@
-import { CompositeCstNodeImpl, URI } from "langium";
-import { ApplyLabelEditAction, SModelIndex } from "sprotty-protocol";
-import { ER2CDSDiagramServer } from "../er2cds-diagram-server.js";
-import { ER2CDSServices } from "../er2cds-module.js";
+import { CompositeCstNodeImpl, URI } from 'langium';
+import { ApplyLabelEditAction, SModelIndex } from 'sprotty-protocol';
+import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
+import { ER2CDSServices } from '../er2cds-module.js';
 import { WorkspaceEditAction } from 'sprotty-vscode-protocol/lib/lsp/editing';
 import { WorkspaceEdit } from 'vscode-languageserver-protocol';
 import { Range } from 'vscode-languageserver-types';
-import { ER2CDS } from "../generated/ast.js";
+import { ER2CDS } from '../generated/ast.js';
 
 export class ApplyLabelEditActionHandler {
     private workspaceEdit: WorkspaceEdit | undefined;
