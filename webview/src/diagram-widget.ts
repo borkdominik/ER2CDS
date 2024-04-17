@@ -1,7 +1,9 @@
 import { postConstruct, injectable } from 'inversify';
 import { VscodeDiagramWidget } from 'sprotty-vscode-webview';
-import { DiagramServerProxy, SetUIExtensionVisibilityAction } from 'sprotty';
+import { DiagramServerProxy } from 'sprotty';
 import { FitToScreenAction } from 'sprotty-protocol';
+import { EnableToolPaletteAction } from './tool-palette/actions';
+import { EnableEditorPanelAction } from './editor-panel/actions';
 
 @injectable()
 export class ER2CDSDiagramWidget extends VscodeDiagramWidget {
@@ -16,6 +18,7 @@ export class ER2CDSDiagramWidget extends VscodeDiagramWidget {
 
         this.requestModel().then(() => this.actionDispatcher.dispatch(FitToScreenAction.create([])));
 
-        this.actionDispatcher.dispatch(SetUIExtensionVisibilityAction.create({ extensionId: 'tool-palette', visible: true }));
+        this.actionDispatcher.dispatch(EnableToolPaletteAction.create());
+        this.actionDispatcher.dispatch(EnableEditorPanelAction.create());
     }
 }

@@ -1,5 +1,6 @@
-import { inject, injectable } from 'inversify';
-import { ILogger, ModelIndexImpl, SModelElementImpl, SModelRootImpl, TYPES, isSelectable } from 'sprotty';
+import { inject, injectable, postConstruct } from 'inversify';
+import { CommandStack, ILogger, ModelIndexImpl, SModelElementImpl, SModelRootImpl, TYPES, isSelectable } from 'sprotty';
+import { Emitter, Event, } from 'vscode-jsonrpc';
 
 @injectable()
 export class DiagramEditorService {
@@ -10,8 +11,32 @@ export class DiagramEditorService {
 
     protected selectedElementIDs: Set<string> = new Set();
 
+    protected onModelRootChangedEmitter = new Emitter<Readonly<SModelRootImpl>>();
+
     @inject(TYPES.ILogger)
     protected logger: ILogger;
+
+    @postConstruct()
+    protected initialize() {
+        this.onModelRootChanged(r => this.modelRootChanged(r));
+    }
+
+    notifyModelRootChanged(root: Readonly<SModelRootImpl>, notifier: object): void {
+        if (!(notifier instanceof CommandStack)) {
+            throw new Error('Invalid model root change notification. Notifier is not an instance of `CommandStack`.');
+        }
+
+        this.root = root;
+        this.onModelRootChangedEmitter.fire(root);
+    }
+
+    getModelRoot(): Readonly<SModelRootImpl> {
+        return this.root;
+    }
+
+    get onModelRootChanged(): Event<Readonly<SModelRootImpl>> {
+        return this.onModelRootChangedEmitter.event;
+    }
 
     updateSelection(newRoot: Readonly<SModelRootImpl>, select: string[], deselect: string[]): void {
         if (newRoot === undefined && select.length === 0 && deselect.length === 0) {
@@ -54,10 +79,6 @@ export class DiagramEditorService {
 
     modelRootChanged(root: Readonly<SModelRootImpl>): void {
         this.updateSelection(root, [], []);
-    }
-
-    getModelRoot(): Readonly<SModelRootImpl> {
-        return this.root;
     }
 
     getSelectedElements(): Readonly<SModelElementImpl>[] {

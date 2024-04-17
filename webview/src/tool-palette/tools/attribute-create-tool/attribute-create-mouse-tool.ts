@@ -30,7 +30,6 @@ export class AttributeCreateMouseListener extends MouseListener {
 
         const result: Action[] = [];
         result.push(CreateAttributeAction.create(entityParent.id));
-        console.log(result);
 
         return result;
     }

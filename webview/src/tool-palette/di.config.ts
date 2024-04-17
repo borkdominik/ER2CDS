@@ -1,5 +1,4 @@
 import { ContainerModule } from 'inversify';
-
 import { ToolPalette } from './tool-palette';
 import { TYPES, configureActionHandler } from 'sprotty';
 import { EnableToolPaletteAction } from './actions';

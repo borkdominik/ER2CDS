@@ -11,8 +11,10 @@ import '@vscode/codicons/dist/codicon.css';
 
 import '../css/compartment.css';
 import '../css/diagram.css';
+import '../css/editor-panel.css';
 import '../css/helper-lines.css';
 import '../css/labels.css';
+import '../css/property-palette.css';
 import '../css/tool-palette.css';
 
 import ToolPaletteModule from './tool-palette/di.config';
@@ -23,6 +25,8 @@ import ServicesModule from './services/di.config';
 import EdgeCreateToolModule from './tool-palette/tools/edge-create-tool/di.config';
 import HelperLineModule from './helper-lines/di.config';
 import AttributeToolModule from './tool-palette/tools/attribute-create-tool/di.config';
+import EditorPanelModule from './editor-panel/di.config';
+import PropertyPaletteModule from './property-palette/di.config';
 
 export default (containerId: string) => {
     const DiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
@@ -87,6 +91,9 @@ export default (containerId: string) => {
     container.load(DeleteToolModule);
     container.load(EdgeCreateToolModule);
     container.load(AttributeToolModule);
+
+    container.load(EditorPanelModule);
+    container.load(PropertyPaletteModule);
 
     container.load(HelperLineModule);
 
