@@ -39,7 +39,6 @@ export class EditorPanel extends AbstractUIExtension implements IActionHandler {
     }
 
     handle(action: Action): ICommand | Action | void {
-        console.log(action);
         if (action.kind === EnableEditorPanelAction.KIND) {
             this.actionDispatcher.dispatch(SetUIExtensionVisibilityAction.create({ extensionId: EditorPanel.ID, visible: true }));
         }

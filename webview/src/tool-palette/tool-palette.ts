@@ -1,11 +1,12 @@
 import { inject, injectable } from 'inversify';
-import { AbstractUIExtension, IActionHandler, ICommand, codiconCSSClasses, ActionDispatcher, SModelRootImpl, TYPES } from 'sprotty';
+import { AbstractUIExtension, IActionHandler, ICommand, codiconCSSClasses, ActionDispatcher, SModelRootImpl, TYPES, SetUIExtensionVisibilityAction } from 'sprotty';
 import { Action } from 'sprotty-protocol';
 import { matchesKeystroke } from 'sprotty/lib/utils/keyboard';
 import { ToolPaletteItem } from './tool-palette-item';
 import { EnableCreateAttributeToolAction, EnableCreateEdgeToolAction, EnableDefaultToolsAction, EnableDeleteMouseToolAction, EnableMarqueeMouseToolAction } from './tools/actions';
 import { CreateElementAction } from '../actions';
 import { NODE_ENTITY, NODE_RELATIONSHIP } from '../model';
+import { EnableToolPaletteAction } from './actions';
 
 const CLICKED_CSS_CLASS = 'clicked';
 const SEARCH_ICON_ID = 'search';
@@ -47,6 +48,10 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
     }
 
     handle(action: Action): ICommand | Action | void {
+        if (action.kind === EnableToolPaletteAction.KIND) {
+            this.actionDispatcher.dispatch(SetUIExtensionVisibilityAction.create({ extensionId: ToolPalette.ID, visible: true }));
+        }
+
         this.changeActiveButton();
     }
 
