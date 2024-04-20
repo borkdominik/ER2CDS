@@ -1,5 +1,5 @@
 import { injectable, inject, postConstruct } from 'inversify';
-import { IActionHandler, TYPES, ActionDispatcher, ICommand, SModelRootImpl } from 'sprotty';
+import { IActionHandler, TYPES, ActionDispatcher, ICommand, SModelRootImpl, ModelIndexImpl, SModelElementImpl, SLabelImpl } from 'sprotty';
 import { createIcon } from '../tool-palette/tool-palette';
 import { createBoolProperty } from './bool/bool.creator';
 import { ElementBoolPropertyItem } from './bool/bool.model';
@@ -13,6 +13,7 @@ import { Action, SelectAction } from 'sprotty-protocol';
 import { EditorPanelChild } from '../editor-panel/editor-panel';
 import { DeleteElementAction } from '../actions';
 import { DiagramEditorService } from '../services/diagram-editor-service';
+import { EntityNode } from '../model';
 
 export interface Cache {
     [elementId: string]: {
@@ -119,18 +120,49 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
     protected refresh(elementId?: string): PropertyPaletteModel {
         this.activeElementId = elementId ?? this.activeElementId;
 
-        const propertyPaletteItem = <ElementTextPropertyItem>{
-            elementId: elementId,
-            propertyId: 'test',
-            type: 'TEXT',
-            label: 'test1',
-            text: 'test2'
+        const modelIndex = new ModelIndexImpl();
+        modelIndex.add(this.diagramEditorService.getModelRoot());
+
+        const element = modelIndex.getById(this.activeElementId);
+
+        const propertyPaletteItems = [];
+
+        if (element instanceof EntityNode) {
+            const entity = element as EntityNode;
+
+            // Entity-Name
+            if (entity.children.length > 0) {
+                const propertyPaletteItem = <ElementTextPropertyItem>{
+                    elementId: entity.id,
+                    propertyId: entity.children[0].id,
+                    type: 'TEXT',
+                    label: 'Name',
+                    text: (entity.children[0].children[0] as SLabelImpl).text
+                }
+
+                propertyPaletteItems.push(propertyPaletteItem);
+            }
+
+            // Entity-Attribute
+            if (entity.children.length > 1) {
+                entity.children[1].children.forEach(c => {
+                    const propertyPaletteItem = <ElementTextPropertyItem>{
+                        elementId: entity.id,
+                        propertyId: c.id,
+                        type: 'TEXT',
+                        label: 'Attribute',
+                        text: (c.children[0] as SLabelImpl).text
+                    }
+
+                    propertyPaletteItems.push(propertyPaletteItem);
+                });
+            }
         }
 
         //TODO
         this.palette = <PropertyPaletteModel>{
             elementId: elementId,
-            items: [propertyPaletteItem]
+            items: propertyPaletteItems
         };
 
         if (!this.palette) {
