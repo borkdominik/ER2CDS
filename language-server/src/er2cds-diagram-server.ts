@@ -36,6 +36,7 @@ export class ER2CDSDiagramServer extends DiagramServer {
 
             case CreateAttributeAction.KIND:
                 new CreateAttributeActionHandler().handle(action as CreateAttributeAction, this, this.services);
+                break;
 
             case DeleteElementAction.KIND:
                 new DeleteElementActionHandler().handle(action as DeleteElementAction, this, this.services);

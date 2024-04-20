@@ -42,7 +42,7 @@ export class CreateElementActionHandler {
                 [sourceUri.toString()]: [
                     {
                         range: Range.create(Position.create(textDocument?.lineCount + 1, 0), Position.create(textDocument?.lineCount + 1, 0)),
-                        newText: '\n\n' + 'entity' + ' ' + this.getNewName(NODE_ENTITY, 'Entity', server.state.currentRoot.children) + '{ }'
+                        newText: '\n\n' + 'entity' + ' ' + this.getNewName(NODE_ENTITY, 'Entity', server.state.currentRoot.children) + '{' + '\n' + '}' + '\n'
                     }
                 ]
             }
