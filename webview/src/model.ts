@@ -30,6 +30,120 @@ export const COMP_ENTITY_HEADER = 'comp:entity-header';
 export const COMP_ATTRIBUTES = 'comp:attributes';
 export const COMP_ATTRIBUTES_ROW = 'comp:attributes-row';
 
+export const DATATYPES = [
+    {
+        label: 'Calculation/amount field',
+        value: 'DEC'
+    },
+    {
+        label: 'Single-byte integer',
+        value: 'INT1'
+    },
+    {
+        label: 'Two-byte integer',
+        value: 'INT2'
+    },
+    {
+        label: 'Four-byte integer',
+        value: 'INT4',
+    },
+    {
+        label: 'Currency field',
+        value: 'CURR'
+    },
+    {
+        label: 'Currency key',
+        value: 'CUKY'
+    },
+    {
+        label: 'Quantity',
+        value: 'QUAN'
+    },
+    {
+        label: 'Unit',
+        value: 'UNIT'
+    },
+    {
+        label: 'Floating point number',
+        value: 'FLTP'
+    },
+    {
+        label: 'Numeric text',
+        value: 'NUMC'
+    },
+    {
+        label: 'Character',
+        value: 'CHAR'
+    },
+    {
+        label: 'Long Character',
+        value: 'LCHR'
+    },
+    {
+        label: 'String of variable length',
+        value: 'STRING'
+    },
+    {
+        label: 'Byte string of variable length',
+        value: 'RAWSTRING'
+    },
+    {
+        label: 'Date',
+        value: 'DATS'
+    },
+    {
+        label: 'Accounting period YYYYMM',
+        value: 'ACCP'
+    },
+    {
+        label: 'Time HHMMSS',
+        value: 'TIMS'
+    },
+    {
+        label: 'Byte string',
+        value: 'RAW'
+    },
+    {
+        label: 'Long byte string',
+        value: 'LRAW'
+    },
+    {
+        label: 'Client',
+        value: 'CLNT'
+    },
+    {
+        label: 'Language',
+        value: 'LANG'
+    }
+]
+
+export const ATTRIBUTE_TYPES = [
+    {
+        label: 'derived',
+        value: 'derived'
+    },
+    {
+        label: 'key',
+        value: 'key'
+    },
+    {
+        label: 'multivalued',
+        value: 'multivalued'
+    },
+    {
+        label: 'none',
+        value: 'none',
+    },
+    {
+        label: 'optional',
+        value: 'optional'
+    },
+    {
+        label: 'partial-key',
+        value: 'partial-key'
+    }
+]
+
 export class ER2CDSRoot extends SGraphImpl {
     name: string;
 }

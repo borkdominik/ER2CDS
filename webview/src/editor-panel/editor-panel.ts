@@ -69,8 +69,6 @@ export class EditorPanel extends AbstractUIExtension implements IActionHandler {
     }
 
     protected initializeContents(containerElement: HTMLElement): void {
-        console.log("INIT CONTENTS");
-
         containerElement.tabIndex = 0;
 
         this.initializeHeader();

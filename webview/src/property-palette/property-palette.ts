@@ -1,5 +1,5 @@
 import { injectable, inject, postConstruct } from 'inversify';
-import { IActionHandler, TYPES, ActionDispatcher, ICommand, SModelRootImpl, ModelIndexImpl, SModelElementImpl, SLabelImpl } from 'sprotty';
+import { IActionHandler, TYPES, ActionDispatcher, ICommand, SModelRootImpl, ModelIndexImpl, CommitModelAction, SLabelImpl, SCompartmentImpl } from 'sprotty';
 import { createIcon } from '../tool-palette/tool-palette';
 import { createBoolProperty } from './bool/bool.creator';
 import { ElementBoolPropertyItem } from './bool/bool.model';
@@ -9,11 +9,11 @@ import { createReferenceProperty } from './reference/reference.creator';
 import { ElementReferencePropertyItem } from './reference/reference.model';
 import { createTextProperty } from './text/text.creator';
 import { ElementTextPropertyItem } from './text/text.model';
-import { Action, SelectAction } from 'sprotty-protocol';
+import { Action, SelectAction, ApplyLabelEditAction } from 'sprotty-protocol';
 import { EditorPanelChild } from '../editor-panel/editor-panel';
-import { DeleteElementAction } from '../actions';
+import { CreateAttributeAction, DeleteElementAction } from '../actions';
 import { DiagramEditorService } from '../services/diagram-editor-service';
-import { EntityNode } from '../model';
+import { DATATYPES, EntityNode } from '../model';
 
 export interface Cache {
     [elementId: string]: {
@@ -49,7 +49,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
     static readonly ID = 'property-palette';
 
     protected palette: PropertyPaletteModel;
-    protected lastPalettes: PropertyPaletteModel[];
+    protected lastPalettes: PropertyPaletteModel[] = [];
     protected cache: Cache = {};
     protected activeElementId?: string;
     protected uiElements: ElementPropertyUI[] = [];
@@ -69,7 +69,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
     }
 
     handle(action: Action): ICommand | Action | void {
-        if (action.kind === SelectAction.KIND && (action as SelectAction).selectedElementsIDs.length > 0) {
+        if (action.kind === SelectAction.KIND && (action as SelectAction).selectedElementsIDs && (action as SelectAction).selectedElementsIDs.length > 0) {
             this.refresh((action as SelectAction).selectedElementsIDs[0]);
             this.content.scrollTop = 0;
         }
@@ -130,38 +130,69 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         if (element instanceof EntityNode) {
             const entity = element as EntityNode;
 
-            // Entity-Name
             if (entity.children.length > 0) {
-                const propertyPaletteItem = <ElementTextPropertyItem>{
+                const entityNamePaletteItem = <ElementTextPropertyItem>{
+                    type: ElementTextPropertyItem.TYPE,
                     elementId: entity.id,
                     propertyId: entity.children[0].id,
-                    type: 'TEXT',
                     label: 'Name',
                     text: (entity.children[0].children[0] as SLabelImpl).text
                 }
 
-                propertyPaletteItems.push(propertyPaletteItem);
+                propertyPaletteItems.push(entityNamePaletteItem);
             }
 
-            // Entity-Attribute
-            if (entity.children.length > 1) {
-                entity.children[1].children.forEach(c => {
-                    const propertyPaletteItem = <ElementTextPropertyItem>{
-                        elementId: entity.id,
-                        propertyId: c.id,
-                        type: 'TEXT',
-                        label: 'Attribute',
-                        text: (c.children[0] as SLabelImpl).text
-                    }
+            const entityAttributesPaletteItems = <ElementReferencePropertyItem>{
+                type: ElementReferencePropertyItem.TYPE,
+                elementId: entity.id,
+                isOrderable: false,
+                label: 'Attributes',
+                references: entity.children[1].children.map(c => ({ elementId: c.id, label: c.id, isReadonly: false }) as ElementReferencePropertyItem.Reference),
+                creates: [({ label: 'Create Attribute', action: CreateAttributeAction.create(entity.id) }) as ElementReferencePropertyItem.CreateReference]
+            }
 
-                    propertyPaletteItems.push(propertyPaletteItem);
-                });
+            propertyPaletteItems.push(entityAttributesPaletteItems);
+        }
+
+        if (element instanceof SCompartmentImpl) {
+            if (element.children.length > 1) {
+                const entityAttributePaletteItem = <ElementTextPropertyItem>{
+                    type: ElementTextPropertyItem.TYPE,
+                    elementId: element.id,
+                    propertyId: element.children[0].id,
+                    label: 'Name',
+                    text: (element.children[0] as SLabelImpl).text
+                }
+
+                propertyPaletteItems.push(entityAttributePaletteItem);
+
+                const entityAttributeDatatypePaletteItem = <ElementChoicePropertyItem>{
+                    type: ElementChoicePropertyItem.TYPE,
+                    elementId: element.id,
+                    propertyId: element.children[2].id,
+                    label: 'Datatype',
+                    choice: (element.children[2] as SLabelImpl).text,
+                    choices: DATATYPES
+                }
+
+                propertyPaletteItems.push(entityAttributeDatatypePaletteItem);
+
+                // const entityAttributeTypePaletteItem = <ElementChoicePropertyItem>{
+                //     type: ElementChoicePropertyItem.TYPE,
+                //     elementId: element.id,
+                //     propertyId: element.children[3].id,
+                //     label: 'Type',
+                //     choice: (element.children[3] as SLabelImpl).text,
+                //     choices: ATTRIBUTE_TYPES
+                // }
+
+                // propertyPaletteItems.push(entityAttributeTypePaletteItem);
             }
         }
 
-        //TODO
         this.palette = <PropertyPaletteModel>{
             elementId: elementId,
+            label: elementId,
             items: propertyPaletteItems
         };
 
@@ -224,8 +255,6 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             breadcrumbs.textContent = `${breadcrumbs.textContent}${palette.label}`;
 
             this.header.appendChild(breadcrumbs);
-        } else {
-            setTextPlaceholder(this.header, 'No label provided.');
         }
     }
 
@@ -236,6 +265,8 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         if (items !== undefined && items.length > 0) {
             for (const propertyItem of items) {
                 let created: CreatedElementProperty | undefined = undefined;
+
+                console.log(ElementChoicePropertyItem.is(propertyItem));
 
                 if (ElementTextPropertyItem.is(propertyItem)) {
                     created = createTextProperty(propertyItem, {
@@ -276,7 +307,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
                             },
                             onNavigate: async (item, reference) => {
                                 this.lastPalettes.push(this.palette!);
-                                await this.refresh(reference.elementId);
+                                this.refresh(reference.elementId);
                                 this.content.scrollTop = 0;
                             },
                             onMove: async (item, selectedReferences, direction, state) => {
@@ -315,8 +346,8 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
     protected async update(elementId: string, propertyId: string, value: string): Promise<void> {
         this.disable();
 
-        // TODO
-        // return this.actionDispatcher.dispatch(new UpdateElementPropertyAction(elementId, propertyId, value));
+        // TODO: ApplyLabelEdit is sent twice
+        return this.actionDispatcher.dispatchAll([ApplyLabelEditAction.create(propertyId, value), CommitModelAction.create()]);
     }
 
     protected disable(): void {
