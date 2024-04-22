@@ -1,5 +1,5 @@
 import { injectable, inject, postConstruct } from 'inversify';
-import { IActionHandler, TYPES, ActionDispatcher, ICommand, SModelRootImpl, ModelIndexImpl, CommitModelAction, SLabelImpl, SCompartmentImpl } from 'sprotty';
+import { IActionHandler, TYPES, ActionDispatcher, ICommand, SModelRootImpl, ModelIndexImpl, SLabelImpl, SCompartmentImpl, SChildElementImpl } from 'sprotty';
 import { createIcon } from '../tool-palette/tool-palette';
 import { createBoolProperty } from './bool/bool.creator';
 import { ElementBoolPropertyItem } from './bool/bool.model';
@@ -9,9 +9,9 @@ import { createReferenceProperty } from './reference/reference.creator';
 import { ElementReferencePropertyItem } from './reference/reference.model';
 import { createTextProperty } from './text/text.creator';
 import { ElementTextPropertyItem } from './text/text.model';
-import { Action, SelectAction, ApplyLabelEditAction } from 'sprotty-protocol';
+import { Action, SelectAction } from 'sprotty-protocol';
 import { EditorPanelChild } from '../editor-panel/editor-panel';
-import { CreateAttributeAction, DeleteElementAction } from '../actions';
+import { CreateAttributeAction, DeleteElementAction, UpdateElementPropertyAction } from '../actions';
 import { DiagramEditorService } from '../services/diagram-editor-service';
 import { DATATYPES, EntityNode } from '../model';
 
@@ -127,6 +127,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
 
         const propertyPaletteItems = [];
 
+        // Entity
         if (element instanceof EntityNode) {
             const entity = element as EntityNode;
 
@@ -154,11 +155,14 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             propertyPaletteItems.push(entityAttributesPaletteItems);
         }
 
-        if (element instanceof SCompartmentImpl) {
+        // Attributes
+        if (element instanceof SCompartmentImpl && element.parent && (element.parent as SCompartmentImpl).parent && (element.parent as SCompartmentImpl).parent instanceof EntityNode) {
+            const entity = (element.parent as SCompartmentImpl).parent as EntityNode;
+
             if (element.children.length > 1) {
                 const entityAttributePaletteItem = <ElementTextPropertyItem>{
                     type: ElementTextPropertyItem.TYPE,
-                    elementId: element.id,
+                    elementId: entity.id,
                     propertyId: element.children[0].id,
                     label: 'Name',
                     text: (element.children[0] as SLabelImpl).text
@@ -168,7 +172,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
 
                 const entityAttributeDatatypePaletteItem = <ElementChoicePropertyItem>{
                     type: ElementChoicePropertyItem.TYPE,
-                    elementId: element.id,
+                    elementId: entity.id,
                     propertyId: element.children[2].id,
                     label: 'Datatype',
                     choice: (element.children[2] as SLabelImpl).text,
@@ -191,8 +195,8 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         }
 
         this.palette = <PropertyPaletteModel>{
-            elementId: elementId,
-            label: elementId,
+            elementId: this.activeElementId,
+            label: this.activeElementId,
             items: propertyPaletteItems
         };
 
@@ -211,9 +215,8 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
     }
 
     protected refreshUi(palette?: PropertyPaletteModel): void {
-        if (this.containerElement === undefined) {
+        if (this.containerElement === undefined)
             return;
-        }
 
         this.header.innerHTML = '';
         this.content.innerHTML = '';
@@ -232,6 +235,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             breadcrumbs.classList.add('property-palette-breadcrumbs');
 
             const lastPalettes = this.lastPalettes;
+            console.log(this.lastPalettes);
 
             if (lastPalettes.length > 0) {
                 const backButton = document.createElement('button');
@@ -266,15 +270,27 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             for (const propertyItem of items) {
                 let created: CreatedElementProperty | undefined = undefined;
 
-                console.log(ElementChoicePropertyItem.is(propertyItem));
-
                 if (ElementTextPropertyItem.is(propertyItem)) {
                     created = createTextProperty(propertyItem, {
-                        onBlur: (item, input) => {
-                            this.update(item.elementId, item.propertyId, input.value);
+                        onBlur: async (item, input) => {
+                            await this.update(item.elementId, item.propertyId, input.value);
+
+                            if (item.elementId + '.header-comp' === item.propertyId) {
+                                this.activeElementId = input.value;
+                            } else {
+                                this.activeElementId = item.elementId;
+                                this.lastPalettes = [];
+                            }
                         },
-                        onEnter: (item, input) => {
-                            this.update(item.elementId, item.propertyId, input.value);
+                        onEnter: async (item, input) => {
+                            await this.update(item.elementId, item.propertyId, input.value);
+
+                            if (item.elementId + '.header-comp' === item.propertyId) {
+                                this.activeElementId = input.value;
+                            } else {
+                                this.activeElementId = item.elementId;
+                                this.lastPalettes = [];
+                            }
                         }
                     });
                 } else if (ElementBoolPropertyItem.is(propertyItem)) {
@@ -346,8 +362,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
     protected async update(elementId: string, propertyId: string, value: string): Promise<void> {
         this.disable();
 
-        // TODO: ApplyLabelEdit is sent twice
-        return this.actionDispatcher.dispatchAll([ApplyLabelEditAction.create(propertyId, value), CommitModelAction.create()]);
+        return this.actionDispatcher.dispatch(UpdateElementPropertyAction.create(elementId, propertyId, value));
     }
 
     protected disable(): void {

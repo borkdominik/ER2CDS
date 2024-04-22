@@ -2,7 +2,7 @@ import { injectable } from 'inversify';
 import { ActionHandlerRegistry } from 'sprotty';
 import { Action, ApplyLabelEditAction } from 'sprotty-protocol';
 import { VscodeLspEditDiagramServer } from 'sprotty-vscode-webview/lib/lsp/editing';
-import { CreateElementAction, DeleteElementAction, CreateEdgeAction, CreateAttributeAction } from './actions';
+import { CreateElementAction, DeleteElementAction, CreateEdgeAction, CreateAttributeAction, UpdateElementPropertyAction } from './actions';
 
 @injectable()
 export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
@@ -13,7 +13,11 @@ export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
         registry.register(CreateElementAction.KIND, this);
         registry.register(CreateEdgeAction.KIND, this);
         registry.register(CreateAttributeAction.KIND, this);
+
+        registry.register(UpdateElementPropertyAction.KIND, this);
+
         registry.register(DeleteElementAction.KIND, this);
+
         registry.register(ApplyLabelEditAction.KIND, this);
     }
 
@@ -26,6 +30,9 @@ export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
                 return true;
 
             case CreateAttributeAction.KIND:
+                return true;
+
+            case UpdateElementPropertyAction.KIND:
                 return true;
 
             case DeleteElementAction.KIND:

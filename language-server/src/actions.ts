@@ -46,6 +46,25 @@ export namespace CreateAttributeAction {
     }
 }
 
+export interface UpdateElementPropertyAction extends Action {
+    kind: typeof UpdateElementPropertyAction.KIND,
+    elementId: string,
+    propertyId: string,
+    value: string
+}
+export namespace UpdateElementPropertyAction {
+    export const KIND = 'updateElementProperty';
+
+    export function create(elementId: string, propertyId: string, value: string): UpdateElementPropertyAction {
+        return {
+            kind: KIND,
+            elementId: elementId,
+            propertyId: propertyId,
+            value: value
+        };
+    }
+}
+
 export interface DeleteElementAction extends Action {
     kind: typeof DeleteElementAction.KIND;
     elementIds: string[];
