@@ -11,6 +11,8 @@ import { COMP_ATTRIBUTES_ROW, EDGE, Edge, NODE_ENTITY, NODE_RELATIONSHIP } from 
 
 
 export class DeleteElementActionHandler {
+    private workspaceEdit: WorkspaceEdit | undefined;
+
     public handle(action: DeleteElementAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {
         const sourceUriString = server.state.options?.sourceUri?.toString();
         if (!sourceUriString)
@@ -36,14 +38,14 @@ export class DeleteElementActionHandler {
                 if (element?.type === NODE_ENTITY) {
                     model.entities.forEach((e) => {
                         if (e.name === element?.id && e.$cstNode?.range)
-                            server.dispatch(this.createWorkspaceEditDeleteAction(sourceUri, e.$cstNode?.range));
+                            this.createWorkspaceEditDeleteAction(sourceUri, e.$cstNode?.range);
                     });
                 }
 
                 if (element?.type === NODE_RELATIONSHIP) {
                     model.relationships.forEach((r) => {
                         if (r.name === element?.id && r.$cstNode?.range)
-                            server.dispatch(this.createWorkspaceEditDeleteAction(sourceUri, r.$cstNode?.range));
+                            this.createWorkspaceEditDeleteAction(sourceUri, r.$cstNode?.range);
                     });
                 }
 
@@ -53,10 +55,10 @@ export class DeleteElementActionHandler {
                     model.relationships.forEach((r) => {
                         if (r.name === edge.sourceId || r.name === edge.targetId) {
                             if ((r.first?.target.$refText === edge.sourceId || r.first?.target.$refText === edge.targetId) && r.first?.$cstNode?.range)
-                                server.dispatch(this.createWorkspaceEditDeleteAction(sourceUri, r.first.$cstNode?.range));
+                                this.createWorkspaceEditDeleteAction(sourceUri, r.first.$cstNode?.range);
 
                             if ((r.second?.target.$refText === edge.sourceId || r.second?.target.$refText === edge.targetId) && r.second.$cstNode?.range)
-                                server.dispatch(this.createWorkspaceEditDeleteAction(sourceUri, r.second.$cstNode?.range));
+                                this.createWorkspaceEditDeleteAction(sourceUri, r.second.$cstNode?.range);
                         }
                     });
                 }
@@ -68,32 +70,39 @@ export class DeleteElementActionHandler {
 
                     model.entities.filter(e => e.name === entityId).map(e => e.attributes.forEach(a => {
                         if (a.name === attributeId && a.$cstNode?.range)
-                            server.dispatch(this.createWorkspaceEditDeleteAction(sourceUri, a.$cstNode?.range));
+                            this.createWorkspaceEditDeleteAction(sourceUri, a.$cstNode?.range);
                     }));
                 }
             });
         }
 
+        if (this.workspaceEdit) {
+            const workspaceEditAction: WorkspaceEditAction = {
+                kind: WorkspaceEditAction.KIND,
+                workspaceEdit: this.workspaceEdit
+            }
+
+            server.dispatch(workspaceEditAction);
+        }
+
         return Promise.resolve();
     }
 
-    private createWorkspaceEditDeleteAction(sourceUri: URI, range: Range): WorkspaceEditAction {
-        const workspaceEdit: WorkspaceEdit = {
-            changes: {
-                [sourceUri.toString()]: [
-                    {
-                        range: range,
-                        newText: ''
-                    }
-                ]
+    private createWorkspaceEditDeleteAction(sourceUri: URI, range: Range) {
+        if (!this.workspaceEdit) {
+            this.workspaceEdit = {
+                changes: {
+                    [sourceUri.toString()]: []
+                }
             }
         }
 
-        const workspaceEditAction: WorkspaceEditAction = {
-            kind: WorkspaceEditAction.KIND,
-            workspaceEdit: workspaceEdit
-        }
+        const textEdit = {
+            range: range,
+            newText: ''
+        };
 
-        return workspaceEditAction;
+        if (this.workspaceEdit.changes)
+            this.workspaceEdit.changes[sourceUri.toString()].push(textEdit);
     }
 }
