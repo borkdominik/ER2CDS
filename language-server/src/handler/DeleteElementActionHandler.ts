@@ -7,7 +7,7 @@ import { ER2CDS } from '../generated/ast.js';
 import { Range } from 'vscode-languageserver'
 import { WorkspaceEdit } from 'vscode-languageserver-protocol';
 import { WorkspaceEditAction } from 'sprotty-vscode-protocol/lib/lsp/editing';
-import { EDGE, Edge, NODE_ENTITY, NODE_RELATIONSHIP } from '../model.js';
+import { COMP_ATTRIBUTES_ROW, EDGE, Edge, NODE_ENTITY, NODE_RELATIONSHIP } from '../model.js';
 
 
 export class DeleteElementActionHandler {
@@ -59,6 +59,17 @@ export class DeleteElementActionHandler {
                                 server.dispatch(this.createWorkspaceEditDeleteAction(sourceUri, r.second.$cstNode?.range));
                         }
                     });
+                }
+
+                if (element?.type === COMP_ATTRIBUTES_ROW) {
+                    const split = element.id.split('.');
+                    const entityId = split[0];
+                    const attributeId = split[1];
+
+                    model.entities.filter(e => e.name === entityId).map(e => e.attributes.forEach(a => {
+                        if (a.name === attributeId && a.$cstNode?.range)
+                            server.dispatch(this.createWorkspaceEditDeleteAction(sourceUri, a.$cstNode?.range));
+                    }));
                 }
             });
         }

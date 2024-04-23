@@ -41,7 +41,7 @@ export class CreateAttributeActionHandler {
                 [sourceUri.toString()]: [
                     {
                         range: Range.create(Position.create(lastChild.range.start.line, 0), Position.create(lastChild.range.end.line, newText.length + 8)),
-                        newText: '\t' + newText + ': string'
+                        newText: '\t' + newText + ':' + ' ' + 'STRING'
                     },
                     {
                         range: Range.create(Position.create(lastChild.range.start.line + 1, lastChild.range.start.character), Position.create(lastChild.range.end.line + 1, lastChild.range.end.character)),
