@@ -13,7 +13,7 @@ import { Action, SelectAction } from 'sprotty-protocol';
 import { EditorPanelChild } from '../editor-panel/editor-panel';
 import { CreateAttributeAction, DeleteElementAction, UpdateElementPropertyAction } from '../actions';
 import { DiagramEditorService } from '../services/diagram-editor-service';
-import { DATATYPES, EntityNode } from '../model';
+import { DATATYPES, EntityNode, RelationshipNode } from '../model';
 
 export interface Cache {
     [elementId: string]: {
@@ -155,6 +155,23 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             propertyPaletteItems.push(entityAttributesPaletteItems);
         }
 
+        // Relationship
+        if (element instanceof RelationshipNode) {
+            const relationship = element as RelationshipNode;
+
+            if (relationship.children.length > 0) {
+                const relationshipNamePaletteItem = <ElementTextPropertyItem>{
+                    type: ElementTextPropertyItem.TYPE,
+                    elementId: relationship.id,
+                    propertyId: relationship.children[0].id,
+                    label: 'Name',
+                    text: (relationship.children[0] as SLabelImpl).text
+                }
+
+                propertyPaletteItems.push(relationshipNamePaletteItem);
+            }
+        }
+
         // Attributes
         if (element instanceof SCompartmentImpl && element.parent && (element.parent as SCompartmentImpl).parent && (element.parent as SCompartmentImpl).parent instanceof EntityNode) {
             const entity = (element.parent as SCompartmentImpl).parent as EntityNode;
@@ -235,7 +252,6 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             breadcrumbs.classList.add('property-palette-breadcrumbs');
 
             const lastPalettes = this.lastPalettes;
-            console.log(this.lastPalettes);
 
             if (lastPalettes.length > 0) {
                 const backButton = document.createElement('button');
@@ -275,20 +291,16 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
                         onBlur: async (item, input) => {
                             await this.update(item.elementId, item.propertyId, input.value);
 
-                            if (item.elementId + '.header-comp' === item.propertyId) {
+                            if (item.label === 'Name') {
                                 this.activeElementId = input.value;
-                            } else {
-                                this.activeElementId = item.elementId;
                                 this.lastPalettes = [];
                             }
                         },
                         onEnter: async (item, input) => {
                             await this.update(item.elementId, item.propertyId, input.value);
 
-                            if (item.elementId + '.header-comp' === item.propertyId) {
+                            if (item.label === 'Name') {
                                 this.activeElementId = input.value;
-                            } else {
-                                this.activeElementId = item.elementId;
                                 this.lastPalettes = [];
                             }
                         }
