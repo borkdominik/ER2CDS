@@ -13,3 +13,15 @@
     font-style: italic;
     fill: var(--vscode-button-foreground)
 }
+
+.multivalued {
+    fill: var(--vscode-button-foreground)
+}
+
+.optional {
+    fill: var(--vscode-button-foreground)
+}
+
+.none {
+    fill: var(--vscode-button-foreground)
+}

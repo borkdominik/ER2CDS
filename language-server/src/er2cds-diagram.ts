@@ -4,7 +4,7 @@ import { SCompartment, SLabel } from 'sprotty-protocol';
 import { Attribute, ER2CDS, Entity, Relationship, RelationshipEntity } from './generated/ast.js';
 import { ER2CDSServices } from './er2cds-module.js';
 import { AstNode } from 'langium';
-import { COMP_ATTRIBUTES, COMP_ATTRIBUTES_ROW, COMP_ENTITY_HEADER, EDGE, EDGE_INHERITANCE, ER2CDSRoot, Edge, EntityNode, GRAPH, LABEL_BOTTOM, LABEL_BOTTOM_LEFT, LABEL_BOTTOM_RIGHT, LABEL_DERIVED, LABEL_ENTITY, LABEL_KEY, LABEL_PARTIAL_KEY, LABEL_RELATIONSHIP, LABEL_SEPARATOR, LABEL_TEXT, LABEL_TOP, LABEL_TOP_LEFT, LABEL_TOP_RIGHT, NODE_ENTITY, NODE_RELATIONSHIP, RelationshipNode } from './model.js';
+import { COMP_ATTRIBUTES, COMP_ATTRIBUTES_ROW, COMP_ENTITY_HEADER, EDGE, EDGE_INHERITANCE, ER2CDSRoot, Edge, EntityNode, GRAPH, LABEL_BOTTOM, LABEL_BOTTOM_LEFT, LABEL_BOTTOM_RIGHT, LABEL_DERIVED, LABEL_ENTITY, LABEL_KEY, LABEL_MULTIVALUED, LABEL_NONE, LABEL_OPTIONAL, LABEL_PARTIAL_KEY, LABEL_RELATIONSHIP, LABEL_SEPARATOR, LABEL_TEXT, LABEL_TOP, LABEL_TOP_LEFT, LABEL_TOP_RIGHT, NODE_ENTITY, NODE_RELATIONSHIP, RelationshipNode } from './model.js';
 import { LayoutOptions } from 'elkjs';
 
 export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
@@ -244,6 +244,15 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
 
             case 'derived':
                 return LABEL_DERIVED;
+
+            case 'multivalued':
+                return LABEL_MULTIVALUED;
+
+            case 'optional':
+                return LABEL_OPTIONAL;
+
+            case 'none':
+                return LABEL_NONE;
 
             default:
                 return LABEL_TEXT;

@@ -13,7 +13,7 @@ import { Action, SelectAction } from 'sprotty-protocol';
 import { EditorPanelChild } from '../editor-panel/editor-panel';
 import { CreateAttributeAction, DeleteElementAction, UpdateElementPropertyAction } from '../actions';
 import { DiagramEditorService } from '../services/diagram-editor-service';
-import { DATATYPES, EntityNode, RelationshipNode } from '../model';
+import { ATTRIBUTE_TYPES, DATATYPES, EntityNode, RelationshipNode } from '../model';
 
 export interface Cache {
     [elementId: string]: {
@@ -198,16 +198,18 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
 
                 propertyPaletteItems.push(entityAttributeDatatypePaletteItem);
 
-                // const entityAttributeTypePaletteItem = <ElementChoicePropertyItem>{
-                //     type: ElementChoicePropertyItem.TYPE,
-                //     elementId: element.id,
-                //     propertyId: element.children[3].id,
-                //     label: 'Type',
-                //     choice: (element.children[3] as SLabelImpl).text,
-                //     choices: ATTRIBUTE_TYPES
-                // }
+                console.log((element.children[0] as SLabelImpl).type);
+                const type = (element.children[0] as SLabelImpl).type.split(':')[1];
+                const entityAttributeTypePaletteItem = <ElementChoicePropertyItem>{
+                    type: ElementChoicePropertyItem.TYPE,
+                    elementId: element.id,
+                    propertyId: 'type',
+                    label: 'Type',
+                    choice: type,
+                    choices: ATTRIBUTE_TYPES
+                }
 
-                // propertyPaletteItems.push(entityAttributeTypePaletteItem);
+                propertyPaletteItems.push(entityAttributeTypePaletteItem);
             }
         }
 
@@ -291,8 +293,15 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
                         onBlur: async (item, input) => {
                             await this.update(item.elementId, item.propertyId, input.value);
 
+                            console.log(item);
+
                             if (item.label === 'Name') {
-                                this.activeElementId = input.value;
+                                if (item.elementId === item.text) {
+                                    this.activeElementId = input.value;
+                                } else {
+                                    this.activeElementId = item.elementId;
+                                }
+
                                 this.lastPalettes = [];
                             }
                         },
@@ -300,7 +309,12 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
                             await this.update(item.elementId, item.propertyId, input.value);
 
                             if (item.label === 'Name') {
-                                this.activeElementId = input.value;
+                                if (item.elementId === item.text) {
+                                    this.activeElementId = input.value;
+                                } else {
+                                    this.activeElementId = item.elementId;
+                                }
+
                                 this.lastPalettes = [];
                             }
                         }

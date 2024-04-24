@@ -3,7 +3,7 @@ import {
     configureModelElement, ConsoleLogger, editLabelFeature, expandFeature, HtmlRootImpl, HtmlRootView, loadDefaultModules, LogLevel, overrideViewerOptions, PreRenderedElementImpl,
     PreRenderedView, SCompartmentImpl, SCompartmentView, SLabelImpl, SLabelView, SModelRootImpl, SRoutingHandleImpl, SRoutingHandleView, TYPES
 } from 'sprotty';
-import { COMP_ATTRIBUTES, COMP_ATTRIBUTES_ROW, COMP_ENTITY_HEADER, CardinalityLabel, EDGE, EDGE_INHERITANCE, EDGE_PARTIAL, ER2CDSRoot, Edge, EdgeInheritance, EntityNode, GRAPH, LABEL_BOTTOM, LABEL_BOTTOM_LEFT, LABEL_BOTTOM_RIGHT, LABEL_DERIVED, LABEL_ENTITY, LABEL_KEY, LABEL_PARTIAL_KEY, LABEL_RELATIONSHIP, LABEL_TEXT, LABEL_TOP, LABEL_TOP_LEFT, LABEL_TOP_RIGHT, LABEL_SEPARATOR, LeftCardinalityLabel, LeftRoleLabel, NODE_ENTITY, NODE_RELATIONSHIP, RelationshipNode, RightCardinalityLabel, RightRoleLabel, RoleLabel } from './model';
+import { COMP_ATTRIBUTES, COMP_ATTRIBUTES_ROW, COMP_ENTITY_HEADER, CardinalityLabel, EDGE, EDGE_INHERITANCE, EDGE_PARTIAL, ER2CDSRoot, Edge, EdgeInheritance, EntityNode, GRAPH, LABEL_BOTTOM, LABEL_BOTTOM_LEFT, LABEL_BOTTOM_RIGHT, LABEL_DERIVED, LABEL_ENTITY, LABEL_KEY, LABEL_PARTIAL_KEY, LABEL_RELATIONSHIP, LABEL_TEXT, LABEL_TOP, LABEL_TOP_LEFT, LABEL_TOP_RIGHT, LABEL_SEPARATOR, LeftCardinalityLabel, LeftRoleLabel, NODE_ENTITY, NODE_RELATIONSHIP, RelationshipNode, RightCardinalityLabel, RightRoleLabel, RoleLabel, LABEL_MULTIVALUED, LABEL_NONE, LABEL_OPTIONAL } from './model';
 import { ER2CDSRootView, EdgeInheritanceView, EdgeView, EntityNodeView, RelationshipNodeView } from './views';
 
 import 'sprotty/css/sprotty.css';
@@ -61,6 +61,10 @@ export default (containerId: string) => {
         configureModelElement(context, LABEL_KEY, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
         configureModelElement(context, LABEL_PARTIAL_KEY, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
         configureModelElement(context, LABEL_DERIVED, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
+        configureModelElement(context, LABEL_MULTIVALUED, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
+        configureModelElement(context, LABEL_OPTIONAL, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
+        configureModelElement(context, LABEL_NONE, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
+
         configureModelElement(context, LABEL_TEXT, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
         configureModelElement(context, LABEL_SEPARATOR, SLabelImpl, SLabelView);
 

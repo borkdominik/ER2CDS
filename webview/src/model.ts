@@ -23,6 +23,10 @@ export const LABEL_BOTTOM_RIGHT = 'label:bottom-right';
 export const LABEL_KEY = 'label:key';
 export const LABEL_PARTIAL_KEY = 'label:partial-key';
 export const LABEL_DERIVED = 'label:derived';
+export const LABEL_MULTIVALUED = 'label:multivalued';
+export const LABEL_OPTIONAL = 'label:optional';
+export const LABEL_NONE = 'label:none';
+
 export const LABEL_TEXT = 'label:text';
 export const LABEL_SEPARATOR = 'label:separator';
 
