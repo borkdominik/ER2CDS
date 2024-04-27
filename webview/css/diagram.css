@@ -124,3 +124,9 @@
 .sprotty-edge-arrow {
     fill: var(--vscode-editorActiveLineNumber-foreground);
 }
+
+.border-weak {
+    stroke: white;
+    stroke-width: 1;
+    fill: transparent;
+}

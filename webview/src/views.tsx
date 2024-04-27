@@ -67,7 +67,7 @@ export class RelationshipNodeView extends DiamondNodeView {
         if (node.weak) {
             return (
                 <g>
-                    <polygon class-border-weak points={pointsWeak} />
+                    <polygon class-border-weak={true} points={pointsWeak} />
                     <polygon class-sprotty-node={node instanceof SNodeImpl} class-sprotty-port={node instanceof SPortImpl} class-mouseover={node.hoverFeedback} class-selected={node.selected} points={points} />
                     {context.renderChildren(node)}
                 </g>

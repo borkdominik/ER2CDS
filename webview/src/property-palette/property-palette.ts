@@ -131,17 +131,23 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         if (element instanceof EntityNode) {
             const entity = element as EntityNode;
 
-            if (entity.children.length > 0) {
-                const entityNamePaletteItem = <ElementTextPropertyItem>{
-                    type: ElementTextPropertyItem.TYPE,
-                    elementId: entity.id,
-                    propertyId: entity.children[0].id,
-                    label: 'Name',
-                    text: (entity.children[0].children[0] as SLabelImpl).text
-                }
-
-                propertyPaletteItems.push(entityNamePaletteItem);
+            const entityNamePaletteItem = <ElementTextPropertyItem>{
+                type: ElementTextPropertyItem.TYPE,
+                elementId: entity.id,
+                propertyId: entity.children[0].id,
+                label: 'Name',
+                text: (entity.children[0].children[0] as SLabelImpl).text
             }
+            propertyPaletteItems.push(entityNamePaletteItem);
+
+            const entityWeakPaletteItem = <ElementBoolPropertyItem>{
+                type: ElementBoolPropertyItem.TYPE,
+                elementId: entity.id,
+                propertyId: 'weak',
+                label: 'Weak Entity',
+                value: entity.weak
+            }
+            propertyPaletteItems.push(entityWeakPaletteItem);
 
             const entityAttributesPaletteItems = <ElementReferencePropertyItem>{
                 type: ElementReferencePropertyItem.TYPE,
@@ -151,7 +157,6 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
                 references: entity.children[1].children.map(c => ({ elementId: c.id, label: c.id, isReadonly: false }) as ElementReferencePropertyItem.Reference),
                 creates: [({ label: 'Create Attribute', action: CreateAttributeAction.create(entity.id) }) as ElementReferencePropertyItem.CreateReference]
             }
-
             propertyPaletteItems.push(entityAttributesPaletteItems);
         }
 
@@ -159,17 +164,23 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         if (element instanceof RelationshipNode) {
             const relationship = element as RelationshipNode;
 
-            if (relationship.children.length > 0) {
-                const relationshipNamePaletteItem = <ElementTextPropertyItem>{
-                    type: ElementTextPropertyItem.TYPE,
-                    elementId: relationship.id,
-                    propertyId: relationship.children[0].id,
-                    label: 'Name',
-                    text: (relationship.children[0] as SLabelImpl).text
-                }
-
-                propertyPaletteItems.push(relationshipNamePaletteItem);
+            const relationshipNamePaletteItem = <ElementTextPropertyItem>{
+                type: ElementTextPropertyItem.TYPE,
+                elementId: relationship.id,
+                propertyId: relationship.children[0].id,
+                label: 'Name',
+                text: (relationship.children[0] as SLabelImpl).text
             }
+            propertyPaletteItems.push(relationshipNamePaletteItem);
+
+            const relationshipWeakPaletteItem = <ElementBoolPropertyItem>{
+                type: ElementBoolPropertyItem.TYPE,
+                elementId: relationship.id,
+                propertyId: 'weak',
+                label: 'Weak Relationship',
+                value: relationship.weak
+            }
+            propertyPaletteItems.push(relationshipWeakPaletteItem);
         }
 
         // Attributes
@@ -184,7 +195,6 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
                     label: 'Name',
                     text: (element.children[0] as SLabelImpl).text
                 }
-
                 propertyPaletteItems.push(entityAttributePaletteItem);
 
                 const entityAttributeDatatypePaletteItem = <ElementChoicePropertyItem>{
@@ -195,10 +205,8 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
                     choice: (element.children[2] as SLabelImpl).text,
                     choices: DATATYPES
                 }
-
                 propertyPaletteItems.push(entityAttributeDatatypePaletteItem);
 
-                console.log((element.children[0] as SLabelImpl).type);
                 const type = (element.children[0] as SLabelImpl).type.split(':')[1];
                 const entityAttributeTypePaletteItem = <ElementChoicePropertyItem>{
                     type: ElementChoicePropertyItem.TYPE,
@@ -208,7 +216,6 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
                     choice: type,
                     choices: ATTRIBUTE_TYPES
                 }
-
                 propertyPaletteItems.push(entityAttributeTypePaletteItem);
             }
         }
