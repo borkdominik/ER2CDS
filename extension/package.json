@@ -85,6 +85,11 @@
         "command": "er2cds.diagram.export",
         "title": "Export diagram to SVG",
         "category": "ER2CDS Diagram"
+      },
+      {
+        "command": "er2cds.generate.cds.proxy",
+        "title": "Generate CDS",
+        "category": "ER2CDS Diagram"
       }
     ],
     "menus": {
@@ -108,6 +113,10 @@
         {
           "command": "er2cds.diagram.export",
           "when": "er2cds-diagram-focused"
+        },
+        {
+          "command": "er2cds.generate.cds.proxy",
+          "when": "editorLangId == 'er2cds'"
         }
       ],
       "editor/context": [

@@ -5,6 +5,7 @@ import { registerDefaultCommands, registerTextEditorSync } from 'sprotty-vscode'
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node';
 import { ER2CDSWebViewPanelManager } from './web-view-panel-manager';
 import { Messenger } from 'vscode-messenger';
+import { generateCDSHandler } from './commands';
 
 let languageClient: LanguageClient;
 
@@ -31,6 +32,8 @@ export function activate(context: vscode.ExtensionContext) {
 
     registerDefaultCommands(webviewPanelManager, context, { extensionPrefix: 'er2cds' });
     registerTextEditorSync(webviewPanelManager, context);
+
+    context.subscriptions.push(vscode.commands.registerCommand('er2cds.generate.cds.proxy', generateCDSHandler));
 }
 
 export function createLanguageClient(context: vscode.ExtensionContext): LanguageClient {
