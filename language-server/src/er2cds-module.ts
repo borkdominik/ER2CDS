@@ -1,6 +1,6 @@
-import type { DefaultSharedModuleContext, Module, PartialLangiumServices } from 'langium';
+import type { DefaultSharedModuleContext, ExecuteCommandAcceptor, Module, PartialLangiumServices } from 'langium';
 import type { DiagramOptions } from 'sprotty-protocol';
-import { URI, createDefaultModule, createDefaultSharedModule, inject } from 'langium';
+import { AbstractExecuteCommandHandler, URI, createDefaultModule, createDefaultSharedModule, inject } from 'langium';
 import { DefaultDiagramServerManager, DiagramActionNotification, LangiumSprottyServices, LangiumSprottySharedServices, SprottyDiagramServices, SprottySharedServices } from 'langium-sprotty';
 import { DefaultElementFilter, ElkFactory, ElkLayoutEngine, IElementFilter, ILayoutConfigurator } from 'sprotty-elk/lib/elk-layout.js';
 import { ER2CDSGeneratedModule, ER2CDSGeneratedSharedModule } from './generated/module.js';
@@ -8,6 +8,7 @@ import { ER2CDSValidator, registerValidationChecks } from './er2cds-validator.js
 import { ER2CDSDiagramGenerator } from './er2cds-diagram.js';
 import { ER2CDSLayoutConfigurator } from './er2cds-layout.js';
 import { ER2CDSDiagramServer } from './er2cds-diagram-server.js';
+import { generateCDS } from './generator/generator.js';
 
 const ElkConstructor = require('elkjs/lib/elk.bundled.js').default;
 
@@ -52,6 +53,17 @@ export const ER2CDSModule: Module<ER2CDSServices, PartialLangiumServices & Sprot
 };
 
 /**
+ * Handles VSC extension commands
+ */
+class ER2CDSCommandHandler extends AbstractExecuteCommandHandler {
+    registerCommands(acceptor: ExecuteCommandAcceptor): void {
+        acceptor('er2cds.generate.cds', args => {
+            generateCDS(args[0]);
+        });
+    }
+}
+
+/**
  * Create the full set of services required by Langium.
  *
  * First inject the shared services by merging two modules:
@@ -82,6 +94,7 @@ export function createER2CDSServices(context: DefaultSharedModuleContext): {
         ER2CDSModule
     );
 
+    shared.lsp.ExecuteCommandHandler = new ER2CDSCommandHandler();
     shared.ServiceRegistry.register(ER2CDS);
     registerValidationChecks(ER2CDS);
 

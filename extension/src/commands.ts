@@ -1,6 +1,6 @@
-import { window, Uri, commands } from "vscode";
+import { window, Uri, commands } from 'vscode';
 
-export const generateCdsCommand = "er2cds.generate.cds";
+export const generateCdsCommand = 'er2cds.generate.cds';
 
 export const generateCDSHandler = async () => {
     sendToServer(generateCdsCommand);
@@ -13,19 +13,16 @@ export const sendToServer = async (command: string, fileUri?: Uri) => {
         if (activeEditor?.document?.languageId === 'er2cds') {
             fileUri = window.activeTextEditor?.document.uri;
         } else {
-            window.showErrorMessage("Error! Invalid file");
+            window.showErrorMessage('Error! Invalid file');
         }
     }
 
-    if (fileUri?.toString) {
-        const response: string | undefined = await commands.executeCommand(command, fileUri.toString());
-
-        if (response) {
-            if (response.startsWith('Error')) {
-                window.showErrorMessage(response);
-            } else {
-                window.showInformationMessage(response);
-            }
+    const response: string | undefined = await commands.executeCommand(command, fileUri.toString());
+    if (response) {
+        if (response.startsWith('Error')) {
+            window.showErrorMessage(response);
+        } else {
+            window.showInformationMessage(response);
         }
     }
 };
