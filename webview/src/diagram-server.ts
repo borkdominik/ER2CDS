@@ -3,6 +3,7 @@ import { ActionHandlerRegistry } from 'sprotty';
 import { Action, ApplyLabelEditAction } from 'sprotty-protocol';
 import { VscodeLspEditDiagramServer } from 'sprotty-vscode-webview/lib/lsp/editing';
 import { CreateElementAction, DeleteElementAction, CreateEdgeAction, CreateAttributeAction, UpdateElementPropertyAction } from './actions';
+import { RequestAutoCompleteAction } from './auto-complete/auto-complete-actions';
 
 @injectable()
 export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
@@ -15,10 +16,10 @@ export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
         registry.register(CreateAttributeAction.KIND, this);
 
         registry.register(UpdateElementPropertyAction.KIND, this);
-
         registry.register(DeleteElementAction.KIND, this);
-
         registry.register(ApplyLabelEditAction.KIND, this);
+
+        registry.register(RequestAutoCompleteAction.KIND, this);
     }
 
     public override handleLocally(action: Action): boolean {
@@ -39,6 +40,9 @@ export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
                 return true;
 
             case ApplyLabelEditAction.KIND:
+                return true;
+
+            case RequestAutoCompleteAction.KIND:
                 return true;
 
             default:

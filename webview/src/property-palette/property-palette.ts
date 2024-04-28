@@ -1,5 +1,5 @@
 import { injectable, inject, postConstruct } from 'inversify';
-import { IActionHandler, TYPES, ActionDispatcher, ICommand, SModelRootImpl, ModelIndexImpl, SLabelImpl, SCompartmentImpl, SChildElementImpl } from 'sprotty';
+import { IActionHandler, TYPES, ActionDispatcher, ICommand, SModelRootImpl, ModelIndexImpl, SLabelImpl, SCompartmentImpl, SModelElementImpl } from 'sprotty';
 import { createIcon } from '../tool-palette/tool-palette';
 import { createBoolProperty } from './bool/bool.creator';
 import { ElementBoolPropertyItem } from './bool/bool.model';
@@ -14,6 +14,10 @@ import { EditorPanelChild } from '../editor-panel/editor-panel';
 import { CreateAttributeAction, DeleteElementAction, UpdateElementPropertyAction } from '../actions';
 import { DiagramEditorService } from '../services/diagram-editor-service';
 import { ATTRIBUTE_TYPES, DATATYPES, EntityNode, RelationshipNode } from '../model';
+import { AutoCompleteWidget } from '../auto-complete/auto-complete-widget';
+import { ElementAutoCompletePropertyItem } from './auto-complete/auto-complete.model';
+import { createAutoCompleteProperty } from './auto-complete/auto-complete.creator';
+import { AutoCompleteValue, RequestAutoCompleteAction } from '../auto-complete/auto-complete-actions';
 
 export interface Cache {
     [elementId: string]: {
@@ -30,7 +34,7 @@ export interface PropertyPaletteModel {
 export interface ElementPropertyItem {
     elementId: string;
     propertyId: string;
-    type: 'TEXT' | 'BOOL' | 'CHOICE' | 'REFERENCE';
+    type: 'TEXT' | 'BOOL' | 'CHOICE' | 'REFERENCE' | 'AUTO_COMPLETE';
 }
 
 export interface CreatedElementProperty {
@@ -56,6 +60,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
     protected containerElement: HTMLElement;
     protected header: HTMLElement;
     protected content: HTMLElement;
+    protected root: SModelRootImpl;
 
     @inject(TYPES.IActionDispatcher)
     protected readonly actionDispatcher: ActionDispatcher;
@@ -76,6 +81,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
     }
 
     modelRootChanged(root: Readonly<SModelRootImpl>): void {
+        this.root = root;
         this.refresh();
         this.enable();
     }
@@ -129,95 +135,17 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
 
         // Entity
         if (element instanceof EntityNode) {
-            const entity = element as EntityNode;
-
-            const entityNamePaletteItem = <ElementTextPropertyItem>{
-                type: ElementTextPropertyItem.TYPE,
-                elementId: entity.id,
-                propertyId: entity.children[0].id,
-                label: 'Name',
-                text: (entity.children[0].children[0] as SLabelImpl).text
-            }
-            propertyPaletteItems.push(entityNamePaletteItem);
-
-            const entityWeakPaletteItem = <ElementBoolPropertyItem>{
-                type: ElementBoolPropertyItem.TYPE,
-                elementId: entity.id,
-                propertyId: 'weak',
-                label: 'Weak Entity',
-                value: entity.weak
-            }
-            propertyPaletteItems.push(entityWeakPaletteItem);
-
-            const entityAttributesPaletteItems = <ElementReferencePropertyItem>{
-                type: ElementReferencePropertyItem.TYPE,
-                elementId: entity.id,
-                isOrderable: false,
-                label: 'Attributes',
-                references: entity.children[1].children.map(c => ({ elementId: c.id, label: c.id, isReadonly: false }) as ElementReferencePropertyItem.Reference),
-                creates: [({ label: 'Create Attribute', action: CreateAttributeAction.create(entity.id) }) as ElementReferencePropertyItem.CreateReference]
-            }
-            propertyPaletteItems.push(entityAttributesPaletteItems);
+            this.initializeEntityPropertyPaletteItems(element, propertyPaletteItems);
         }
 
         // Relationship
         if (element instanceof RelationshipNode) {
-            const relationship = element as RelationshipNode;
-
-            const relationshipNamePaletteItem = <ElementTextPropertyItem>{
-                type: ElementTextPropertyItem.TYPE,
-                elementId: relationship.id,
-                propertyId: relationship.children[0].id,
-                label: 'Name',
-                text: (relationship.children[0] as SLabelImpl).text
-            }
-            propertyPaletteItems.push(relationshipNamePaletteItem);
-
-            const relationshipWeakPaletteItem = <ElementBoolPropertyItem>{
-                type: ElementBoolPropertyItem.TYPE,
-                elementId: relationship.id,
-                propertyId: 'weak',
-                label: 'Weak Relationship',
-                value: relationship.weak
-            }
-            propertyPaletteItems.push(relationshipWeakPaletteItem);
+            this.initializeRelationshipPropertyPaletteItems(element, propertyPaletteItems);
         }
 
         // Attributes
         if (element instanceof SCompartmentImpl && element.parent && (element.parent as SCompartmentImpl).parent && (element.parent as SCompartmentImpl).parent instanceof EntityNode) {
-            const entity = (element.parent as SCompartmentImpl).parent as EntityNode;
-
-            if (element.children.length > 1) {
-                const entityAttributePaletteItem = <ElementTextPropertyItem>{
-                    type: ElementTextPropertyItem.TYPE,
-                    elementId: entity.id,
-                    propertyId: element.children[0].id,
-                    label: 'Name',
-                    text: (element.children[0] as SLabelImpl).text
-                }
-                propertyPaletteItems.push(entityAttributePaletteItem);
-
-                const entityAttributeDatatypePaletteItem = <ElementChoicePropertyItem>{
-                    type: ElementChoicePropertyItem.TYPE,
-                    elementId: entity.id,
-                    propertyId: element.children[2].id,
-                    label: 'Datatype',
-                    choice: (element.children[2] as SLabelImpl).text,
-                    choices: DATATYPES
-                }
-                propertyPaletteItems.push(entityAttributeDatatypePaletteItem);
-
-                const type = (element.children[0] as SLabelImpl).type.split(':')[1];
-                const entityAttributeTypePaletteItem = <ElementChoicePropertyItem>{
-                    type: ElementChoicePropertyItem.TYPE,
-                    elementId: element.id,
-                    propertyId: 'type',
-                    label: 'Type',
-                    choice: type,
-                    choices: ATTRIBUTE_TYPES
-                }
-                propertyPaletteItems.push(entityAttributeTypePaletteItem);
-            }
+            this.initializeAttributesPropertyPaletteItems(element, propertyPaletteItems);
         }
 
         this.palette = <PropertyPaletteModel>{
@@ -300,8 +228,6 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
                         onBlur: async (item, input) => {
                             await this.update(item.elementId, item.propertyId, input.value);
 
-                            console.log(item);
-
                             if (item.label === 'Name') {
                                 if (item.elementId === item.text) {
                                     this.activeElementId = input.value;
@@ -326,6 +252,9 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
                             }
                         }
                     });
+                } else if (ElementAutoCompletePropertyItem.is(propertyItem)) {
+                    created = createAutoCompleteProperty(propertyItem, this.root);
+
                 } else if (ElementBoolPropertyItem.is(propertyItem)) {
                     created = createBoolProperty(propertyItem, {
                         onChange: (item, input) => {
@@ -404,6 +333,117 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
 
     protected enable(): void {
         this.uiElements.forEach(element => element.enable());
+    }
+
+    protected initializeEntityPropertyPaletteItems(element: SModelElementImpl, propertyPaletteItems: ElementPropertyItem[]) {
+        const entity = element as EntityNode;
+
+        const nameAutoComplete = new AutoCompleteWidget(
+            { provideSuggestions: input => this.retrieveSuggestions(input) },
+            { executeFromSuggestion: input => this.executeFromSuggestion(input) },
+            { executeFromTextOnlyInput: input => this.executeFromTextOnlyInput(input) }
+        );
+
+        const entityNamePaletteItem = <ElementAutoCompletePropertyItem>{
+            type: ElementAutoCompletePropertyItem.TYPE,
+            elementId: entity.id,
+            propertyId: entity.children[0].id,
+            label: 'Name',
+            autoComplete: nameAutoComplete
+        };
+        propertyPaletteItems.push(entityNamePaletteItem);
+
+        const entityWeakPaletteItem = <ElementBoolPropertyItem>{
+            type: ElementBoolPropertyItem.TYPE,
+            elementId: entity.id,
+            propertyId: 'weak',
+            label: 'Weak Entity',
+            value: entity.weak
+        }
+        propertyPaletteItems.push(entityWeakPaletteItem);
+
+        const entityAttributesPaletteItems = <ElementReferencePropertyItem>{
+            type: ElementReferencePropertyItem.TYPE,
+            elementId: entity.id,
+            isOrderable: false,
+            label: 'Attributes',
+            references: entity.children[1].children.map(c => ({ elementId: c.id, label: c.id, isReadonly: false }) as ElementReferencePropertyItem.Reference),
+            creates: [({ label: 'Create Attribute', action: CreateAttributeAction.create(entity.id) }) as ElementReferencePropertyItem.CreateReference]
+        }
+        propertyPaletteItems.push(entityAttributesPaletteItems);
+    }
+
+    protected initializeRelationshipPropertyPaletteItems(element: SModelElementImpl, propertyPaletteItems: ElementPropertyItem[]) {
+        const relationship = element as RelationshipNode;
+
+        const relationshipNamePaletteItem = <ElementTextPropertyItem>{
+            type: ElementTextPropertyItem.TYPE,
+            elementId: relationship.id,
+            propertyId: relationship.children[0].id,
+            label: 'Name',
+            text: (relationship.children[0] as SLabelImpl).text
+        }
+        propertyPaletteItems.push(relationshipNamePaletteItem);
+
+        const relationshipWeakPaletteItem = <ElementBoolPropertyItem>{
+            type: ElementBoolPropertyItem.TYPE,
+            elementId: relationship.id,
+            propertyId: 'weak',
+            label: 'Weak Relationship',
+            value: relationship.weak
+        }
+        propertyPaletteItems.push(relationshipWeakPaletteItem);
+    }
+
+    protected initializeAttributesPropertyPaletteItems(element: SCompartmentImpl, propertyPaletteItems: ElementPropertyItem[]) {
+        const entity = (element.parent as SCompartmentImpl).parent as EntityNode;
+
+        if (element.children.length > 1) {
+            const entityAttributePaletteItem = <ElementTextPropertyItem>{
+                type: ElementTextPropertyItem.TYPE,
+                elementId: entity.id,
+                propertyId: element.children[0].id,
+                label: 'Name',
+                text: (element.children[0] as SLabelImpl).text
+            }
+            propertyPaletteItems.push(entityAttributePaletteItem);
+
+            const entityAttributeDatatypePaletteItem = <ElementChoicePropertyItem>{
+                type: ElementChoicePropertyItem.TYPE,
+                elementId: entity.id,
+                propertyId: element.children[2].id,
+                label: 'Datatype',
+                choice: (element.children[2] as SLabelImpl).text,
+                choices: DATATYPES
+            }
+            propertyPaletteItems.push(entityAttributeDatatypePaletteItem);
+
+            const type = (element.children[0] as SLabelImpl).type.split(':')[1];
+            const entityAttributeTypePaletteItem = <ElementChoicePropertyItem>{
+                type: ElementChoicePropertyItem.TYPE,
+                elementId: element.id,
+                propertyId: 'type',
+                label: 'Type',
+                choice: type,
+                choices: ATTRIBUTE_TYPES
+            }
+            propertyPaletteItems.push(entityAttributeTypePaletteItem);
+        }
+    }
+
+    protected async retrieveSuggestions(input: string): Promise<AutoCompleteValue[]> {
+        console.log("RETRIEVE: ", input);
+        const response = await this.actionDispatcher.request(RequestAutoCompleteAction.create(input));
+        console.log(response);
+        return response.values;
+    }
+
+    protected executeFromSuggestion(input: AutoCompleteValue): void {
+        console.log("EXECUTE: ", input);
+    }
+
+    protected executeFromTextOnlyInput(input: string): void {
+        console.log("EXECUTE TEXT SUBMIT: ", input);
     }
 }
 
