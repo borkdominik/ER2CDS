@@ -34,6 +34,32 @@ export function activate(context: vscode.ExtensionContext) {
     registerTextEditorSync(webviewPanelManager, context);
 
     context.subscriptions.push(vscode.commands.registerCommand('er2cds.generate.cds.proxy', generateCDSHandler));
+
+    context.subscriptions.push(vscode.commands.registerCommand('er2cds.add.system.proxy', async () => {
+        const sapSystemUrl = await vscode.window.showInputBox({ title: 'SAP System URL' });
+        if (!sapSystemUrl)
+            return;
+
+        await context.secrets.store('sapSystemUrl', sapSystemUrl);
+
+        const sapClient = await vscode.window.showInputBox({ title: 'SAP Client' });
+        if (!sapClient)
+            return;
+
+        await context.secrets.store('sapClient', sapClient);
+
+        const sapUsername = await vscode.window.showInputBox({ title: 'SAP Username' });
+        if (!sapUsername)
+            return;
+
+        await context.secrets.store('sapUsername', sapUsername);
+
+        const sapPassword = await vscode.window.showInputBox({ title: 'SAP Password', password: true });
+        if (!sapPassword)
+            return;
+
+        await context.secrets.store('sapPassword', sapPassword);
+    }));
 }
 
 export function createLanguageClient(context: vscode.ExtensionContext): LanguageClient {

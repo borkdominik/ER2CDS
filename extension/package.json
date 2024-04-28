@@ -90,6 +90,11 @@
         "command": "er2cds.generate.cds.proxy",
         "title": "Generate CDS",
         "category": "ER2CDS Diagram"
+      },
+      {
+        "command": "er2cds.add.system.proxy",
+        "title": "Add SAP System",
+        "category": "ER2CDS Diagram"
       }
     ],
     "menus": {
@@ -117,6 +122,11 @@
         {
           "command": "er2cds.generate.cds.proxy",
           "when": "editorLangId == 'er2cds'"
+        },
+        {
+          "command": "er2cds.add.system.proxy",
+          "title": "Add SAP System",
+          "category": "ER2CDS Diagram"
         }
       ],
       "editor/context": [
