@@ -393,14 +393,21 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         const entity = (element.parent as SCompartmentImpl).parent as EntityNode;
 
         if (element.children.length > 1) {
-            const entityAttributePaletteItem = <ElementTextPropertyItem>{
-                type: ElementTextPropertyItem.TYPE,
+            const nameAutoComplete = new AutoCompleteWidget(
+                { provideValues: input => this.retrieveSuggestionsAttribute(entity.id, element.children[0].id, input) },
+                { executeFromValue: input => this.executeFromSuggestionAttribute(entity.id, element.children[0].id, input) },
+                { executeFromTextOnlyInput: input => this.executeFromTextOnlyInputAttribute(entity.id, element.children[0].id, input) }
+            );
+
+            const entityAttributeNamePaletteItem = <ElementAutoCompletePropertyItem>{
+                type: ElementAutoCompletePropertyItem.TYPE,
                 elementId: entity.id,
                 propertyId: element.children[0].id,
                 label: 'Name',
-                text: (element.children[0] as SLabelImpl).text
-            }
-            propertyPaletteItems.push(entityAttributePaletteItem);
+                value: (element.children[0] as SLabelImpl).text,
+                autoComplete: nameAutoComplete
+            };
+            propertyPaletteItems.push(entityAttributeNamePaletteItem);
 
             const entityAttributeDatatypePaletteItem = <ElementChoicePropertyItem>{
                 type: ElementChoicePropertyItem.TYPE,
@@ -447,6 +454,26 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         this.update(elementId, propertyId, input);
 
         this.activeElementId = input;
+        this.lastPalettes = [];
+    }
+
+    protected async retrieveSuggestionsAttribute(elementId: string, propertyId: string, input: string): Promise<AutoCompleteValue[]> {
+        const attributeId = propertyId.substring(0, propertyId.lastIndexOf('.'));
+        const response = await this.actionDispatcher.request(RequestAutoCompleteAction.create(attributeId, input));
+        return response.values;
+    }
+
+    protected executeFromSuggestionAttribute(elementId: string, propertyId: string, input: AutoCompleteValue): void {
+        this.update(elementId, propertyId, input.label);
+
+        this.activeElementId = elementId;
+        this.lastPalettes = [];
+    }
+
+    protected executeFromTextOnlyInputAttribute(elementId: string, propertyId: string, input: string): void {
+        this.update(elementId, propertyId, input);
+
+        this.activeElementId = elementId;
         this.lastPalettes = [];
     }
 }
