@@ -9,21 +9,27 @@ import { convertWorkspaceEdit } from 'sprotty-vscode/lib/lsp/lsp-utils';
 import path = require('path');
 
 export class ER2CDSWebViewPanelManager extends LspWebviewPanelManager {
-    constructor(options: LspWebviewPanelManagerOptions) {
+    protected context: vscode.ExtensionContext;
+
+    constructor(context: vscode.ExtensionContext, options: LspWebviewPanelManagerOptions) {
         super(options);
+        this.context = context;
     }
 
     protected override createEndpoint(identifier: SprottyDiagramIdentifier): LspWebviewEndpoint {
         const webviewContainer = this.createWebview(identifier);
         const participant = this.messenger.registerWebviewPanel(webviewContainer);
 
-        const webview = new ER2CDSWebviewEndpoint({
-            languageClient: this.languageClient,
-            webviewContainer,
-            messenger: this.messenger,
-            messageParticipant: participant,
-            identifier,
-        });
+        const webview = new ER2CDSWebviewEndpoint(
+            this.context,
+            {
+                languageClient: this.languageClient,
+                webviewContainer,
+                messenger: this.messenger,
+                messageParticipant: participant,
+                identifier,
+            }
+        );
 
         webview.addActionHandler(WorkspaceEditAction.KIND, this.handleWorkspaceEditAction);
 

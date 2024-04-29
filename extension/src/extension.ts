@@ -21,6 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
     languageClient = createLanguageClient(context);
 
     const webviewPanelManager = new ER2CDSWebViewPanelManager(
+        context,
         {
             extensionUri: context.extensionUri,
             languageClient,
@@ -36,11 +37,11 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand('er2cds.generate.cds.proxy', generateCDSHandler));
 
     context.subscriptions.push(vscode.commands.registerCommand('er2cds.add.system.proxy', async () => {
-        const sapSystemUrl = await vscode.window.showInputBox({ title: 'SAP System URL' });
-        if (!sapSystemUrl)
+        const sapsapUrl = await vscode.window.showInputBox({ title: 'SAP System URL' });
+        if (!sapsapUrl)
             return;
 
-        await context.secrets.store('sapSystemUrl', sapSystemUrl);
+        await context.secrets.store('sapUrl', sapsapUrl);
 
         const sapClient = await vscode.window.showInputBox({ title: 'SAP Client' });
         if (!sapClient)

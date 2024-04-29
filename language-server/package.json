@@ -9,8 +9,10 @@
     "dependencies": {
         "@types/vscode": "^1.87.0",
         "elkjs": "^0.9.1",
+        "https": "^1.0.0",
         "langium": "~2.1.0",
         "langium-sprotty": "^2.1.0",
+        "node-fetch": "^3.3.2",
         "sprotty": "^1.1.1",
         "sprotty-elk": "^1.1.0",
         "sprotty-protocol": "^1.1.0",

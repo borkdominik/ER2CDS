@@ -1,17 +1,27 @@
-import { RequestAction, ResponseAction, generateRequestId } from "sprotty-protocol";
+import { Action, RequestAction, ResponseAction, generateRequestId } from 'sprotty-protocol';
 
 export interface RequestAutoCompleteAction extends RequestAction<SetAutoCompleteAction> {
     kind: typeof RequestAutoCompleteAction.KIND,
     elementId: string;
+    search: string;
+    sapUrl: string;
+    sapClient: string;
+    sapUsername: string;
+    sapPassword: string;
 }
 export namespace RequestAutoCompleteAction {
     export const KIND = 'requestAutoComplete';
 
-    export function create(elementId: string): RequestAutoCompleteAction {
+    export function create(elementId: string, search: string, sapUrl: string, sapClient: string, sapUsername: string, sapPassword: string): RequestAutoCompleteAction {
         return {
             kind: KIND,
             requestId: generateRequestId(),
-            elementId: elementId
+            elementId: elementId,
+            search: search,
+            sapUrl: sapUrl,
+            sapClient: sapClient,
+            sapUsername: sapUsername,
+            sapPassword: sapPassword
         };
     }
 }
@@ -19,7 +29,6 @@ export namespace RequestAutoCompleteAction {
 export interface AutoCompleteValue {
     label: string;
 }
-
 export interface SetAutoCompleteAction extends ResponseAction {
     kind: typeof SetAutoCompleteAction.KIND,
     elementId: string,

@@ -1,15 +1,17 @@
 import { AutocompleteResult, AutocompleteSettings } from 'autocompleter';
-import { AutoCompleteValue } from './auto-complete-actions';
 import { SModelRootImpl, codiconCSSClasses } from 'sprotty';
 import { toArray } from 'lodash';
 import { matchesKeystroke } from 'sprotty/lib/utils/keyboard';
+import { AutoCompleteValue } from '../../actions';
+import configureAutocomplete from 'autocompleter';
 
-export interface SuggestionProvider {
-    provideSuggestions(input: string): Promise<AutoCompleteValue[]>;
+
+export interface ValueProvider {
+    provideValues(input: string): Promise<AutoCompleteValue[]>;
 }
 
-export interface SuggestionSubmitHandler {
-    executeFromSuggestion(input: AutoCompleteValue): void;
+export interface ValueSubmitHandler {
+    executeFromValue(input: AutoCompleteValue): void;
 }
 
 export interface TextSubmitHandler {
@@ -17,12 +19,9 @@ export interface TextSubmitHandler {
 }
 
 export interface AutoCompleteWidgetOptions {
-    visibleSuggestionsChanged?: (suggestions: AutoCompleteValue[]) => void;
-    selectedSuggestionChanged?: (suggestion?: AutoCompleteValue) => void;
+    visibleValuesChanged?: (values: AutoCompleteValue[]) => void;
+    selectedValueChanged?: (value?: AutoCompleteValue) => void;
 }
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const configureAutocomplete: (settings: AutocompleteSettings<AutoCompleteValue>) => AutocompleteResult = require('autocompleter');
 
 export class AutoCompleteWidget {
     protected loadingIndicatorClasses = codiconCSSClasses('loading', false, true, ['loading']);
@@ -34,16 +33,16 @@ export class AutoCompleteWidget {
     protected contextActions?: AutoCompleteValue[];
     protected previousContent?: string;
 
-    readonly autoSuggestionSettings = {
-        noSuggestionsMessage: 'No suggestions available',
-        suggestionsClass: 'command-palette-suggestions',
+    readonly autoValueSettings = {
+        noValuesMessage: 'No values available',
+        valuesClass: 'auto-complete-values',
         debounceWaitMs: 50,
         showOnFocus: true
     };
 
     constructor(
-        public suggestionProvider: SuggestionProvider,
-        public suggestionSubmitHandler: SuggestionSubmitHandler,
+        public valueProvider: ValueProvider,
+        public valueSubmitHandler: ValueSubmitHandler,
         public textSubmitHandler: TextSubmitHandler,
         protected options?: AutoCompleteWidgetOptions
     ) { }
@@ -77,10 +76,10 @@ export class AutoCompleteWidget {
     }
 
     protected handleKeyDown(event: KeyboardEvent): void {
-        if (matchesKeystroke(event, 'Enter') && !this.isInputElementChanged() && this.isSuggestionAvailable()) {
+        if (matchesKeystroke(event, 'Enter') && !this.isInputElementChanged() && this.isValueAvailable()) {
             return;
         }
-        if (!matchesKeystroke(event, 'Enter') || this.isSuggestionAvailable()) {
+        if (!matchesKeystroke(event, 'Enter') || this.isValueAvailable()) {
             return;
         }
         if (this.textSubmitHandler) {
@@ -95,14 +94,14 @@ export class AutoCompleteWidget {
     protected autocompleteSettings(root: Readonly<SModelRootImpl>): AutocompleteSettings<AutoCompleteValue> {
         return {
             input: this.inputElement,
-            emptyMsg: this.autoSuggestionSettings.noSuggestionsMessage,
-            className: this.autoSuggestionSettings.suggestionsClass,
-            showOnFocus: this.autoSuggestionSettings.showOnFocus,
-            debounceWaitMs: this.autoSuggestionSettings.debounceWaitMs,
+            emptyMsg: this.autoValueSettings.noValuesMessage,
+            className: this.autoValueSettings.valuesClass,
+            showOnFocus: this.autoValueSettings.showOnFocus,
+            debounceWaitMs: this.autoValueSettings.debounceWaitMs,
             minLength: -1,
-            fetch: (text: string, update: (items: AutoCompleteValue[]) => void) => this.updateSuggestions(update, text, root),
+            fetch: (text: string, update: (items: AutoCompleteValue[]) => void) => this.updateValues(update, text, root),
             onSelect: (item: AutoCompleteValue) => this.onSelect(item),
-            render: (item: AutoCompleteValue, currentValue: string): HTMLDivElement | undefined => this.renderSuggestions(item, currentValue),
+            render: (item: AutoCompleteValue, currentValue: string): HTMLDivElement | undefined => this.renderValues(item, currentValue),
             customize: (input, inputRect, container, maxHeight) => {
                 this.customizeInputElement(input, inputRect, container, maxHeight);
             }
@@ -115,27 +114,27 @@ export class AutoCompleteWidget {
         if (this.containerElement) {
             this.containerElement.appendChild(container);
 
-            if (this.options && this.options.selectedSuggestionChanged) {
+            if (this.options && this.options.selectedValueChanged) {
                 const selectedElement = container.querySelector('.selected');
 
                 if (selectedElement !== null && selectedElement !== undefined) {
                     const index = Array.from(container.children).indexOf(selectedElement);
-                    this.options.selectedSuggestionChanged(this.contextActions?.[index]);
+                    this.options.selectedValueChanged(this.contextActions?.[index]);
                 } else {
-                    this.options.selectedSuggestionChanged(undefined);
+                    this.options.selectedValueChanged(undefined);
                 }
             }
         }
     }
 
-    protected updateSuggestions(update: (items: AutoCompleteValue[]) => void, text: string, root: Readonly<SModelRootImpl>, ...contextElementIds: string[]): void {
+    protected updateValues(update: (items: AutoCompleteValue[]) => void, text: string, root: Readonly<SModelRootImpl>, ...contextElementIds: string[]): void {
         this.onLoading();
 
-        this.doUpdateSuggestions(text, root)
+        this.doUpdateValues(text, root)
             .then(actions => {
                 this.contextActions = this.filterActions(text, actions);
                 update(this.contextActions);
-                this.options?.visibleSuggestionsChanged?.(this.contextActions);
+                this.options?.visibleValuesChanged?.(this.contextActions);
                 this.onLoaded('success');
             })
             .catch(reason => {
@@ -152,8 +151,8 @@ export class AutoCompleteWidget {
         this.containerElement.appendChild(this.loadingIndicator);
     }
 
-    protected doUpdateSuggestions(text: string, root: Readonly<SModelRootImpl>, ...contextElementIds: string[]): Promise<AutoCompleteValue[]> {
-        return this.suggestionProvider.provideSuggestions(text);
+    protected doUpdateValues(text: string, root: Readonly<SModelRootImpl>, ...contextElementIds: string[]): Promise<AutoCompleteValue[]> {
+        return this.valueProvider.provideValues(text);
     }
 
     protected onLoaded(_success: 'success' | 'error'): void {
@@ -163,7 +162,7 @@ export class AutoCompleteWidget {
         this.previousContent = this.inputElement.value;
     }
 
-    protected renderSuggestions(item: AutoCompleteValue, value: string): HTMLDivElement {
+    protected renderValues(item: AutoCompleteValue, value: string): HTMLDivElement {
         const itemElement = document.createElement('div');
         const wordMatcher = this.escapeForRegExp(value).split(' ').join('|');
         const regex = new RegExp(wordMatcher, 'gi');
@@ -177,7 +176,7 @@ export class AutoCompleteWidget {
     }
 
     protected renderIcon(itemElement: HTMLDivElement, icon: string): void {
-        itemElement.innerHTML += `<span class="icon ${icon}"></span>`;
+        itemElement.innerHTML += `<span class='icon ${icon}'></span>`;
     }
 
     protected filterActions(filterText: string, actions: AutoCompleteValue[]): AutoCompleteValue[] {
@@ -191,15 +190,15 @@ export class AutoCompleteWidget {
     }
 
     protected onSelect(item: AutoCompleteValue): void {
-        this.executeFromSuggestion(item);
+        this.executeFromValue(item);
     }
 
-    protected isSuggestionAvailable(): boolean | undefined {
+    protected isValueAvailable(): boolean | undefined {
         return this.contextActions && this.contextActions.length > 0;
     }
 
-    protected executeFromSuggestion(input: AutoCompleteValue): void {
-        this.suggestionSubmitHandler.executeFromSuggestion(input);
+    protected executeFromValue(input: AutoCompleteValue): void {
+        this.valueSubmitHandler.executeFromValue(input);
     }
 
     protected executeFromTextOnlyInput(): void {

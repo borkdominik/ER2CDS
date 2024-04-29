@@ -11,13 +11,12 @@ import { createTextProperty } from './text/text.creator';
 import { ElementTextPropertyItem } from './text/text.model';
 import { Action, SelectAction } from 'sprotty-protocol';
 import { EditorPanelChild } from '../editor-panel/editor-panel';
-import { CreateAttributeAction, DeleteElementAction, UpdateElementPropertyAction } from '../actions';
+import { AutoCompleteValue, CreateAttributeAction, DeleteElementAction, RequestAutoCompleteAction, UpdateElementPropertyAction } from '../actions';
 import { DiagramEditorService } from '../services/diagram-editor-service';
 import { ATTRIBUTE_TYPES, DATATYPES, EntityNode, RelationshipNode } from '../model';
-import { AutoCompleteWidget } from '../auto-complete/auto-complete-widget';
+import { AutoCompleteWidget } from './auto-complete/auto-complete-widget';
 import { ElementAutoCompletePropertyItem } from './auto-complete/auto-complete.model';
 import { createAutoCompleteProperty } from './auto-complete/auto-complete.creator';
-import { AutoCompleteValue, RequestAutoCompleteAction } from '../auto-complete/auto-complete-actions';
 
 export interface Cache {
     [elementId: string]: {
@@ -321,12 +320,6 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         }
     }
 
-    protected async update(elementId: string, propertyId: string, value: string): Promise<void> {
-        this.disable();
-
-        return this.actionDispatcher.dispatch(UpdateElementPropertyAction.create(elementId, propertyId, value));
-    }
-
     protected disable(): void {
         this.uiElements.forEach(element => element.disable());
     }
@@ -339,9 +332,9 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         const entity = element as EntityNode;
 
         const nameAutoComplete = new AutoCompleteWidget(
-            { provideSuggestions: input => this.retrieveSuggestions(input) },
-            { executeFromSuggestion: input => this.executeFromSuggestion(input) },
-            { executeFromTextOnlyInput: input => this.executeFromTextOnlyInput(input) }
+            { provideValues: input => this.retrieveSuggestionsEntity(entity.id, entity.children[0].id, input) },
+            { executeFromValue: input => this.executeFromSuggestionEntity(entity.id, entity.children[0].id, input) },
+            { executeFromTextOnlyInput: input => this.executeFromTextOnlyInputEntity(entity.id, entity.children[0].id, input) }
         );
 
         const entityNamePaletteItem = <ElementAutoCompletePropertyItem>{
@@ -349,6 +342,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             elementId: entity.id,
             propertyId: entity.children[0].id,
             label: 'Name',
+            value: (entity.children[0].children[0] as SLabelImpl).text,
             autoComplete: nameAutoComplete
         };
         propertyPaletteItems.push(entityNamePaletteItem);
@@ -431,19 +425,29 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         }
     }
 
-    protected async retrieveSuggestions(input: string): Promise<AutoCompleteValue[]> {
-        console.log("RETRIEVE: ", input);
-        const response = await this.actionDispatcher.request(RequestAutoCompleteAction.create(input));
-        console.log(response);
+    protected async update(elementId: string, propertyId: string, value: string): Promise<void> {
+        this.disable();
+
+        return this.actionDispatcher.dispatch(UpdateElementPropertyAction.create(elementId, propertyId, value));
+    }
+
+    protected async retrieveSuggestionsEntity(elementId: string, propertyId: string, input: string): Promise<AutoCompleteValue[]> {
+        const response = await this.actionDispatcher.request(RequestAutoCompleteAction.create(elementId, input));
         return response.values;
     }
 
-    protected executeFromSuggestion(input: AutoCompleteValue): void {
-        console.log("EXECUTE: ", input);
+    protected executeFromSuggestionEntity(elementId: string, propertyId: string, input: AutoCompleteValue): void {
+        this.update(elementId, propertyId, input.label);
+
+        this.activeElementId = input.label;
+        this.lastPalettes = [];
     }
 
-    protected executeFromTextOnlyInput(input: string): void {
-        console.log("EXECUTE TEXT SUBMIT: ", input);
+    protected executeFromTextOnlyInputEntity(elementId: string, propertyId: string, input: string): void {
+        this.update(elementId, propertyId, input);
+
+        this.activeElementId = input;
+        this.lastPalettes = [];
     }
 }
 

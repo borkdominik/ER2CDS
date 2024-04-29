@@ -1,9 +1,10 @@
-import { AutoCompleteWidget } from '../../auto-complete/auto-complete-widget';
+import { AutoCompleteWidget } from './auto-complete-widget';
 import { ElementPropertyItem } from '../property-palette';
 
 export interface ElementAutoCompletePropertyItem extends ElementPropertyItem {
     type: typeof ElementAutoCompletePropertyItem.TYPE;
     label: string;
+    value?: string;
     autoComplete: AutoCompleteWidget;
 }
 

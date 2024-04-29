@@ -2,6 +2,7 @@
     "name": "er2cds",
     "dependencies": {
         "@vscode/webview-ui-toolkit": "^1.4.0",
+        "autocompleter": "^9.2.1",
         "lodash": "^4.17.21",
         "reflect-metadata": "^0.2.1",
         "sprotty": "^1.0.0",

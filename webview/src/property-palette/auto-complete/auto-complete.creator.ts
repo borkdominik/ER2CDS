@@ -12,8 +12,12 @@ export function createAutoCompleteProperty(autoCompleteItem: ElementAutoComplete
     div.appendChild(label);
 
     autoCompleteItem.autoComplete.initialize(div);
-    autoCompleteItem.autoComplete.open(root);
     autoCompleteItem.autoComplete.inputField.classList.add('property-item-full');
+
+    if (autoCompleteItem.value)
+        autoCompleteItem.autoComplete.inputField.value = autoCompleteItem.value;
+
+    autoCompleteItem.autoComplete.open(root);
 
     return {
         element: div,

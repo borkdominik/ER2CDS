@@ -1,0 +1,42 @@
+.auto-complete-values {
+    background: white;
+    color: black;
+    z-index: 1000;
+    overflow: auto;
+    box-sizing: border-box;
+    border: 1px solid rgba(60, 60, 60, 0.6);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.auto-complete-values .icon {
+    padding-right: 0.3em;
+    display: flex;
+    align-self: center;
+}
+
+.auto-complete-values em {
+    font-weight: bold;
+    font-style: normal;
+}
+
+.auto-complete-values>div {
+    padding: 0 4px;
+    display: flex;
+}
+
+.auto-complete-values .group {
+    background: #eee;
+}
+
+.auto-complete-values>div:hover:not(.group),
+.auto-complete-values>div.selected {
+    cursor: pointer;
+}
+
+.auto-complete-values>div:hover:not(.group) {
+    background: #e0e0e0;
+}
+
+.auto-complete-values>div.selected {
+    background: #bbdefb;
+}
