@@ -16,38 +16,12 @@ export const ER2CDSTerminals = {
     SL_COMMENT: /\/\/[^\n\r]*/,
 };
 
-export type AttributeType = 'derived' | 'key' | 'multivalued' | 'none' | 'optional' | 'partial-key';
-
-export type CardinalityType = '0..1' | '0..N' | '1' | '1..1' | '1..N' | 'N' | 'none';
-
-export type DERIVED = 'derived';
-
-export function isDERIVED(item: unknown): item is DERIVED {
-    return item === 'derived';
-}
-
-export type KEY = 'key';
-
-export function isKEY(item: unknown): item is KEY {
-    return item === 'key';
-}
+export type CardinalityType = '1' | 'N';
 
 export type MANY = 'N';
 
 export function isMANY(item: unknown): item is MANY {
     return item === 'N';
-}
-
-export type MULTIVALUED = 'multivalued';
-
-export function isMULTIVALUED(item: unknown): item is MULTIVALUED {
-    return item === 'multivalued';
-}
-
-export type NONE = 'none';
-
-export function isNONE(item: unknown): item is NONE {
-    return item === 'none';
 }
 
 export type ONE = '1';
@@ -56,48 +30,11 @@ export function isONE(item: unknown): item is ONE {
     return item === '1';
 }
 
-export type ONE_MANY = '1..N';
-
-export function isONE_MANY(item: unknown): item is ONE_MANY {
-    return item === '1..N';
-}
-
-export type ONE_ONE = '1..1';
-
-export function isONE_ONE(item: unknown): item is ONE_ONE {
-    return item === '1..1';
-}
-
-export type OPTIONAL = 'optional';
-
-export function isOPTIONAL(item: unknown): item is OPTIONAL {
-    return item === 'optional';
-}
-
-export type PARTIAL_KEY = 'partial-key';
-
-export function isPARTIAL_KEY(item: unknown): item is PARTIAL_KEY {
-    return item === 'partial-key';
-}
-
-export type ZERO_OR_MANY = '0..N';
-
-export function isZERO_OR_MANY(item: unknown): item is ZERO_OR_MANY {
-    return item === '0..N';
-}
-
-export type ZERO_OR_ONE = '0..1';
-
-export function isZERO_OR_ONE(item: unknown): item is ZERO_OR_ONE {
-    return item === '0..1';
-}
-
 export interface Attribute extends AstNode {
-    readonly $container: Entity | Relationship;
+    readonly $container: Entity;
     readonly $type: 'Attribute';
     datatype?: DataType
     name: string
-    type?: AttributeType
 }
 
 export const Attribute = 'Attribute';
@@ -124,9 +61,7 @@ export interface Entity extends AstNode {
     readonly $container: ER2CDS;
     readonly $type: 'Entity';
     attributes: Array<Attribute>
-    extends?: Reference<Entity>
     name: string
-    weak: boolean
 }
 
 export const Entity = 'Entity';
@@ -151,17 +86,29 @@ export function isER2CDS(item: unknown): item is ER2CDS {
 export interface Relationship extends AstNode {
     readonly $container: ER2CDS;
     readonly $type: 'Relationship';
-    attributes: Array<Attribute>
+    attributes: Array<RelationshipAttribute>
     first?: RelationshipEntity
     name: string
     second?: RelationshipEntity
-    weak: boolean
 }
 
 export const Relationship = 'Relationship';
 
 export function isRelationship(item: unknown): item is Relationship {
     return reflection.isInstance(item, Relationship);
+}
+
+export interface RelationshipAttribute extends AstNode {
+    readonly $container: Relationship;
+    readonly $type: 'RelationshipAttribute';
+    firstAttribute: Reference<Attribute>
+    secondAttribute: Reference<Attribute>
+}
+
+export const RelationshipAttribute = 'RelationshipAttribute';
+
+export function isRelationshipAttribute(item: unknown): item is RelationshipAttribute {
+    return reflection.isInstance(item, RelationshipAttribute);
 }
 
 export interface RelationshipEntity extends AstNode {
@@ -184,13 +131,14 @@ export type ER2CDSAstType = {
     ER2CDS: ER2CDS
     Entity: Entity
     Relationship: Relationship
+    RelationshipAttribute: RelationshipAttribute
     RelationshipEntity: RelationshipEntity
 }
 
 export class ER2CDSAstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return ['Attribute', 'DataType', 'ER2CDS', 'Entity', 'Relationship', 'RelationshipEntity'];
+        return ['Attribute', 'DataType', 'ER2CDS', 'Entity', 'Relationship', 'RelationshipAttribute', 'RelationshipEntity'];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
@@ -204,7 +152,10 @@ export class ER2CDSAstReflection extends AbstractAstReflection {
     getReferenceType(refInfo: ReferenceInfo): string {
         const referenceId = `${refInfo.container.$type}:${refInfo.property}`;
         switch (referenceId) {
-            case 'Entity:extends':
+            case 'RelationshipAttribute:firstAttribute':
+            case 'RelationshipAttribute:secondAttribute': {
+                return Attribute;
+            }
             case 'RelationshipEntity:target': {
                 return Entity;
             }
@@ -220,8 +171,7 @@ export class ER2CDSAstReflection extends AbstractAstReflection {
                 return {
                     name: 'Entity',
                     mandatory: [
-                        { name: 'attributes', type: 'array' },
-                        { name: 'weak', type: 'boolean' }
+                        { name: 'attributes', type: 'array' }
                     ]
                 };
             }
@@ -238,8 +188,7 @@ export class ER2CDSAstReflection extends AbstractAstReflection {
                 return {
                     name: 'Relationship',
                     mandatory: [
-                        { name: 'attributes', type: 'array' },
-                        { name: 'weak', type: 'boolean' }
+                        { name: 'attributes', type: 'array' }
                     ]
                 };
             }

@@ -30,7 +30,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@20"
+                "$ref": "#/rules@10"
               },
               "arguments": []
             }
@@ -57,7 +57,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@2"
+                    "$ref": "#/rules@4"
                   },
                   "arguments": []
                 }
@@ -80,16 +80,6 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
         "$type": "Group",
         "elements": [
           {
-            "$type": "Assignment",
-            "feature": "weak",
-            "operator": "?=",
-            "terminal": {
-              "$type": "Keyword",
-              "value": "weak"
-            },
-            "cardinality": "?"
-          },
-          {
             "$type": "Keyword",
             "value": "entity"
           },
@@ -100,32 +90,10 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@20"
+                "$ref": "#/rules@10"
               },
               "arguments": []
             }
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Keyword",
-                "value": "extends"
-              },
-              {
-                "$type": "Assignment",
-                "feature": "extends",
-                "operator": "=",
-                "terminal": {
-                  "$type": "CrossReference",
-                  "type": {
-                    "$ref": "#/rules@1"
-                  },
-                  "deprecatedSyntax": false
-                }
-              }
-            ],
-            "cardinality": "?"
           },
           {
             "$type": "Keyword",
@@ -138,7 +106,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@4"
+                "$ref": "#/rules@2"
               },
               "arguments": []
             },
@@ -159,20 +127,134 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
     },
     {
       "$type": "ParserRule",
-      "name": "Relationship",
+      "name": "Attribute",
       "definition": {
         "$type": "Group",
         "elements": [
           {
             "$type": "Assignment",
-            "feature": "weak",
-            "operator": "?=",
+            "feature": "name",
+            "operator": "=",
             "terminal": {
-              "$type": "Keyword",
-              "value": "weak"
-            },
-            "cardinality": "?"
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@10"
+              },
+              "arguments": []
+            }
           },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": ":"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "datatype",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@3"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "?"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "DataType",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "type",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@10"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "("
+              },
+              {
+                "$type": "Assignment",
+                "feature": "size",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@11"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": ","
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "d",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@11"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ],
+                "cardinality": "?"
+              },
+              {
+                "$type": "Keyword",
+                "value": ")"
+              }
+            ],
+            "cardinality": "?"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Relationship",
+      "definition": {
+        "$type": "Group",
+        "elements": [
           {
             "$type": "Keyword",
             "value": "relationship"
@@ -184,7 +266,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@20"
+                "$ref": "#/rules@10"
               },
               "arguments": []
             }
@@ -203,7 +285,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@3"
+                    "$ref": "#/rules@5"
                   },
                   "arguments": []
                 },
@@ -223,7 +305,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@3"
+                        "$ref": "#/rules@5"
                       },
                       "arguments": []
                     }
@@ -241,7 +323,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@4"
+                "$ref": "#/rules@6"
               },
               "arguments": []
             },
@@ -292,7 +374,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@5"
+                    "$ref": "#/rules@7"
                   },
                   "arguments": []
                 }
@@ -311,7 +393,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@22"
+                        "$ref": "#/rules@12"
                       },
                       "arguments": []
                     }
@@ -337,56 +419,37 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
     },
     {
       "$type": "ParserRule",
-      "name": "Attribute",
+      "name": "RelationshipAttribute",
       "definition": {
         "$type": "Group",
         "elements": [
           {
             "$type": "Assignment",
-            "feature": "name",
+            "feature": "firstAttribute",
             "operator": "=",
             "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@20"
+              "$type": "CrossReference",
+              "type": {
+                "$ref": "#/rules@2"
               },
-              "arguments": []
+              "deprecatedSyntax": false
             }
           },
           {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Keyword",
-                "value": ":"
-              },
-              {
-                "$type": "Assignment",
-                "feature": "datatype",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@19"
-                  },
-                  "arguments": []
-                }
-              }
-            ],
-            "cardinality": "?"
+            "$type": "Keyword",
+            "value": "="
           },
           {
             "$type": "Assignment",
-            "feature": "type",
+            "feature": "secondAttribute",
             "operator": "=",
             "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@12"
+              "$type": "CrossReference",
+              "type": {
+                "$ref": "#/rules@2"
               },
-              "arguments": []
-            },
-            "cardinality": "?"
+              "deprecatedSyntax": false
+            }
           }
         ]
       },
@@ -409,27 +472,6 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@18"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@6"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@7"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
               "$ref": "#/rules@8"
             },
             "arguments": []
@@ -440,52 +482,8 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
               "$ref": "#/rules@9"
             },
             "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@10"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@11"
-            },
-            "arguments": []
           }
         ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "ZERO_OR_ONE",
-      "dataType": "string",
-      "definition": {
-        "$type": "Keyword",
-        "value": "0..1"
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "ZERO_OR_MANY",
-      "dataType": "string",
-      "definition": {
-        "$type": "Keyword",
-        "value": "0..N"
       },
       "definesHiddenTokens": false,
       "entry": false,
@@ -511,266 +509,11 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
     },
     {
       "$type": "ParserRule",
-      "name": "ONE_ONE",
-      "dataType": "string",
-      "definition": {
-        "$type": "Keyword",
-        "value": "1..1"
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "ONE_MANY",
-      "dataType": "string",
-      "definition": {
-        "$type": "Keyword",
-        "value": "1..N"
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
       "name": "MANY",
       "dataType": "string",
       "definition": {
         "$type": "Keyword",
         "value": "N"
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "AttributeType",
-      "returnType": {
-        "$ref": "#/types@1"
-      },
-      "definition": {
-        "$type": "Alternatives",
-        "elements": [
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@18"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@13"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@14"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@15"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@16"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@17"
-            },
-            "arguments": []
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "KEY",
-      "dataType": "string",
-      "definition": {
-        "$type": "Keyword",
-        "value": "key"
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "PARTIAL_KEY",
-      "dataType": "string",
-      "definition": {
-        "$type": "Keyword",
-        "value": "partial-key"
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "OPTIONAL",
-      "dataType": "string",
-      "definition": {
-        "$type": "Keyword",
-        "value": "optional"
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "DERIVED",
-      "dataType": "string",
-      "definition": {
-        "$type": "Keyword",
-        "value": "derived"
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "MULTIVALUED",
-      "dataType": "string",
-      "definition": {
-        "$type": "Keyword",
-        "value": "multivalued"
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "NONE",
-      "dataType": "string",
-      "definition": {
-        "$type": "Keyword",
-        "value": "none"
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "DataType",
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Assignment",
-            "feature": "type",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@20"
-              },
-              "arguments": []
-            }
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Keyword",
-                "value": "("
-              },
-              {
-                "$type": "Assignment",
-                "feature": "size",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@21"
-                  },
-                  "arguments": []
-                }
-              },
-              {
-                "$type": "Group",
-                "elements": [
-                  {
-                    "$type": "Keyword",
-                    "value": ","
-                  },
-                  {
-                    "$type": "Assignment",
-                    "feature": "d",
-                    "operator": "=",
-                    "terminal": {
-                      "$type": "RuleCall",
-                      "rule": {
-                        "$ref": "#/rules@21"
-                      },
-                      "arguments": []
-                    }
-                  }
-                ],
-                "cardinality": "?"
-              },
-              {
-                "$type": "Keyword",
-                "value": ")"
-              }
-            ],
-            "cardinality": "?"
-          }
-        ]
       },
       "definesHiddenTokens": false,
       "entry": false,
@@ -857,64 +600,11 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
         "types": [
           {
             "$type": "SimpleType",
-            "stringType": "none"
-          },
-          {
-            "$type": "SimpleType",
-            "stringType": "0..1"
-          },
-          {
-            "$type": "SimpleType",
-            "stringType": "0..N"
-          },
-          {
-            "$type": "SimpleType",
             "stringType": "1"
           },
           {
             "$type": "SimpleType",
-            "stringType": "1..1"
-          },
-          {
-            "$type": "SimpleType",
-            "stringType": "1..N"
-          },
-          {
-            "$type": "SimpleType",
             "stringType": "N"
-          }
-        ]
-      }
-    },
-    {
-      "$type": "Type",
-      "name": "AttributeType",
-      "type": {
-        "$type": "UnionType",
-        "types": [
-          {
-            "$type": "SimpleType",
-            "stringType": "none"
-          },
-          {
-            "$type": "SimpleType",
-            "stringType": "key"
-          },
-          {
-            "$type": "SimpleType",
-            "stringType": "partial-key"
-          },
-          {
-            "$type": "SimpleType",
-            "stringType": "optional"
-          },
-          {
-            "$type": "SimpleType",
-            "stringType": "derived"
-          },
-          {
-            "$type": "SimpleType",
-            "stringType": "multivalued"
           }
         ]
       }

@@ -13,7 +13,7 @@ import { Action, SelectAction } from 'sprotty-protocol';
 import { EditorPanelChild } from '../editor-panel/editor-panel';
 import { AutoCompleteValue, CreateAttributeAction, DeleteElementAction, RequestAutoCompleteAction, UpdateElementPropertyAction } from '../actions';
 import { DiagramEditorService } from '../services/diagram-editor-service';
-import { ATTRIBUTE_TYPES, DATATYPES, EntityNode, RelationshipNode } from '../model';
+import { DATATYPES, EntityNode, RelationshipNode } from '../model';
 import { AutoCompleteWidget } from './auto-complete/auto-complete-widget';
 import { ElementAutoCompletePropertyItem } from './auto-complete/auto-complete.model';
 import { createAutoCompleteProperty } from './auto-complete/auto-complete.creator';
@@ -347,15 +347,6 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         };
         propertyPaletteItems.push(entityNamePaletteItem);
 
-        const entityWeakPaletteItem = <ElementBoolPropertyItem>{
-            type: ElementBoolPropertyItem.TYPE,
-            elementId: entity.id,
-            propertyId: 'weak',
-            label: 'Weak Entity',
-            value: entity.weak
-        }
-        propertyPaletteItems.push(entityWeakPaletteItem);
-
         const entityAttributesPaletteItems = <ElementReferencePropertyItem>{
             type: ElementReferencePropertyItem.TYPE,
             elementId: entity.id,
@@ -378,15 +369,6 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             text: (relationship.children[0] as SLabelImpl).text
         }
         propertyPaletteItems.push(relationshipNamePaletteItem);
-
-        const relationshipWeakPaletteItem = <ElementBoolPropertyItem>{
-            type: ElementBoolPropertyItem.TYPE,
-            elementId: relationship.id,
-            propertyId: 'weak',
-            label: 'Weak Relationship',
-            value: relationship.weak
-        }
-        propertyPaletteItems.push(relationshipWeakPaletteItem);
     }
 
     protected initializeAttributesPropertyPaletteItems(element: SCompartmentImpl, propertyPaletteItems: ElementPropertyItem[]) {
@@ -418,17 +400,6 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
                 choices: DATATYPES
             }
             propertyPaletteItems.push(entityAttributeDatatypePaletteItem);
-
-            const type = (element.children[0] as SLabelImpl).type.split(':')[1];
-            const entityAttributeTypePaletteItem = <ElementChoicePropertyItem>{
-                type: ElementChoicePropertyItem.TYPE,
-                elementId: element.id,
-                propertyId: 'type',
-                label: 'Type',
-                choice: type,
-                choices: ATTRIBUTE_TYPES
-            }
-            propertyPaletteItems.push(entityAttributeTypePaletteItem);
         }
     }
 

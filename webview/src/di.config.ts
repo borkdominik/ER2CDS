@@ -3,8 +3,13 @@ import {
     configureModelElement, ConsoleLogger, editLabelFeature, expandFeature, HtmlRootImpl, HtmlRootView, loadDefaultModules, LogLevel, overrideViewerOptions, PreRenderedElementImpl,
     PreRenderedView, SCompartmentImpl, SCompartmentView, SLabelImpl, SLabelView, SModelRootImpl, SRoutingHandleImpl, SRoutingHandleView, TYPES
 } from 'sprotty';
-import { COMP_ATTRIBUTES, COMP_ATTRIBUTES_ROW, COMP_ENTITY_HEADER, CardinalityLabel, EDGE, EDGE_INHERITANCE, EDGE_PARTIAL, ER2CDSRoot, Edge, EdgeInheritance, EntityNode, GRAPH, LABEL_BOTTOM, LABEL_BOTTOM_LEFT, LABEL_BOTTOM_RIGHT, LABEL_DERIVED, LABEL_ENTITY, LABEL_KEY, LABEL_PARTIAL_KEY, LABEL_RELATIONSHIP, LABEL_TEXT, LABEL_TOP, LABEL_TOP_LEFT, LABEL_TOP_RIGHT, LABEL_SEPARATOR, LeftCardinalityLabel, LeftRoleLabel, NODE_ENTITY, NODE_RELATIONSHIP, RelationshipNode, RightCardinalityLabel, RightRoleLabel, RoleLabel, LABEL_MULTIVALUED, LABEL_NONE, LABEL_OPTIONAL } from './model';
-import { ER2CDSRootView, EdgeInheritanceView, EdgeView, EntityNodeView, RelationshipNodeView } from './views';
+import {
+    ER2CDSRoot, EntityNode, RelationshipNode, Edge, CardinalityLabel,
+    GRAPH, NODE_ENTITY, NODE_RELATIONSHIP,
+    COMP_ATTRIBUTES, COMP_ATTRIBUTES_ROW, COMP_ENTITY_HEADER, EDGE,
+    LABEL_ENTITY, LABEL_ATTRIBUTE, LABEL_CARDINALITY, LABEL_SEPARATOR, LABEL_RELATIONSHIP
+} from './model';
+import { ER2CDSRootView, EdgeView, EntityNodeView, RelationshipNodeView } from './views';
 
 import 'sprotty/css/sprotty.css';
 import '@vscode/codicons/dist/codicon.css';
@@ -14,7 +19,6 @@ import '../css/compartment.css';
 import '../css/diagram.css';
 import '../css/editor-panel.css';
 import '../css/helper-lines.css';
-import '../css/labels.css';
 import '../css/property-palette.css';
 import '../css/tool-palette.css';
 
@@ -43,36 +47,20 @@ export default (containerId: string) => {
         configureModelElement(context, NODE_ENTITY, EntityNode, EntityNodeView, { enable: [expandFeature] });
         configureModelElement(context, NODE_RELATIONSHIP, RelationshipNode, RelationshipNodeView);
 
-        // Edges
+        // Edge
         configureModelElement(context, EDGE, Edge, EdgeView);
-        configureModelElement(context, EDGE_PARTIAL, Edge, EdgeView);
-        configureModelElement(context, EDGE_INHERITANCE, EdgeInheritance, EdgeInheritanceView);
-
-        // Labels
-        configureModelElement(context, LABEL_ENTITY, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
-        configureModelElement(context, LABEL_RELATIONSHIP, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
-
-        configureModelElement(context, LABEL_TOP, CardinalityLabel, SLabelView);
-        configureModelElement(context, LABEL_TOP_LEFT, LeftCardinalityLabel, SLabelView);
-        configureModelElement(context, LABEL_TOP_RIGHT, RightCardinalityLabel, SLabelView);
-        configureModelElement(context, LABEL_BOTTOM, RoleLabel, SLabelView);
-        configureModelElement(context, LABEL_BOTTOM_LEFT, LeftRoleLabel, SLabelView);
-        configureModelElement(context, LABEL_BOTTOM_RIGHT, RightRoleLabel, SLabelView);
-
-        configureModelElement(context, LABEL_KEY, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
-        configureModelElement(context, LABEL_PARTIAL_KEY, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
-        configureModelElement(context, LABEL_DERIVED, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
-        configureModelElement(context, LABEL_MULTIVALUED, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
-        configureModelElement(context, LABEL_OPTIONAL, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
-        configureModelElement(context, LABEL_NONE, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
-
-        configureModelElement(context, LABEL_TEXT, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
-        configureModelElement(context, LABEL_SEPARATOR, SLabelImpl, SLabelView);
 
         // Compartments
         configureModelElement(context, COMP_ENTITY_HEADER, SCompartmentImpl, SCompartmentView);
         configureModelElement(context, COMP_ATTRIBUTES, SCompartmentImpl, SCompartmentView);
         configureModelElement(context, COMP_ATTRIBUTES_ROW, SCompartmentImpl, SCompartmentView);
+
+        // Labels
+        configureModelElement(context, LABEL_ENTITY, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
+        configureModelElement(context, LABEL_RELATIONSHIP, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
+        configureModelElement(context, LABEL_ATTRIBUTE, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
+        configureModelElement(context, LABEL_SEPARATOR, SLabelImpl, SLabelView);
+        configureModelElement(context, LABEL_CARDINALITY, CardinalityLabel, SLabelView);
 
         // Sprotty
         configureModelElement(context, 'html', HtmlRootImpl, HtmlRootView);

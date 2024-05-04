@@ -2,13 +2,13 @@ import type { DefaultSharedModuleContext, ExecuteCommandAcceptor, Module, Partia
 import type { DiagramOptions } from 'sprotty-protocol';
 import { AbstractExecuteCommandHandler, URI, createDefaultModule, createDefaultSharedModule, inject } from 'langium';
 import { DefaultDiagramServerManager, DiagramActionNotification, LangiumSprottyServices, LangiumSprottySharedServices, SprottyDiagramServices, SprottySharedServices } from 'langium-sprotty';
-import { DefaultElementFilter, ElkFactory, ElkLayoutEngine, IElementFilter, ILayoutConfigurator } from 'sprotty-elk/lib/elk-layout.js';
+import { DefaultElementFilter, DefaultLayoutConfigurator, ElkFactory, ElkLayoutEngine, IElementFilter, ILayoutConfigurator } from 'sprotty-elk/lib/elk-layout.js';
 import { ER2CDSGeneratedModule, ER2CDSGeneratedSharedModule } from './generated/module.js';
 import { ER2CDSValidator, registerValidationChecks } from './er2cds-validator.js';
-import { ER2CDSDiagramGenerator } from './er2cds-diagram.js';
-import { ER2CDSLayoutConfigurator } from './er2cds-layout.js';
+import { ER2CDSDiagramGenerator } from './er2cds-diagram-generator.js';
 import { ER2CDSDiagramServer } from './er2cds-diagram-server.js';
 import { generateCDS } from './generator/generator.js';
+import { ER2CDSScopeProvider } from './er2cds-scope-provider.js';
 
 const ElkConstructor = require('elkjs/lib/elk.bundled.js').default;
 
@@ -41,6 +41,9 @@ export const ER2CDSModule: Module<ER2CDSServices, PartialLangiumServices & Sprot
     validation: {
         ER2CDSValidator: () => new ER2CDSValidator()
     },
+    references: {
+        ScopeProvider: (services) => new ER2CDSScopeProvider(services)
+    },
     diagram: {
         DiagramGenerator: services => new ER2CDSDiagramGenerator(services),
         ModelLayoutEngine: services => new ElkLayoutEngine(services.layout.ElkFactory, services.layout.ElementFilter, services.layout.LayoutConfigurator) as any
@@ -48,7 +51,7 @@ export const ER2CDSModule: Module<ER2CDSServices, PartialLangiumServices & Sprot
     layout: {
         ElkFactory: () => () => new ElkConstructor({ algorithms: ['layered'] }),
         ElementFilter: () => new DefaultElementFilter,
-        LayoutConfigurator: () => new ER2CDSLayoutConfigurator
+        LayoutConfigurator: () => new DefaultLayoutConfigurator
     }
 };
 
