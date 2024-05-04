@@ -27,7 +27,7 @@ export class ER2CDSWebViewPanelManager extends LspWebviewPanelManager {
                 webviewContainer,
                 messenger: this.messenger,
                 messageParticipant: participant,
-                identifier,
+                identifier
             }
         );
 

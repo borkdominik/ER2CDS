@@ -1,9 +1,8 @@
 /** @jsx svg */
 import { injectable } from 'inversify';
 import { VNode } from 'snabbdom';
-import { Diamond, DiamondNodeView, IViewArgs, PolylineEdgeView, RectangularNodeView, RenderingContext, SEdgeImpl, SGraphView, SNodeImpl, SPortImpl, setAttr, svg } from 'sprotty';
+import { Diamond, DiamondNodeView, IViewArgs, PolylineEdgeView, RectangularNodeView, RenderingContext, SGraphView, SNodeImpl, SPortImpl, setAttr, svg } from 'sprotty';
 import { ER2CDSRoot, Edge, EntityNode, RelationshipNode } from './model';
-import { Point, toDegrees } from 'sprotty-protocol';
 
 @injectable()
 export class ER2CDSRootView extends SGraphView {

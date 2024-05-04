@@ -6,18 +6,18 @@ export const generateCDSHandler = async () => {
     sendToServer(generateCdsCommand);
 };
 
-export const sendToServer = async (command: string, fileUri?: Uri) => {
-    if (!fileUri) {
+export const sendToServer = async (command: string, args?: any) => {
+    if (command === generateCdsCommand && !args) {
         const activeEditor = window.activeTextEditor;
 
         if (activeEditor?.document?.languageId === 'er2cds') {
-            fileUri = window.activeTextEditor?.document.uri;
+            args = window.activeTextEditor?.document.uri.toString();
         } else {
             window.showErrorMessage('Error! Invalid file');
         }
     }
 
-    const response: string | undefined = await commands.executeCommand(command, fileUri.toString());
+    const response: string | undefined = await commands.executeCommand(command, args);
     if (response) {
         if (response.startsWith('Error')) {
             window.showErrorMessage(response);

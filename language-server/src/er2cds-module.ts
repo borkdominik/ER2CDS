@@ -45,8 +45,8 @@ export const ER2CDSModule: Module<ER2CDSServices, PartialLangiumServices & Sprot
         ScopeProvider: (services) => new ER2CDSScopeProvider(services)
     },
     diagram: {
-        DiagramGenerator: services => new ER2CDSDiagramGenerator(services),
-        ModelLayoutEngine: services => new ElkLayoutEngine(services.layout.ElkFactory, services.layout.ElementFilter, services.layout.LayoutConfigurator) as any
+        DiagramGenerator: (services: any) => new ER2CDSDiagramGenerator(services),
+        ModelLayoutEngine: (services: any) => new ElkLayoutEngine(services.layout.ElkFactory, services.layout.ElementFilter, services.layout.LayoutConfigurator) as any
     },
     layout: {
         ElkFactory: () => () => new ElkConstructor({ algorithms: ['layered'] }),
