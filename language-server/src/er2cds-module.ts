@@ -97,10 +97,11 @@ export function createER2CDSServices(context: DefaultSharedModuleContext): {
         ER2CDSModule
     );
 
-    shared.lsp.ExecuteCommandHandler = new ER2CDSCommandHandler();
     shared.ServiceRegistry.register(ER2CDS);
     registerValidationChecks(ER2CDS);
 
+    shared.lsp.ExecuteCommandHandler = new ER2CDSCommandHandler();
+    
     return { shared, ER2CDS };
 }
 
@@ -127,5 +128,5 @@ const ER2CDSSprottySharedModule: Module<LangiumSprottySharedServices, SprottySha
     diagram: {
         diagramServerFactory: ER2CDSDiagramServerFactory,
         DiagramServerManager: (services) => new DefaultDiagramServerManager(services),
-    },
+    }
 };
