@@ -10,7 +10,7 @@ import { Range, Position } from 'vscode-languageserver-types';
 import { ER2CDS } from '../generated/ast.js';
 
 export class CreateAttributeActionHandler {
-    public handle(action: CreateAttributeAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {
+    public async handle(action: CreateAttributeAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {
         const sourceUriString = server.state.options?.sourceUri?.toString();
         if (!sourceUriString)
             return Promise.resolve();
@@ -41,7 +41,7 @@ export class CreateAttributeActionHandler {
                 [sourceUri.toString()]: [
                     {
                         range: Range.create(Position.create(lastChild.range.start.line, 0), Position.create(lastChild.range.end.line, newText.length + 8)),
-                        newText: '\t' + newText + ':' + ' ' + 'STRING' + ' ' + 'none'
+                        newText: '\t' + newText + ':' + ' ' + 'STRING'
                     },
                     {
                         range: Range.create(Position.create(lastChild.range.start.line + 1, lastChild.range.start.character), Position.create(lastChild.range.end.line + 1, lastChild.range.end.character)),
@@ -55,7 +55,7 @@ export class CreateAttributeActionHandler {
             workspaceEdit: workspaceEdit
         }
 
-        server.dispatch(workspaceEditAction);
+        await server.dispatch(workspaceEditAction);
 
         return Promise.resolve();
     }

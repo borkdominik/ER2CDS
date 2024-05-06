@@ -6,8 +6,6 @@ import { ER2CDSWebviewEndpoint } from './web-view-endpoint';
 import { WorkspaceEditAction } from 'sprotty-vscode-protocol/lib/lsp/editing';
 import { convertWorkspaceEdit } from 'sprotty-vscode/lib/lsp/lsp-utils';
 
-import path = require('path');
-
 export class ER2CDSWebViewPanelManager extends LspWebviewPanelManager {
     protected context: vscode.ExtensionContext;
 
@@ -88,8 +86,7 @@ export class ER2CDSWebViewPanelManager extends LspWebviewPanelManager {
         }
     }
 
-    private createWebviewHtml(identifier: SprottyDiagramIdentifier, container: WebviewContainer,
-        options: { scriptUri: vscode.Uri, cssUri?: vscode.Uri, title?: string }): string {
+    private createWebviewHtml(identifier: SprottyDiagramIdentifier, container: WebviewContainer, options: { scriptUri: vscode.Uri, cssUri?: vscode.Uri, title?: string }): string {
         const transformUri = (uri: vscode.Uri) => container.webview.asWebviewUri(uri).toString();
         return `<!DOCTYPE html>
                         <html lang="en">

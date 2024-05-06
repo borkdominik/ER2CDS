@@ -56,6 +56,8 @@ export class RequestAutoCompleteActionHandler {
                     }
                 );
             }
+        ).catch(
+            (error: any) => this.resolveEmpty(action, server)
         );
 
         return Promise.resolve();

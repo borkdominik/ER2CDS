@@ -13,12 +13,14 @@ import { ER2CDSRootView, EdgeView, EntityNodeView, RelationshipNodeView } from '
 
 import 'sprotty/css/sprotty.css';
 import '@vscode/codicons/dist/codicon.css';
+import '@vscode/webview-ui-toolkit/dist/toolkit.js'
 
 import '../css/auto-complete.css';
 import '../css/compartment.css';
 import '../css/diagram.css';
 import '../css/editor-panel.css';
 import '../css/helper-lines.css';
+import '../css/popup.css';
 import '../css/property-palette.css';
 import '../css/tool-palette.css';
 
@@ -32,11 +34,12 @@ import HelperLineModule from './helper-lines/di.config';
 import AttributeToolModule from './tool-palette/tools/attribute-create-tool/di.config';
 import EditorPanelModule from './editor-panel/di.config';
 import PropertyPaletteModule from './property-palette/di.config';
+import PopupModule from './popup/di.config';
 
 export default (containerId: string) => {
     const DiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
-        rebind(TYPES.LogLevel).toConstantValue(LogLevel.info);
+        rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
 
         const context = { bind, unbind, isBound, rebind };
 
@@ -88,6 +91,7 @@ export default (containerId: string) => {
     container.load(EditorPanelModule);
     container.load(PropertyPaletteModule);
 
+    container.load(PopupModule);
     container.load(HelperLineModule);
 
     overrideViewerOptions(container, {

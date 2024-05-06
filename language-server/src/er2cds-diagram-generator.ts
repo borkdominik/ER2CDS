@@ -41,7 +41,7 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
         return graph;
     }
 
-    protected generateEntity(entity: Entity, { idCache, state }: GeneratorContext<ER2CDS>): EntityNode {
+    protected generateEntity(entity: Entity, { idCache }: GeneratorContext<ER2CDS>): EntityNode {
         const entityId = idCache.uniqueId(entity.name, entity);
 
         const node = <EntityNode>{

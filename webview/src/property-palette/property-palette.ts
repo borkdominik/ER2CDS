@@ -9,7 +9,7 @@ import { createReferenceProperty } from './reference/reference.creator';
 import { ElementReferencePropertyItem } from './reference/reference.model';
 import { createTextProperty } from './text/text.creator';
 import { ElementTextPropertyItem } from './text/text.model';
-import { Action, SelectAction } from 'sprotty-protocol';
+import { Action, SelectAction, RequestPopupModelAction, Bounds } from 'sprotty-protocol';
 import { EditorPanelChild } from '../editor-panel/editor-panel';
 import { AutoCompleteValue, CreateAttributeAction, DeleteElementAction, RequestAutoCompleteAction, UpdateElementPropertyAction } from '../actions';
 import { DiagramEditorService } from '../services/diagram-editor-service';
@@ -54,12 +54,15 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
     protected palette: PropertyPaletteModel;
     protected lastPalettes: PropertyPaletteModel[] = [];
     protected cache: Cache = {};
-    protected activeElementId?: string;
+
     protected uiElements: ElementPropertyUI[] = [];
     protected containerElement: HTMLElement;
     protected header: HTMLElement;
     protected content: HTMLElement;
+
     protected root: SModelRootImpl;
+    protected activeElementId?: string;
+    protected requestPopupModel: boolean = false;
 
     @inject(TYPES.IActionDispatcher)
     protected readonly actionDispatcher: ActionDispatcher;
@@ -163,6 +166,12 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         }
 
         this.refreshUi(this.palette);
+
+        if (this.requestPopupModel) {
+            const point = Bounds.center(this.root.canvasBounds);
+            this.actionDispatcher.dispatch(RequestPopupModelAction.create({ elementId: this.activeElementId, bounds: { x: point.x, y: point.y, height: -1, width: -1 } }));
+            this.requestPopupModel = false;
+        }
 
         return this.palette;
     }
@@ -414,17 +423,19 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         return response.values;
     }
 
-    protected executeFromSuggestionEntity(elementId: string, propertyId: string, input: AutoCompleteValue): void {
-        this.update(elementId, propertyId, input.label);
+    protected async executeFromSuggestionEntity(elementId: string, propertyId: string, input: AutoCompleteValue): Promise<void> {
+        await this.update(elementId, propertyId, input.label);
 
         this.activeElementId = input.label;
+        this.requestPopupModel = true;
         this.lastPalettes = [];
     }
 
-    protected executeFromTextOnlyInputEntity(elementId: string, propertyId: string, input: string): void {
-        this.update(elementId, propertyId, input);
+    protected async executeFromTextOnlyInputEntity(elementId: string, propertyId: string, input: string): Promise<void> {
+        await this.update(elementId, propertyId, input);
 
         this.activeElementId = input;
+        this.requestPopupModel = true;
         this.lastPalettes = [];
     }
 

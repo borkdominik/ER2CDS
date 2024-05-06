@@ -1,4 +1,4 @@
-import { injectable, multiInject, inject } from 'inversify';
+import { injectable, inject } from 'inversify';
 import { CommandStack, ICommand, SModelRootImpl, SetModelCommand, UpdateModelCommand } from 'sprotty';
 import { DiagramEditorService } from './diagram-editor-service';
 import { LazyInjector } from './lazy-injector';

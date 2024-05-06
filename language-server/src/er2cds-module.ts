@@ -101,7 +101,7 @@ export function createER2CDSServices(context: DefaultSharedModuleContext): {
     registerValidationChecks(ER2CDS);
 
     shared.lsp.ExecuteCommandHandler = new ER2CDSCommandHandler();
-    
+
     return { shared, ER2CDS };
 }
 
