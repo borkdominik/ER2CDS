@@ -61,10 +61,10 @@ export default (containerId: string) => {
         configureModelElement(context, COMP_ATTRIBUTES_ROW, SCompartmentImpl, SCompartmentView);
 
         // Labels
-        configureModelElement(context, LABEL_ENTITY, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
-        configureModelElement(context, LABEL_RELATIONSHIP, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
-        configureModelElement(context, LABEL_ATTRIBUTE, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
-        configureModelElement(context, LABEL_ATTRIBUTE_KEY, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
+        configureModelElement(context, LABEL_ENTITY, SLabelImpl, SLabelView);
+        configureModelElement(context, LABEL_RELATIONSHIP, SLabelImpl, SLabelView);
+        configureModelElement(context, LABEL_ATTRIBUTE, SLabelImpl, SLabelView);
+        configureModelElement(context, LABEL_ATTRIBUTE_KEY, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_SEPARATOR, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_CARDINALITY, CardinalityLabel, SLabelView);
 

@@ -42,7 +42,7 @@ export const ER2CDSModule: Module<ER2CDSServices, PartialLangiumServices & Sprot
         ER2CDSValidator: () => new ER2CDSValidator()
     },
     references: {
-        ScopeProvider: (services) => new ER2CDSScopeProvider(services)
+        ScopeProvider: (services) => new ER2CDSScopeProvider(services),
     },
     diagram: {
         DiagramGenerator: (services: any) => new ER2CDSDiagramGenerator(services),
@@ -90,6 +90,7 @@ export function createER2CDSServices(context: DefaultSharedModuleContext): {
         ER2CDSGeneratedSharedModule,
         ER2CDSSprottySharedModule
     );
+    shared.lsp.ExecuteCommandHandler = new ER2CDSCommandHandler();
 
     const ER2CDS = inject(
         createDefaultModule({ shared }),
@@ -99,8 +100,6 @@ export function createER2CDSServices(context: DefaultSharedModuleContext): {
 
     shared.ServiceRegistry.register(ER2CDS);
     registerValidationChecks(ER2CDS);
-
-    shared.lsp.ExecuteCommandHandler = new ER2CDSCommandHandler();
 
     return { shared, ER2CDS };
 }

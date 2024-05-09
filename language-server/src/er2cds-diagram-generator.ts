@@ -164,7 +164,7 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
             },
             children: [
                 <SLabel>{
-                    id: attributeId + '.name',
+                    id: attributeId + '.label',
                     text: attribute.name,
                     type: attribute.type ? LABEL_ATTRIBUTE_KEY : LABEL_ATTRIBUTE
                 },

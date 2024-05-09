@@ -233,31 +233,11 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
 
                 if (ElementTextPropertyItem.is(propertyItem)) {
                     created = createTextProperty(propertyItem, {
-                        onBlur: async (item, input) => {
-                            await this.update(item.elementId, item.propertyId, input.value);
-
-                            if (item.label === 'Name') {
-                                if (item.elementId === item.text) {
-                                    this.activeElementId = input.value;
-                                } else {
-                                    this.activeElementId = item.elementId;
-                                }
-
-                                this.lastPalettes = [];
-                            }
+                        onBlur: (item, input) => {
+                            this.update(item.elementId, item.propertyId, input.value);
                         },
-                        onEnter: async (item, input) => {
-                            await this.update(item.elementId, item.propertyId, input.value);
-
-                            if (item.label === 'Name') {
-                                if (item.elementId === item.text) {
-                                    this.activeElementId = input.value;
-                                } else {
-                                    this.activeElementId = item.elementId;
-                                }
-
-                                this.lastPalettes = [];
-                            }
+                        onEnter: (item, input) => {
+                            this.update(item.elementId, item.propertyId, input.value);
                         }
                     });
                 } else if (ElementAutoCompletePropertyItem.is(propertyItem)) {
@@ -349,7 +329,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         const entityNamePaletteItem = <ElementAutoCompletePropertyItem>{
             type: ElementAutoCompletePropertyItem.TYPE,
             elementId: entity.id,
-            propertyId: entity.children[0].id,
+            propertyId: 'entity-name',
             label: 'Name',
             value: (entity.children[0].children[0] as SLabelImpl).text,
             autoComplete: nameAutoComplete
@@ -373,7 +353,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         const relationshipNamePaletteItem = <ElementTextPropertyItem>{
             type: ElementTextPropertyItem.TYPE,
             elementId: relationship.id,
-            propertyId: relationship.children[0].id,
+            propertyId: 'relationship-name',
             label: 'Name',
             text: (relationship.children[0] as SLabelImpl).text
         }
@@ -392,8 +372,8 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
 
             const entityAttributeNamePaletteItem = <ElementAutoCompletePropertyItem>{
                 type: ElementAutoCompletePropertyItem.TYPE,
-                elementId: entity.id,
-                propertyId: element.children[0].id,
+                elementId: element.children[0].id,
+                propertyId: 'attribute-name',
                 label: 'Name',
                 value: (element.children[0] as SLabelImpl).text,
                 autoComplete: nameAutoComplete
@@ -402,8 +382,8 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
 
             const entityAttributeDatatypePaletteItem = <ElementChoicePropertyItem>{
                 type: ElementChoicePropertyItem.TYPE,
-                elementId: entity.id,
-                propertyId: element.children[2].id,
+                elementId: element.children[2].id,
+                propertyId: 'attribute-datatype',
                 label: 'Datatype',
                 choice: (element.children[2] as SLabelImpl).text,
                 choices: DATATYPES
@@ -413,7 +393,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             const entityAttributeKeyPaletteItem = <ElementBoolPropertyItem>{
                 type: ElementBoolPropertyItem.TYPE,
                 elementId: element.children[0].id,
-                propertyId: 'type',
+                propertyId: 'attribute-type',
                 label: 'Keyfield',
                 value: (element.children[0] as SLabelImpl).type === LABEL_ATTRIBUTE_KEY
             }
@@ -433,7 +413,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
     }
 
     protected async executeFromSuggestionEntity(elementId: string, propertyId: string, input: AutoCompleteValue): Promise<void> {
-        await this.update(elementId, propertyId, input.label);
+        await this.update(elementId, 'entity-name', input.label);
 
         this.activeElementId = input.label;
         this.requestPopupModel = true;
@@ -441,7 +421,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
     }
 
     protected async executeFromTextOnlyInputEntity(elementId: string, propertyId: string, input: string): Promise<void> {
-        await this.update(elementId, propertyId, input);
+        await this.update(elementId, 'entity-name', input);
 
         this.activeElementId = input;
         this.requestPopupModel = true;
@@ -455,14 +435,14 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
     }
 
     protected executeFromSuggestionAttribute(elementId: string, propertyId: string, input: AutoCompleteValue): void {
-        this.update(elementId, propertyId, input.label);
+        this.update(propertyId, 'attribute-name', input.label);
 
         this.activeElementId = elementId;
         this.lastPalettes = [];
     }
 
     protected executeFromTextOnlyInputAttribute(elementId: string, propertyId: string, input: string): void {
-        this.update(elementId, propertyId, input);
+        this.update(propertyId, 'attribute-name', input);
 
         this.activeElementId = elementId;
         this.lastPalettes = [];
