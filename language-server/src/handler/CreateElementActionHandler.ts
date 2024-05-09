@@ -43,7 +43,8 @@ export class CreateElementActionHandler {
                 [sourceUri.toString()]: [
                     {
                         range: Range.create(Position.create(textDocument?.lineCount + 1, 0), Position.create(textDocument?.lineCount + 1, 0)),
-                        newText: expandToString`\n
+                        newText: expandToString`
+                        \n
                         entity ${this.getNewName(NODE_ENTITY, 'Entity', server.state.currentRoot.children)} {
                         }
                         `
@@ -65,7 +66,8 @@ export class CreateElementActionHandler {
                 [sourceUri.toString()]: [
                     {
                         range: Range.create(Position.create(textDocument?.lineCount + 1, 0), Position.create(textDocument?.lineCount + 1, 0)),
-                        newText: expandToString`\n
+                        newText: expandToString`
+                        \n
                         relationship ${this.getNewName(NODE_RELATIONSHIP, 'Relationship', server.state.currentRoot.children)} {
                         }
                         `
