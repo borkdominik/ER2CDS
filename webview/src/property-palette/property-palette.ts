@@ -13,7 +13,7 @@ import { Action, SelectAction, Bounds } from 'sprotty-protocol';
 import { EditorPanelChild } from '../editor-panel/editor-panel';
 import { AutoCompleteValue, CreateAttributeAction, DeleteElementAction, RequestAutoCompleteAction, RequestPopupConfirmModelAction, UpdateElementPropertyAction } from '../actions';
 import { DiagramEditorService } from '../services/diagram-editor-service';
-import { DATATYPES, EntityNode, RelationshipNode } from '../model';
+import { DATATYPES, EntityNode, LABEL_ATTRIBUTE_KEY, RelationshipNode } from '../model';
 import { AutoCompleteWidget } from './auto-complete/auto-complete-widget';
 import { ElementAutoCompletePropertyItem } from './auto-complete/auto-complete.model';
 import { createAutoCompleteProperty } from './auto-complete/auto-complete.creator';
@@ -409,6 +409,15 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
                 choices: DATATYPES
             }
             propertyPaletteItems.push(entityAttributeDatatypePaletteItem);
+
+            const entityAttributeKeyPaletteItem = <ElementBoolPropertyItem>{
+                type: ElementBoolPropertyItem.TYPE,
+                elementId: element.children[0].id,
+                propertyId: 'type',
+                label: 'Keyfield',
+                value: (element.children[0] as SLabelImpl).type === LABEL_ATTRIBUTE_KEY
+            }
+            propertyPaletteItems.push(entityAttributeKeyPaletteItem);
         }
     }
 

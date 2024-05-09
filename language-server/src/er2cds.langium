@@ -10,7 +10,7 @@ Entity:
 	'}';
 
 Attribute:
-	name=ID (':' datatype=DataType)?;
+	name=ID (':' datatype=DataType)? (type=AttributeType)?;
 
 DataType:
 	type=ID ('(' size=INT (',' d=INT)? ')')?;
@@ -28,6 +28,13 @@ RelationshipEntity:
 
 RelationshipAttribute:
 	(firstAttribute=[Attribute] '=' secondAttribute=[Attribute]);
+
+type AttributeType = 'key';
+AttributeType returns AttributeType:
+	KEY
+;
+KEY returns string:
+	'key';
 
 type CardinalityType = '1' | 'N';
 CardinalityType returns CardinalityType:

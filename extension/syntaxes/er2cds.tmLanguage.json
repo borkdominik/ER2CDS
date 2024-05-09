@@ -10,7 +10,7 @@
     },
     {
       "name": "keyword.control.er2cds",
-      "match": "\\b(N|entity|er2cds|relationship)\\b"
+      "match": "\\b(N|entity|er2cds|key|relationship)\\b"
     }
   ],
   "repository": {

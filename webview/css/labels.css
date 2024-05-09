@@ -1,0 +1,8 @@
+.attribute {
+    fill: var(--vscode-button-foreground);
+}
+
+.attribute-key {
+    fill: var(--vscode-button-foreground);
+    text-decoration: underline;
+}

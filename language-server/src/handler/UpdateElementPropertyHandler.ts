@@ -5,7 +5,8 @@ import { UpdateElementPropertyAction } from '../actions.js';
 import { ApplyLabelEditActionHandler } from './ApplyLabelEditActionHandler.js';
 import { CompositeCstNode, URI } from 'langium';
 import { WorkspaceEditAction } from 'sprotty-vscode-protocol/lib/lsp/editing';
-import { ER2CDS } from '../generated/ast.js';
+import { ER2CDS, } from '../generated/ast.js';
+import { TextEdit, Range, Position } from 'vscode-languageserver-types';
 
 export class UpdateElementPropertyHandler {
     public handle(action: UpdateElementPropertyAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {
@@ -40,22 +41,32 @@ export class UpdateElementPropertyHandler {
         const model = document.parseResult.value as ER2CDS;
 
         model.entities.filter(e => e.name === entityId).map(e => e.attributes.forEach(a => {
-            if (a.name === attributeId && (a.$cstNode as CompositeCstNode).content.length > 3) {
-                const range = (a.$cstNode as CompositeCstNode).content[3].range;
+            if (a.name === attributeId) {
+                let textEdit: TextEdit;
+
+                if ((a.$cstNode as CompositeCstNode).content.length > 3) {
+                    const range = (a.$cstNode as CompositeCstNode).content[3].range;
+
+                    textEdit = {
+                        range: range,
+                        newText: ''
+                    }
+                } else {
+                    const range = (a.$cstNode as CompositeCstNode).content[2].range;
+
+                    textEdit = {
+                        range: Range.create(Position.create(range.end.line, range.end.character), Position.create(range.end.line, range.end.character + 4)),
+                        newText: ' key '
+                    }
+                }
 
                 const workspaceEditAction: WorkspaceEditAction = {
                     kind: WorkspaceEditAction.KIND,
                     workspaceEdit: {
                         changes: {
-                            [sourceUri.toString()]: [
-                                {
-                                    range: range,
-                                    newText: action.value
-                                }
-                            ]
+                            [sourceUri.toString()]: [textEdit]
                         }
                     }
-
                 }
 
                 server.dispatch(workspaceEditAction);

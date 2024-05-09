@@ -57,7 +57,7 @@ export class ApplyLabelEditActionHandler {
                         this.createWorkspaceEditReplaceAction(server, sourceUri, ((r.$cstNode) as CompositeCstNodeImpl).content[1].range, action.text);
                 });
 
-            // Attribute-Label
+                // Attribute-Label
             } else {
                 model.entities.filter(e => e.name === element).forEach(e => e.attributes.forEach((a) => {
                     if (a.name === name) {

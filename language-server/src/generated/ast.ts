@@ -16,7 +16,15 @@ export const ER2CDSTerminals = {
     SL_COMMENT: /\/\/[^\n\r]*/,
 };
 
+export type AttributeType = 'key';
+
 export type CardinalityType = '1' | 'N';
+
+export type KEY = 'key';
+
+export function isKEY(item: unknown): item is KEY {
+    return item === 'key';
+}
 
 export type MANY = 'N';
 
@@ -35,6 +43,7 @@ export interface Attribute extends AstNode {
     readonly $type: 'Attribute';
     datatype?: DataType
     name: string
+    type?: AttributeType
 }
 
 export const Attribute = 'Attribute';

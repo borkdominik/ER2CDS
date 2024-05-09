@@ -7,7 +7,8 @@ import {
     ER2CDSRoot, EntityNode, RelationshipNode, Edge, CardinalityLabel,
     GRAPH, NODE_ENTITY, NODE_RELATIONSHIP,
     COMP_ATTRIBUTES, COMP_ATTRIBUTES_ROW, COMP_ENTITY_HEADER, EDGE,
-    LABEL_ENTITY, LABEL_ATTRIBUTE, LABEL_CARDINALITY, LABEL_SEPARATOR, LABEL_RELATIONSHIP
+    LABEL_ENTITY, LABEL_ATTRIBUTE, LABEL_CARDINALITY, LABEL_SEPARATOR, LABEL_RELATIONSHIP,
+    LABEL_ATTRIBUTE_KEY
 } from './model';
 import { ER2CDSRootView, EdgeView, EntityNodeView, RelationshipNodeView } from './views';
 
@@ -20,6 +21,7 @@ import '../css/compartment.css';
 import '../css/diagram.css';
 import '../css/editor-panel.css';
 import '../css/helper-lines.css';
+import '../css/labels.css';
 import '../css/popup.css';
 import '../css/property-palette.css';
 import '../css/tool-palette.css';
@@ -62,6 +64,7 @@ export default (containerId: string) => {
         configureModelElement(context, LABEL_ENTITY, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
         configureModelElement(context, LABEL_RELATIONSHIP, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
         configureModelElement(context, LABEL_ATTRIBUTE, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
+        configureModelElement(context, LABEL_ATTRIBUTE_KEY, SLabelImpl, SLabelView, { enable: [editLabelFeature] });
         configureModelElement(context, LABEL_SEPARATOR, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_CARDINALITY, CardinalityLabel, SLabelView);
 

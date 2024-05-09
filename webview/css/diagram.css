@@ -86,18 +86,6 @@
     stroke-width: 1;
 }
 
-.sprotty .error>.sprotty-node {
-    filter: drop-shadow(0px 0px 2px var(--glsp-error-foreground)) !important;
-}
-
-.sprotty .warning>.sprotty-node {
-    filter: drop-shadow(0px 0px 2px var(--glsp-warning-foreground)) !important;
-}
-
-.sprotty .info>.sprotty-node {
-    filter: drop-shadow(0px 0px 2px var(--glsp-info-foreground)) !important;
-}
-
 .sprotty-node {
     fill: var(--vscode-button-background)
 }

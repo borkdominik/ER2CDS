@@ -29,6 +29,8 @@ async function extractAstFromFile<T extends ER2CDS>(fileUri: URI, services: Lang
     return document.parseResult?.value as T;
 }
 
+
+
 function generateSourceCode(model: ER2CDS): string {
     return expandToString`
         ${generateHeaderAnnotations(model)}
@@ -36,6 +38,7 @@ function generateSourceCode(model: ER2CDS): string {
             ${generateFromClause(model)}
             ${generateInnerJoins(model)}
         {
+            ${generateKeyAttributes(model)}${model.entities.find(e => e.attributes.find(a => a.type === 'key')) && model.entities.find(e => e.attributes.find(a => a.type !== 'key')) ? ',' : ''}
             ${generateAttributes(model)}
         }
     `;
@@ -64,7 +67,7 @@ function generateHeader(model: ER2CDS): string {
 function generateFromClause(model: ER2CDS): string {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-            from ${model.entities[0].name}
+            from ${model.relationships[0].first?.target.ref?.name}
         `;
     }
 
@@ -74,14 +77,19 @@ function generateFromClause(model: ER2CDS): string {
 function generateInnerJoins(model: ER2CDS): string {
     if (model.relationships) {
         return model.relationships.map(r => {
+            let join = '';
 
-            if (r.first?.cardinality === '1' && r.second?.cardinality === '1')
-                return generateInnerJoin(model, r)
+            if (r.first?.cardinality === '1' && r.second?.cardinality === '1') {
+                join = generateInnerJoin(model, r)
 
-            if (r.first?.cardinality === '1' && r.second?.cardinality === 'N')
-                return generateLeftJoin(model, r)
+            } else if (r.first?.cardinality === '1' && r.second?.cardinality === 'N') {
+                join = generateLeftJoin(model, r)
 
-            return '';
+            } else {
+                join = generateInnerJoin(model, r);
+            }
+
+            return join;
         }).join('\n');
     }
 
@@ -90,16 +98,9 @@ function generateInnerJoins(model: ER2CDS): string {
 
 function generateInnerJoin(model: ER2CDS, relationship: Relationship): string {
     if (model.entities && model.entities.length > 0) {
-        const firstEntity = model.entities[0];
-        if (firstEntity.name === relationship.first?.target.ref?.name) {
-            return expandToString`
+        return expandToString`
                 inner join ${relationship.second?.target.ref?.name} on ${generateJoinClause(relationship, relationship.attributes)}
             `;
-        } else {
-            return expandToString`
-                inner join ${relationship.first?.target.ref?.name} on ${generateJoinClause(relationship, relationship.attributes)}
-            `;
-        }
     }
 
     return '';
@@ -107,16 +108,9 @@ function generateInnerJoin(model: ER2CDS, relationship: Relationship): string {
 
 function generateLeftJoin(model: ER2CDS, relationship: Relationship): string {
     if (model.entities && model.entities.length > 0) {
-        const firstEntity = model.entities[0];
-        if (firstEntity.name === relationship.first?.target.ref?.name) {
-            return expandToString`
+        return expandToString`
                 left join ${relationship.second?.target.ref?.name} on ${generateJoinClause(relationship, relationship.attributes)}
             `;
-        } else {
-            return expandToString`
-                left join ${relationship.first?.target.ref?.name} on ${generateJoinClause(relationship, relationship.attributes)}
-            `;
-        }
     }
 
     return '';
@@ -134,12 +128,32 @@ function generateJoinClause(relationship: Relationship, attributes: Relationship
     return joinClause;
 }
 
+function generateKeyAttributes(model: ER2CDS) {
+    if (model.entities) {
+        let attributes: string[] = [];
+
+        model.entities.forEach(e => {
+            const keyFields = e.attributes.filter(a => a.type === 'key');
+
+            if (keyFields.length > 0)
+                attributes.push(keyFields.map(a => generateAttribute(e, a)).join(',\n'));
+        });
+
+        return attributes.join(',\n');
+    }
+
+    return '';
+}
+
 function generateAttributes(model: ER2CDS) {
     if (model.entities) {
         let attributes: string[] = [];
 
         model.entities.forEach(e => {
-            attributes.push(e.attributes.map(a => generateAttribute(e, a)).join(',\n'));
+            const nonKeyFields = e.attributes.filter(a => a.type !== 'key');
+
+            if (nonKeyFields.length > 0)
+                attributes.push(nonKeyFields.map(a => generateAttribute(e, a)).join(',\n'));
         });
 
         return attributes.join(',\n');
@@ -150,6 +164,6 @@ function generateAttributes(model: ER2CDS) {
 
 function generateAttribute(entity: Entity, attribute: Attribute) {
     return expandToString`
-        ${entity.name}.${attribute.name} as ${entity.name}_${attribute.name}
+        ${attribute.type === 'key' ? 'key' : ''} ${entity.name}.${attribute.name} as ${entity.name}_${attribute.name}
     `;
 }

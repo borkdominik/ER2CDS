@@ -9,7 +9,8 @@ import {
     ER2CDSRoot, Edge, EntityNode, RelationshipNode,
     GRAPH, NODE_ENTITY, NODE_RELATIONSHIP, EDGE,
     COMP_ATTRIBUTES, COMP_ATTRIBUTES_ROW, COMP_ENTITY_HEADER,
-    LABEL_ATTRIBUTE, LABEL_CARDINALITY, LABEL_ENTITY, LABEL_RELATIONSHIP, LABEL_SEPARATOR
+    LABEL_ATTRIBUTE, LABEL_CARDINALITY, LABEL_ENTITY, LABEL_RELATIONSHIP, LABEL_SEPARATOR,
+    LABEL_ATTRIBUTE_KEY
 } from './model.js';
 
 export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
@@ -165,7 +166,7 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
                 <SLabel>{
                     id: attributeId + '.name',
                     text: attribute.name,
-                    type: LABEL_ATTRIBUTE
+                    type: attribute.type ? LABEL_ATTRIBUTE_KEY : LABEL_ATTRIBUTE
                 },
                 <SLabel>{
                     id: attributeId + '.separator',
