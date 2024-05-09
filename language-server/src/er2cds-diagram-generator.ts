@@ -155,7 +155,7 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
 
         return <SCompartment>{
             type: COMP_ATTRIBUTES_ROW,
-            id: attributeId + '.attribute-comp',
+            id: attributeId,
             layout: 'hbox',
             layoutOptions: <LayoutOptions>{
                 VAlign: 'middle',

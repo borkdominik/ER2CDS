@@ -1,4 +1,5 @@
-import { HtmlRoot, PreRenderedElement, RequestPopupModelAction, SModelIndex, SetPopupModelAction } from 'sprotty-protocol';
+import { HtmlRoot, PreRenderedElement, SModelIndex, SetPopupModelAction } from 'sprotty-protocol';
+import { RequestPopupConfirmModelAction } from '../actions.js';
 import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
 import { ER2CDSServices } from '../er2cds-module.js';
 import { NODE_ENTITY } from '../model.js';
@@ -7,8 +8,8 @@ export interface PopupButton extends PreRenderedElement {
     target: string;
 }
 
-export class RequestPopupModelActionHandler {
-    public async handle(action: RequestPopupModelAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {
+export class RequestPopupConfirmModelActionHandler {
+    public async handle(action: RequestPopupConfirmModelAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {
         const modelIndex = new SModelIndex();
         modelIndex.add(server.state.currentRoot);
 
@@ -23,7 +24,7 @@ export class RequestPopupModelActionHandler {
         return Promise.resolve();
     }
 
-    protected handleCreateEntityPopup(action: RequestPopupModelAction, server: ER2CDSDiagramServer, services: ER2CDSServices) {
+    protected handleCreateEntityPopup(action: RequestPopupConfirmModelAction, server: ER2CDSDiagramServer, services: ER2CDSServices) {
         const popupId = action.elementId + '-popup';
 
         const popup = <HtmlRoot>{
@@ -40,7 +41,7 @@ export class RequestPopupModelActionHandler {
                                 <div class='popup-header'>
                                     <div class='popup-element-info'>
                                         <vscode-tag class='popup-tag'>Entity</vscode-tag>
-                                        Load all attribute of entity?
+                                        Load all attributes of entity?
                                     </div>
                                 </div>
                             </div>

@@ -5,6 +5,7 @@ import { SModelIndex } from 'sprotty-protocol';
 import { COMP_ATTRIBUTES_ROW, NODE_ENTITY } from '../model.js';
 import { Agent } from 'https';
 import fetch from 'node-fetch';
+import { SapAttribute, SapEntity } from '../model-external.js';
 
 export class RequestAutoCompleteActionHandler {
     public async handle(action: RequestAutoCompleteAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {
@@ -29,7 +30,7 @@ export class RequestAutoCompleteActionHandler {
 
     protected handleRequestAutoCompleteEntity(action: RequestAutoCompleteAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {
         const agent = new Agent({ rejectUnauthorized: false });
-        const url = action.sapUrl + "sap/opu/odata/sap/ZER2CDS/Entities?$filter=startswith(Entity,'" + action.search + "')&$top=20&$format=json&sap-client=" + action.sapClient;
+        const url = action.sapUrl + "sap/opu/odata/sap/ZER2CDS/Entities?$filter=startswith(Entity,'" + action.search + "')&$format=json&sap-client=" + action.sapClient;
 
         if (!url)
             return this.resolveEmpty(action, server);
@@ -52,7 +53,7 @@ export class RequestAutoCompleteActionHandler {
                         kind: SetAutoCompleteAction.KIND,
                         responseId: action.requestId,
                         elementId: action.elementId,
-                        values: response.d.results.map((r: any) => { return { label: r.Entity } })
+                        values: response.d.results.map((r: SapEntity) => { return { label: r.Entity } })
                     }
                 );
             }
@@ -66,7 +67,7 @@ export class RequestAutoCompleteActionHandler {
     protected handleRequestAutoCompleteAttribute(action: RequestAutoCompleteAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {
         const agent = new Agent({ rejectUnauthorized: false });
         const entity = action.elementId.split('.')[0];
-        const url = action.sapUrl + "sap/opu/odata/sap/ZER2CDS/Fields?$filter=Entity eq '" + entity + "' and startswith(Field,'" + action.search + "')&$top=20&$format=json&sap-client=" + action.sapClient;
+        const url = action.sapUrl + "sap/opu/odata/sap/ZER2CDS/Attributes?$filter=Entity eq '" + entity + "' and startswith(Attribute,'" + action.search + "')&$format=json&sap-client=" + action.sapClient;
 
         if (!url)
             return this.resolveEmpty(action, server);
@@ -89,7 +90,7 @@ export class RequestAutoCompleteActionHandler {
                         kind: SetAutoCompleteAction.KIND,
                         responseId: action.requestId,
                         elementId: action.elementId,
-                        values: response.d.results.map((r: any) => { return { label: r.Field } })
+                        values: response.d.results.map((r: SapAttribute) => { return { label: r.Attribute } })
                     }
                 );
             }

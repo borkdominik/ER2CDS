@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
 import { isActionMessage, SelectAction } from 'sprotty-protocol';
 import { LspWebviewEndpoint, LspWebviewEndpointOptions } from 'sprotty-vscode/lib/lsp';
-import { RequestAutoCompleteAction } from './actions';
+import { Action } from 'sprotty-protocol';
+import { CreateElementExternalAction, RequestAutoCompleteAction } from './actions';
 
 export class ER2CDSWebviewEndpoint extends LspWebviewEndpoint {
     protected context: vscode.ExtensionContext;
@@ -18,8 +19,9 @@ export class ER2CDSWebviewEndpoint extends LspWebviewEndpoint {
                     this.handleSelectAction(message.action as SelectAction);
                     break;
 
+                case CreateElementExternalAction.KIND:
                 case RequestAutoCompleteAction.KIND:
-                    message.action = await this.handleRequestAutoCompleteAction(message.action as RequestAutoCompleteAction);
+                    message.action = await this.extendActionWithSecrets(message.action);
                     break;
             }
         }
@@ -38,13 +40,13 @@ export class ER2CDSWebviewEndpoint extends LspWebviewEndpoint {
         }
     }
 
-    protected async handleRequestAutoCompleteAction(requestAutoCompleteAction: RequestAutoCompleteAction): Promise<RequestAutoCompleteAction> {
-        requestAutoCompleteAction.sapUrl = await this.context.secrets.get('sapUrl');
-        requestAutoCompleteAction.sapClient = await this.context.secrets.get('sapClient');
-        requestAutoCompleteAction.sapUsername = await this.context.secrets.get('sapUsername');
-        requestAutoCompleteAction.sapPassword = await this.context.secrets.get('sapPassword');
+    protected async extendActionWithSecrets(action: any): Promise<Action> {
+        action.sapUrl = await this.context.secrets.get('sapUrl');
+        action.sapClient = await this.context.secrets.get('sapClient');
+        action.sapUsername = await this.context.secrets.get('sapUsername');
+        action.sapPassword = await this.context.secrets.get('sapPassword');
 
-        return Promise.resolve(requestAutoCompleteAction);
+        return Promise.resolve(action);
     }
 
     protected deserializeUriOfDiagramIdentifier(): string {

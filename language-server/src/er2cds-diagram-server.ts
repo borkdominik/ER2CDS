@@ -1,6 +1,6 @@
-import { Action, ApplyLabelEditAction, DiagramServer, DiagramServices, RequestAction, RequestPopupModelAction, ResponseAction } from 'sprotty-protocol';
+import { Action, ApplyLabelEditAction, DiagramServer, DiagramServices, RequestAction, ResponseAction } from 'sprotty-protocol';
 import { ER2CDSServices } from './er2cds-module.js';
-import { CreateAttributeAction, CreateEdgeAction, CreateElementAction, DeleteElementAction, RequestAutoCompleteAction, UpdateElementPropertyAction } from './actions.js';
+import { CreateAttributeAction, CreateEdgeAction, CreateElementAction, CreateElementExternalAction, DeleteElementAction, RequestAutoCompleteAction, RequestPopupConfirmModelAction, UpdateElementPropertyAction } from './actions.js';
 import { CreateElementActionHandler } from './handler/CreateElementActionHandler.js';
 import { CreateAttributeActionHandler } from './handler/CreateAttributeActionHandler.js';
 import { CreateEdgeActionHandler } from './handler/CreateEdgeActionHandler.js';
@@ -8,7 +8,8 @@ import { ApplyLabelEditActionHandler } from './handler/ApplyLabelEditActionHandl
 import { UpdateElementPropertyHandler } from './handler/UpdateElementPropertyHandler.js';
 import { DeleteElementActionHandler } from './handler/DeleteElementActionHandler.js';
 import { RequestAutoCompleteActionHandler } from './handler/RequestAutoCompleteActionHandler.js';
-import { RequestPopupModelActionHandler } from './handler/RequestPopupModelActionHandler.js';
+import { RequestPopupConfirmModelActionHandler } from './handler/RequestPopupConfirmModelActionHandler.js';
+import { CreateElementExternalActionHandler } from './handler/CreateElementExternalActionHandler.js';
 
 export class ER2CDSDiagramServer extends DiagramServer {
     private services: ER2CDSServices;
@@ -31,6 +32,10 @@ export class ER2CDSDiagramServer extends DiagramServer {
         switch (action.kind) {
             case CreateElementAction.KIND:
                 new CreateElementActionHandler().handle(action as CreateElementAction, this, this.services);
+                break;
+
+            case CreateElementExternalAction.KIND:
+                new CreateElementExternalActionHandler().handle(action as CreateElementExternalAction, this, this.services);
                 break;
 
             case CreateEdgeAction.KIND:
@@ -57,8 +62,8 @@ export class ER2CDSDiagramServer extends DiagramServer {
                 new RequestAutoCompleteActionHandler().handle(action as RequestAutoCompleteAction, this, this.services);
                 break;
 
-            case RequestPopupModelAction.KIND:
-                new RequestPopupModelActionHandler().handle(action as RequestPopupModelAction, this, this.services);
+            case RequestPopupConfirmModelAction.KIND:
+                new RequestPopupConfirmModelActionHandler().handle(action as RequestPopupConfirmModelAction, this, this.services);
                 break;
 
         }

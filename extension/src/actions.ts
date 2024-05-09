@@ -1,5 +1,28 @@
 import { Action, RequestAction, ResponseAction, generateRequestId } from 'sprotty-protocol';
 
+export interface CreateElementExternalAction extends Action {
+    kind: typeof CreateElementExternalAction.KIND,
+    elementId: string;
+    sapUrl: string;
+    sapClient: string;
+    sapUsername: string;
+    sapPassword: string;
+}
+export namespace CreateElementExternalAction {
+    export const KIND = 'createElementExternalAction';
+
+    export function create(elementId: string, sapUrl: string, sapClient: string, sapUsername: string, sapPassword: string): CreateElementExternalAction {
+        return {
+            kind: KIND,
+            elementId: elementId,
+            sapUrl: sapUrl,
+            sapClient: sapClient,
+            sapUsername: sapUsername,
+            sapPassword: sapPassword
+        };
+    }
+}
+
 export interface RequestAutoCompleteAction extends RequestAction<SetAutoCompleteAction> {
     kind: typeof RequestAutoCompleteAction.KIND,
     elementId: string;

@@ -8,6 +8,7 @@ import { SModelElement, SModelIndex } from 'sprotty-protocol';
 import { CreateEdgeAction } from '../actions.js';
 import { NODE_RELATIONSHIP } from '../model.js';
 import { ER2CDS } from '../generated/ast.js';
+import { expandToString } from 'langium';
 
 export class CreateEdgeActionHandler {
     public handle(action: CreateEdgeAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {
@@ -64,9 +65,11 @@ export class CreateEdgeActionHandler {
                 [sourceUri.toString()]: [
                     {
                         range: range,
-                        newText: 'relationship' + ' ' + this.getNewName(NODE_RELATIONSHIP, 'Relationship', server.state.currentRoot.children) + '{\n' +
-                            '\t' + source.id + ' -> ' + ' ' +
-                            '\n}'
+                        newText: expandToString`
+                            relationship ${this.getNewName(NODE_RELATIONSHIP, 'Relationship', server.state.currentRoot.children)} {
+                                ${source.id} -> 
+                            }
+                            `
                     }
                 ]
             }
@@ -86,9 +89,11 @@ export class CreateEdgeActionHandler {
                 [sourceUri.toString()]: [
                     {
                         range: range,
-                        newText: 'relationship' + ' ' + this.getNewName(NODE_RELATIONSHIP, 'Relationship', server.state.currentRoot.children) + '{\n' +
-                            '\t' + ' ' + ' -> ' + element.id +
-                            '\n}'
+                        newText: expandToString`
+                        relationship ${this.getNewName(NODE_RELATIONSHIP, 'Relationship', server.state.currentRoot.children)} {
+                             -> ${element.id}
+                        }
+                        `
                     }
                 ]
             }
@@ -107,8 +112,8 @@ export class CreateEdgeActionHandler {
             changes: {
                 [sourceUri.toString()]: [
                     {
-                        range: Range.create(Position.create(range.start.line, 0), Position.create(range.start.line, source.id.length + 4 + targetText.length)),
-                        newText: '\t' + source.id + ' -> ' + targetText
+                        range: Range.create(Position.create(range.start.line, 0), Position.create(range.start.line, source.id.length + 5 + targetText.length)),
+                        newText: expandToString`\t${source.id} -> ${targetText}`
                     }
                 ]
             }
@@ -128,7 +133,7 @@ export class CreateEdgeActionHandler {
                 [sourceUri.toString()]: [
                     {
                         range: Range.create(Position.create(range.start.line, 0), Position.create(range.start.line, sourceText.length + 4 + target.id.length)),
-                        newText: '\t' + sourceText + ' -> ' + target.id
+                        newText: expandToString`\t${sourceText} -> ${target.id}`
                     }
                 ]
             }

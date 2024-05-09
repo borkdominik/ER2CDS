@@ -1,4 +1,4 @@
-import { Action, RequestAction, ResponseAction, generateRequestId } from 'sprotty-protocol';
+import { Action, RequestAction, ResponseAction, generateRequestId, Bounds, SetPopupModelAction } from 'sprotty-protocol';
 
 export interface CreateElementAction extends Action {
     kind: typeof CreateElementAction.KIND,
@@ -11,6 +11,29 @@ export namespace CreateElementAction {
         return {
             kind: KIND,
             elementType: elementType
+        };
+    }
+}
+
+export interface CreateElementExternalAction extends Action {
+    kind: typeof CreateElementExternalAction.KIND,
+    elementId: string;
+    sapUrl: string;
+    sapClient: string;
+    sapUsername: string;
+    sapPassword: string;
+}
+export namespace CreateElementExternalAction {
+    export const KIND = 'createElementExternalAction';
+
+    export function create(elementId: string, sapUrl: string, sapClient: string, sapUsername: string, sapPassword: string): CreateElementExternalAction {
+        return {
+            kind: KIND,
+            elementId: elementId,
+            sapUrl: sapUrl,
+            sapClient: sapClient,
+            sapUsername: sapUsername,
+            sapPassword: sapPassword
         };
     }
 }
@@ -123,6 +146,24 @@ export namespace SetAutoCompleteAction {
             responseId: '',
             elementId: elementId,
             values: values
+        };
+    }
+}
+
+export interface RequestPopupConfirmModelAction extends RequestAction<SetPopupModelAction> {
+    kind: typeof RequestPopupConfirmModelAction.KIND
+    elementId: string
+    bounds: Bounds
+}
+export namespace RequestPopupConfirmModelAction {
+    export const KIND = 'requestPopupConfirmModel';
+
+    export function create(options: { elementId: string, bounds: Bounds }): RequestPopupConfirmModelAction {
+        return {
+            kind: KIND,
+            elementId: options.elementId,
+            bounds: options.bounds,
+            requestId: generateRequestId()
         };
     }
 }

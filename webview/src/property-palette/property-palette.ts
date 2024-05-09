@@ -9,9 +9,9 @@ import { createReferenceProperty } from './reference/reference.creator';
 import { ElementReferencePropertyItem } from './reference/reference.model';
 import { createTextProperty } from './text/text.creator';
 import { ElementTextPropertyItem } from './text/text.model';
-import { Action, SelectAction, RequestPopupModelAction, Bounds } from 'sprotty-protocol';
+import { Action, SelectAction, Bounds } from 'sprotty-protocol';
 import { EditorPanelChild } from '../editor-panel/editor-panel';
-import { AutoCompleteValue, CreateAttributeAction, DeleteElementAction, RequestAutoCompleteAction, UpdateElementPropertyAction } from '../actions';
+import { AutoCompleteValue, CreateAttributeAction, DeleteElementAction, RequestAutoCompleteAction, RequestPopupConfirmModelAction, UpdateElementPropertyAction } from '../actions';
 import { DiagramEditorService } from '../services/diagram-editor-service';
 import { DATATYPES, EntityNode, RelationshipNode } from '../model';
 import { AutoCompleteWidget } from './auto-complete/auto-complete-widget';
@@ -169,7 +169,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
 
         if (this.requestPopupModel) {
             const point = Bounds.center(this.root.canvasBounds);
-            this.actionDispatcher.dispatch(RequestPopupModelAction.create({ elementId: this.activeElementId, bounds: { x: point.x, y: point.y, height: -1, width: -1 } }));
+            this.actionDispatcher.dispatch(RequestPopupConfirmModelAction.create({ elementId: this.activeElementId, bounds: { x: point.x - 125, y: point.y - 45, height: 0, width: 0 } }));
             this.requestPopupModel = false;
         }
 

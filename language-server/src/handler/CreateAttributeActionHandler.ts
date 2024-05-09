@@ -1,4 +1,4 @@
-import { CompositeCstNodeImpl, URI } from 'langium';
+import { CompositeCstNodeImpl, URI, expandToString } from 'langium';
 import { SModelElement, SModelIndex } from 'sprotty-protocol';
 import { CreateAttributeAction } from '../actions.js';
 import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
@@ -40,12 +40,10 @@ export class CreateAttributeActionHandler {
             changes: {
                 [sourceUri.toString()]: [
                     {
-                        range: Range.create(Position.create(lastChild.range.start.line, 0), Position.create(lastChild.range.end.line, newText.length + 8)),
-                        newText: '\t' + newText + ':' + ' ' + 'STRING'
-                    },
-                    {
-                        range: Range.create(Position.create(lastChild.range.start.line + 1, lastChild.range.start.character), Position.create(lastChild.range.end.line + 1, lastChild.range.end.character)),
-                        newText: lastChild.text + '\n'
+                        range: Range.create(Position.create(lastChild.range.start.line, 0), Position.create(lastChild.range.end.line, lastChild.range.end.character)),
+                        newText: expandToString`
+                            ${newText} : STRING
+                        }`
                     }
                 ]
             }

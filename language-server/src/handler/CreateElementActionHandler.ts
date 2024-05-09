@@ -8,6 +8,7 @@ import { ER2CDSServices } from '../er2cds-module.js';
 import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
 import { SModelElement } from 'sprotty-protocol';
 import { NODE_ENTITY, NODE_RELATIONSHIP } from '../model.js';
+import { expandToString } from 'langium';
 
 export class CreateElementActionHandler {
     public handle(action: CreateElementAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {
@@ -42,7 +43,10 @@ export class CreateElementActionHandler {
                 [sourceUri.toString()]: [
                     {
                         range: Range.create(Position.create(textDocument?.lineCount + 1, 0), Position.create(textDocument?.lineCount + 1, 0)),
-                        newText: '\n\n' + 'entity' + ' ' + this.getNewName(NODE_ENTITY, 'Entity', server.state.currentRoot.children) + '{' + '\n' + '}' + '\n'
+                        newText: expandToString`\n
+                        entity ${this.getNewName(NODE_ENTITY, 'Entity', server.state.currentRoot.children)} {
+                        }
+                        `
                     }
                 ]
             }
@@ -61,7 +65,10 @@ export class CreateElementActionHandler {
                 [sourceUri.toString()]: [
                     {
                         range: Range.create(Position.create(textDocument?.lineCount + 1, 0), Position.create(textDocument?.lineCount + 1, 0)),
-                        newText: '\n\n' + 'relationship' + ' ' + this.getNewName(NODE_RELATIONSHIP, 'Relationship', server.state.currentRoot.children) + '{ }'
+                        newText: expandToString`\n
+                        relationship ${this.getNewName(NODE_RELATIONSHIP, 'Relationship', server.state.currentRoot.children)} {
+                        }
+                        `
                     }
                 ]
             }

@@ -2,7 +2,7 @@ import { injectable } from 'inversify';
 import { ActionHandlerRegistry } from 'sprotty';
 import { Action, ApplyLabelEditAction } from 'sprotty-protocol';
 import { VscodeLspEditDiagramServer } from 'sprotty-vscode-webview/lib/lsp/editing';
-import { CreateElementAction, DeleteElementAction, CreateEdgeAction, CreateAttributeAction, UpdateElementPropertyAction, RequestAutoCompleteAction } from './actions';
+import { CreateElementAction, DeleteElementAction, CreateEdgeAction, CreateAttributeAction, UpdateElementPropertyAction, RequestAutoCompleteAction, CreateElementExternalAction, RequestPopupConfirmModelAction } from './actions';
 
 @injectable()
 export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
@@ -11,6 +11,7 @@ export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
         super.initialize(registry);
 
         registry.register(CreateElementAction.KIND, this);
+        registry.register(CreateElementExternalAction.KIND, this);
         registry.register(CreateEdgeAction.KIND, this);
         registry.register(CreateAttributeAction.KIND, this);
 
@@ -19,11 +20,15 @@ export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
         registry.register(ApplyLabelEditAction.KIND, this);
 
         registry.register(RequestAutoCompleteAction.KIND, this);
+        registry.register(RequestPopupConfirmModelAction.KIND, this);
     }
 
     public override handleLocally(action: Action): boolean {
         switch (action.kind) {
             case CreateElementAction.KIND:
+                return true;
+
+            case CreateElementExternalAction.KIND:
                 return true;
 
             case CreateEdgeAction.KIND:

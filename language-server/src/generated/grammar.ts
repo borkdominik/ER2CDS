@@ -527,7 +527,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
       "name": "ID",
       "definition": {
         "$type": "RegexToken",
-        "regex": "/[_a-zA-Z][\\\\w_]*/"
+        "regex": "/[_a-zA-Z\\\\/][\\\\w_]*/"
       },
       "fragment": false,
       "hidden": false

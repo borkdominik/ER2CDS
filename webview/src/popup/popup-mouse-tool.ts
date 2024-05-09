@@ -2,7 +2,7 @@ import { inject, injectable, multiInject, optional } from 'inversify';
 import { EMPTY_ROOT, IActionDispatcher, MouseListener, PopupMouseTool, SModelElementImpl, TYPES } from 'sprotty';
 import { PopupButton } from './model';
 import { Action, SetPopupModelAction } from 'sprotty-protocol';
-import { CreateAttributeAction, RequestAutoCompleteAction } from '../actions';
+import { CreateElementExternalAction } from '../actions';
 
 @injectable()
 export class ER2CDSPopupMouseTool extends PopupMouseTool {
@@ -26,15 +26,7 @@ export class PopupButtonListener extends MouseListener {
             return [];
 
         if (target.type === 'button:yes') {
-            this.actionDispatcher.request(RequestAutoCompleteAction.create(target.target, '')).then(a => {
-                const actions = [];
-
-                a.values.forEach(v => {
-                    actions.push(CreateAttributeAction.create(target.target));
-                });
-
-                this.actionDispatcher.dispatchAll(actions);
-            });
+            this.actionDispatcher.dispatch(CreateElementExternalAction.create(target.target));
         }
 
         const actions: Action[] = [];

@@ -8,7 +8,7 @@ import type { AstNode, Reference, ReferenceInfo, TypeMetaData } from 'langium';
 import { AbstractAstReflection } from 'langium';
 
 export const ER2CDSTerminals = {
-    ID: /[_a-zA-Z][\w_]*/,
+    ID: /[_a-zA-Z\/][\w_]*/,
     INT: /[0-9]+/,
     STRING: /[A-Za-z]+/,
     WS: /\s+/,
