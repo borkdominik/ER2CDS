@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { isActionMessage, SelectAction } from 'sprotty-protocol';
 import { LspWebviewEndpoint, LspWebviewEndpointOptions } from 'sprotty-vscode/lib/lsp';
 import { Action } from 'sprotty-protocol';
-import { CreateElementExternalAction, RequestAutoCompleteAction } from './actions';
+import { CreateElementExternalAction, RequestAutoCompleteAction, UpdateElementPropertyAction } from './actions';
 
 export class ER2CDSWebviewEndpoint extends LspWebviewEndpoint {
     protected context: vscode.ExtensionContext;
@@ -20,6 +20,7 @@ export class ER2CDSWebviewEndpoint extends LspWebviewEndpoint {
                     break;
 
                 case CreateElementExternalAction.KIND:
+                case UpdateElementPropertyAction.KIND:
                 case RequestAutoCompleteAction.KIND:
                     message.action = await this.extendActionWithSecrets(message.action);
                     break;

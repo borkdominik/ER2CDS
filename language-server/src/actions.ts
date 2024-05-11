@@ -73,17 +73,25 @@ export interface UpdateElementPropertyAction extends Action {
     kind: typeof UpdateElementPropertyAction.KIND,
     elementId: string,
     propertyId: string,
-    value: string
+    value: string,
+    sapUrl: string;
+    sapClient: string;
+    sapUsername: string;
+    sapPassword: string;
 }
 export namespace UpdateElementPropertyAction {
     export const KIND = 'updateElementProperty';
 
-    export function create(elementId: string, propertyId: string, value: string): UpdateElementPropertyAction {
+    export function create(elementId: string, propertyId: string, value: string, sapUrl: string, sapClient: string, sapUsername: string, sapPassword: string): UpdateElementPropertyAction {
         return {
             kind: KIND,
             elementId: elementId,
             propertyId: propertyId,
-            value: value
+            value: value,
+            sapUrl: sapUrl,
+            sapClient: sapClient,
+            sapUsername: sapUsername,
+            sapPassword: sapPassword
         };
     }
 }

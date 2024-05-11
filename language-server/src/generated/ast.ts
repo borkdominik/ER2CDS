@@ -18,7 +18,7 @@ export const ER2CDSTerminals = {
 
 export type AttributeType = 'key';
 
-export type CardinalityType = '1' | 'N';
+export type CardinalityType = '0..N' | '1' | '1..N';
 
 export type KEY = 'key';
 
@@ -26,16 +26,22 @@ export function isKEY(item: unknown): item is KEY {
     return item === 'key';
 }
 
-export type MANY = 'N';
-
-export function isMANY(item: unknown): item is MANY {
-    return item === 'N';
-}
-
 export type ONE = '1';
 
 export function isONE(item: unknown): item is ONE {
     return item === '1';
+}
+
+export type ONE_MANY = '1..N';
+
+export function isONE_MANY(item: unknown): item is ONE_MANY {
+    return item === '1..N';
+}
+
+export type ZERO_MANY = '0..N';
+
+export function isZERO_MANY(item: unknown): item is ZERO_MANY {
+    return item === '0..N';
 }
 
 export interface Attribute extends AstNode {
