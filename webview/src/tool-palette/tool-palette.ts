@@ -3,7 +3,7 @@ import { AbstractUIExtension, IActionHandler, ICommand, codiconCSSClasses, Actio
 import { Action } from 'sprotty-protocol';
 import { matchesKeystroke } from 'sprotty/lib/utils/keyboard';
 import { ToolPaletteItem } from './tool-palette-item';
-import { EnableCreateAttributeToolAction, EnableCreateEdgeToolAction, EnableDefaultToolsAction, EnableDeleteMouseToolAction, EnableMarqueeMouseToolAction } from './tools/actions';
+import { EnableCreateAttributeToolAction, EnableCreateEdgeToolAction, EnableCreateJoinClauseToolAction, EnableDefaultToolsAction, EnableDeleteMouseToolAction, EnableMarqueeMouseToolAction } from './tools/actions';
 import { CreateElementAction } from '../actions';
 import { NODE_ENTITY, NODE_RELATIONSHIP } from '../model';
 import { EnableToolPaletteAction } from './actions';
@@ -372,6 +372,15 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
             actions: [EnableCreateAttributeToolAction.create()]
         }
         attributeGroup.children.push(addAttributeItem);
+
+        const addJoinClauseItem: ToolPaletteItem = {
+            id: 'tool-palette-add-join-clause',
+            label: 'Add Join Clause',
+            sortString: 'add-join-clause',
+            icon: '',
+            actions: [EnableCreateJoinClauseToolAction.create()]
+        }
+        attributeGroup.children.push(addJoinClauseItem);
 
         this.paletteItems.push(attributeGroup);
     }

@@ -7,7 +7,7 @@ import { ER2CDS } from '../generated/ast.js';
 import { Range } from 'vscode-languageserver'
 import { WorkspaceEdit } from 'vscode-languageserver-protocol';
 import { WorkspaceEditAction } from 'sprotty-vscode-protocol/lib/lsp/editing';
-import { COMP_ATTRIBUTES_ROW, EDGE, Edge, NODE_ENTITY, NODE_RELATIONSHIP } from '../model.js';
+import { COMP_ATTRIBUTE, COMP_JOIN_CLAUSE, EDGE, Edge, NODE_ENTITY, NODE_RELATIONSHIP } from '../model.js';
 
 
 export class DeleteElementActionHandler {
@@ -63,13 +63,25 @@ export class DeleteElementActionHandler {
                     });
                 }
 
-                if (element?.type === COMP_ATTRIBUTES_ROW) {
+                if (element?.type === COMP_ATTRIBUTE) {
                     const split = element.id.split('.');
                     const entityId = split[0];
                     const attributeId = split[1];
 
                     model.entities.filter(e => e.name === entityId).map(e => e.attributes.forEach(a => {
                         if (a.name === attributeId && a.$cstNode?.range)
+                            this.createWorkspaceEditDeleteAction(sourceUri, a.$cstNode?.range);
+                    }));
+                }
+
+                if (element?.type === COMP_JOIN_CLAUSE) {
+                    const split = element.id.split('.');
+                    const relationshipId = split[0];
+                    const firstJoinClauseAttributeId = split[1];
+                    const secondJoinClauseAttributeId = split[2];
+
+                    model.relationships.filter(e => e.name === relationshipId).map(e => e.attributes.forEach(a => {
+                        if (a.firstAttribute.$refText === firstJoinClauseAttributeId && a.secondAttribute.$refText === secondJoinClauseAttributeId && a.$cstNode?.range)
                             this.createWorkspaceEditDeleteAction(sourceUri, a.$cstNode?.range);
                     }));
                 }

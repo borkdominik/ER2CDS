@@ -11,9 +11,9 @@ import { createTextProperty } from './text/text.creator';
 import { ElementTextPropertyItem } from './text/text.model';
 import { Action, SelectAction, Bounds } from 'sprotty-protocol';
 import { EditorPanelChild } from '../editor-panel/editor-panel';
-import { AutoCompleteValue, CreateAttributeAction, DeleteElementAction, RequestAutoCompleteAction, RequestPopupConfirmModelAction, UpdateElementPropertyAction } from '../actions';
+import { AutoCompleteValue, CreateAttributeAction, CreateJoinClauseAction, DeleteElementAction, RequestAutoCompleteAction, RequestPopupConfirmModelAction, UpdateElementPropertyAction } from '../actions';
 import { DiagramEditorService } from '../services/diagram-editor-service';
-import { DATATYPES, EntityNode, LABEL_ATTRIBUTE_KEY, RelationshipNode } from '../model';
+import { COMP_ATTRIBUTE, DATATYPES, EntityNode, LABEL_ATTRIBUTE_KEY, NODE_ENTITY, RelationshipNode } from '../model';
 import { AutoCompleteWidget } from './auto-complete/auto-complete-widget';
 import { ElementAutoCompletePropertyItem } from './auto-complete/auto-complete.model';
 import { createAutoCompleteProperty } from './auto-complete/auto-complete.creator';
@@ -140,14 +140,19 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             this.initializeEntityPropertyPaletteItems(element, propertyPaletteItems);
         }
 
+        // Attributes
+        if (element instanceof SCompartmentImpl && element.parent && (element.parent as SCompartmentImpl).parent && (element.parent as SCompartmentImpl).parent instanceof EntityNode) {
+            this.initializeAttributesPropertyPaletteItems(element, propertyPaletteItems);
+        }
+
         // Relationship
         if (element instanceof RelationshipNode) {
             this.initializeRelationshipPropertyPaletteItems(element, propertyPaletteItems);
         }
 
-        // Attributes
-        if (element instanceof SCompartmentImpl && element.parent && (element.parent as SCompartmentImpl).parent && (element.parent as SCompartmentImpl).parent instanceof EntityNode) {
-            this.initializeAttributesPropertyPaletteItems(element, propertyPaletteItems);
+        // Join Clauses
+        if (element instanceof SCompartmentImpl && element.parent && (element.parent as SCompartmentImpl).parent && (element.parent as SCompartmentImpl).parent instanceof RelationshipNode) {
+            this.initializeJoinClausesPropertyPaletteItems(element, propertyPaletteItems);
         }
 
         this.palette = <PropertyPaletteModel>{
@@ -235,9 +240,23 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
                     created = createTextProperty(propertyItem, {
                         onBlur: (item, input) => {
                             this.update(item.elementId, item.propertyId, input.value);
+
+                            if (item.propertyId === 'entity-name' || item.propertyId === 'relationship-name') {
+                                this.activeElementId = input.value;
+                                this.lastPalettes = [];
+                            } else {
+                                this.activeElementId = this.createNewElementId(item.elementId, item.text, input.value);
+                            }
                         },
                         onEnter: (item, input) => {
                             this.update(item.elementId, item.propertyId, input.value);
+
+                            if (item.propertyId === 'entity-name' || item.propertyId === 'relationship-name') {
+                                this.activeElementId = input.value;
+                                this.lastPalettes = [];
+                            } else {
+                                this.activeElementId = this.createNewElementId(item.elementId, item.text, input.value);
+                            }
                         }
                     });
                 } else if (ElementAutoCompletePropertyItem.is(propertyItem)) {
@@ -358,6 +377,51 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             text: (relationship.children[0] as SLabelImpl).text
         }
         propertyPaletteItems.push(relationshipNamePaletteItem);
+
+        const sourceJoinTable = ((relationship.children[1] as SCompartmentImpl).children[0] as SLabelImpl).text;
+        const targetJoinTable = ((relationship.children[1] as SCompartmentImpl).children[1] as SLabelImpl).text;
+
+        const sourceJoinTableAutoComplete = new AutoCompleteWidget(
+            { provideValues: input => this.retrieveSuggestionsEntity(sourceJoinTable, '', input) },
+            { executeFromValue: input => this.update(sourceJoinTable, 'source-join-table', input.label) },
+            { executeFromTextOnlyInput: input => this.update(sourceJoinTable, 'source-join-table', input) }
+        );
+
+        const targetJoinTableAutoComplete = new AutoCompleteWidget(
+            { provideValues: input => this.retrieveSuggestionsEntity(targetJoinTable, '', input) },
+            { executeFromValue: input => this.update(targetJoinTable, 'target-join-table', input.label) },
+            { executeFromTextOnlyInput: input => this.update(targetJoinTable, 'target-join-table', input) }
+        );
+
+        const relationshipSourceJoinTablePaletteItem = <ElementAutoCompletePropertyItem>{
+            type: ElementAutoCompletePropertyItem.TYPE,
+            elementId: relationship.id,
+            propertyId: 'source-join-table',
+            label: 'Join Source',
+            value: sourceJoinTable,
+            autoComplete: sourceJoinTableAutoComplete
+        }
+        propertyPaletteItems.push(relationshipSourceJoinTablePaletteItem);
+
+        const relationshipTargetJoinTablePaletteItem = <ElementAutoCompletePropertyItem>{
+            type: ElementAutoCompletePropertyItem.TYPE,
+            elementId: relationship.id,
+            propertyId: 'target-join-table',
+            label: 'Join Target',
+            value: targetJoinTable,
+            autoComplete: targetJoinTableAutoComplete
+        }
+        propertyPaletteItems.push(relationshipTargetJoinTablePaletteItem);
+
+        const relationshipJoinClausesPaletteItems = <ElementReferencePropertyItem>{
+            type: ElementReferencePropertyItem.TYPE,
+            elementId: relationship.id,
+            isOrderable: false,
+            label: 'Join Clauses',
+            references: relationship.children[2].children.map(c => ({ elementId: c.id, label: (c.children[0] as SLabelImpl).text + ' = ' + (c.children[1] as SLabelImpl).text, isReadonly: false }) as ElementReferencePropertyItem.Reference),
+            creates: [({ label: 'Create Join Clause', action: CreateJoinClauseAction.create(relationship.id) }) as ElementReferencePropertyItem.CreateReference]
+        }
+        propertyPaletteItems.push(relationshipJoinClausesPaletteItems);
     }
 
     protected initializeAttributesPropertyPaletteItems(element: SCompartmentImpl, propertyPaletteItems: ElementPropertyItem[]) {
@@ -401,6 +465,30 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         }
     }
 
+    protected initializeJoinClausesPropertyPaletteItems(element: SCompartmentImpl, propertyPaletteItems: ElementPropertyItem[]) {
+        const relationship = (element.parent as SCompartmentImpl).parent as RelationshipNode;
+
+        if (element.children.length > 1) {
+            const relationshipFirstJoinClauseAttributeNamePaletteItem = <ElementTextPropertyItem>{
+                type: ElementTextPropertyItem.TYPE,
+                elementId: element.children[0].id,
+                propertyId: 'first-join-clause-attribute-name',
+                label: 'First Join Clause Attribute',
+                text: (element.children[0] as SLabelImpl).text
+            };
+            propertyPaletteItems.push(relationshipFirstJoinClauseAttributeNamePaletteItem);
+
+            const relationshipSecondJoinClauseAttributeNamePaletteItem = <ElementTextPropertyItem>{
+                type: ElementTextPropertyItem.TYPE,
+                elementId: element.children[1].id,
+                propertyId: 'second-join-clause-attribute-name',
+                label: 'Second Join Clause Attribute',
+                text: (element.children[1] as SLabelImpl).text
+            };
+            propertyPaletteItems.push(relationshipSecondJoinClauseAttributeNamePaletteItem);
+        }
+    }
+
     protected async update(elementId: string, propertyId: string, value: string): Promise<void> {
         this.disable();
 
@@ -408,7 +496,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
     }
 
     protected async retrieveSuggestionsEntity(elementId: string, propertyId: string, input: string): Promise<AutoCompleteValue[]> {
-        const response = await this.actionDispatcher.request(RequestAutoCompleteAction.create(elementId, input));
+        const response = await this.actionDispatcher.request(RequestAutoCompleteAction.create(elementId, NODE_ENTITY, input));
         return response.values;
     }
 
@@ -430,22 +518,34 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
 
     protected async retrieveSuggestionsAttribute(elementId: string, propertyId: string, input: string): Promise<AutoCompleteValue[]> {
         const attributeId = propertyId.substring(0, propertyId.lastIndexOf('.'));
-        const response = await this.actionDispatcher.request(RequestAutoCompleteAction.create(attributeId, input));
+        const response = await this.actionDispatcher.request(RequestAutoCompleteAction.create(attributeId, COMP_ATTRIBUTE, input));
         return response.values;
     }
 
     protected executeFromSuggestionAttribute(elementId: string, propertyId: string, input: AutoCompleteValue): void {
         this.update(propertyId, 'attribute-name', input.label);
 
-        this.activeElementId = elementId;
-        this.lastPalettes = [];
+        this.activeElementId = this.createNewElementId(elementId, propertyId.split('.')[1], input.label);
     }
 
     protected executeFromTextOnlyInputAttribute(elementId: string, propertyId: string, input: string): void {
         this.update(propertyId, 'attribute-name', input);
 
-        this.activeElementId = elementId;
-        this.lastPalettes = [];
+        this.activeElementId = this.createNewElementId(elementId, propertyId.split('.')[1], input);
+    }
+
+    private createNewElementId(elementId: string, oldAttributeElementId: string, newAttributeElementId: string): string {
+        const split = elementId.split('.');
+
+        if (split.length >= 4) {
+            if (split[1] === oldAttributeElementId) {
+                return split[0] + '.' + newAttributeElementId + '.' + split[2];
+            } else {
+                return split[0] + '.' + split[1] + '.' + newAttributeElementId;
+            }
+        } else {
+            return split[0] + '.' + newAttributeElementId;
+        }
     }
 }
 

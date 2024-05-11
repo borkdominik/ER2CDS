@@ -52,6 +52,22 @@ export class UpdateElementPropertyHandler {
             case 'attribute-type':
                 await this.handleAttributeTypeEdit(action, model, sourceUri);
                 break;
+
+            case 'source-join-table':
+                await this.handleSourceJoinTableEdit(action, model, sourceUri);
+                break;
+
+            case 'target-join-table':
+                await this.handleTargetJoinTableEdit(action, model, sourceUri);
+                break;
+
+            case 'first-join-clause-attribute-name':
+                await this.handleFirstJoinClauseAttributeEdit(action, model, sourceUri);
+                break;
+
+            case 'second-join-clause-attribute-name':
+                await this.handleSecondJoinClauseAttributeEdit(action, model, sourceUri);
+                break;
         }
 
         if (this.workspaceEdit) {
@@ -154,6 +170,46 @@ export class UpdateElementPropertyHandler {
                     const range = (a.$cstNode as CompositeCstNode).content[2].range;
                     this.createWorkspaceEditAction(sourceUri, Range.create(Position.create(range.end.line, range.end.character), Position.create(range.end.line, range.end.character + 4)), ' key ');
                 }
+            }
+        }));
+    }
+
+    protected async handleSourceJoinTableEdit(action: UpdateElementPropertyAction, model: ER2CDS, sourceUri: URI): Promise<void> {
+        model.relationships.forEach(r => {
+            if (r.first?.target.$refText === action.elementId && r.first?.target.$refNode?.range) {
+                this.createWorkspaceEditAction(sourceUri, r.first?.target.$refNode?.range, action.value);
+            }
+        });
+    }
+
+    protected async handleTargetJoinTableEdit(action: UpdateElementPropertyAction, model: ER2CDS, sourceUri: URI): Promise<void> {
+        model.relationships.forEach(r => {
+            if (r.second?.target.$refText === action.elementId && r.second?.target.$refNode?.range) {
+                this.createWorkspaceEditAction(sourceUri, r.second?.target.$refNode?.range, action.value);
+            }
+        });
+    }
+
+    protected async handleFirstJoinClauseAttributeEdit(action: UpdateElementPropertyAction, model: ER2CDS, sourceUri: URI): Promise<void> {
+        const split = action.elementId.split('.');
+        const relationshipId = split[0];
+        const firstJoinClauseAttributeId = split[1];
+
+        model.relationships.filter(r => r.name === relationshipId).map(e => e.attributes.forEach(a => {
+            if (a.firstAttribute.$refText === firstJoinClauseAttributeId && a.firstAttribute.$refNode?.range) {
+                this.createWorkspaceEditAction(sourceUri, a.firstAttribute.$refNode?.range, action.value);
+            }
+        }));
+    }
+
+    protected async handleSecondJoinClauseAttributeEdit(action: UpdateElementPropertyAction, model: ER2CDS, sourceUri: URI): Promise<void> {
+        const split = action.elementId.split('.');
+        const relationshipId = split[0];
+        const secondJoinClauseAttributeId = split[2];
+
+        model.relationships.filter(r => r.name === relationshipId).map(e => e.attributes.forEach(a => {
+            if (a.secondAttribute.$refText === secondJoinClauseAttributeId && a.secondAttribute.$refNode?.range) {
+                this.createWorkspaceEditAction(sourceUri, a.secondAttribute.$refNode?.range, action.value);
             }
         }));
     }

@@ -2,7 +2,7 @@ import { RequestAutoCompleteAction, SetAutoCompleteAction } from '../actions.js'
 import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
 import { ER2CDSServices } from '../er2cds-module.js';
 import { SModelIndex } from 'sprotty-protocol';
-import { COMP_ATTRIBUTES_ROW, NODE_ENTITY } from '../model.js';
+import { COMP_ATTRIBUTE, NODE_ENTITY } from '../model.js';
 import { Agent } from 'https';
 import fetch from 'node-fetch';
 import { SapAttribute, SapEntity } from '../model-external.js';
@@ -15,17 +15,13 @@ export class RequestAutoCompleteActionHandler {
         const modelIndex = new SModelIndex();
         modelIndex.add(server.state.currentRoot);
 
-        const element = modelIndex.getById(action.elementId);
-
-        if (element?.type === NODE_ENTITY) {
+        if (action.type === NODE_ENTITY) {
             return this.handleRequestAutoCompleteEntity(action, server, services);
-
-        } else if (element?.type === COMP_ATTRIBUTES_ROW) {
+        } else if (action.type === COMP_ATTRIBUTE) {
             return this.handleRequestAutoCompleteAttribute(action, server, services);
-
         }
 
-        return Promise.resolve();
+        return this.resolveEmpty(action, server);
     }
 
     protected handleRequestAutoCompleteEntity(action: RequestAutoCompleteAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {

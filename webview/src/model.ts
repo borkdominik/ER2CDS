@@ -10,7 +10,10 @@ export const EDGE = 'edge';
 
 export const COMP_ENTITY_HEADER = 'comp:entity-header';
 export const COMP_ATTRIBUTES = 'comp:attributes';
-export const COMP_ATTRIBUTES_ROW = 'comp:attributes-row';
+export const COMP_ATTRIBUTE = 'comp:attribute';
+export const COMP_JOIN_TABLE = 'comp:join-table';
+export const COMP_JOIN_CLAUSES = 'comp:join-clauses';
+export const COMP_JOIN_CLAUSE = 'comp:join-clause';
 
 export const LABEL_ENTITY = 'label:entity';
 export const LABEL_RELATIONSHIP = 'label:relationship';
@@ -117,6 +120,7 @@ export class EntityNode extends SNodeImpl {
 export class RelationshipNode extends SNodeImpl {
 
 }
+
 export class Edge extends SEdgeImpl {
     cardinality?: string;
 }

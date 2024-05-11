@@ -1,16 +1,19 @@
 
 import { GeneratorContext, IdCache, LangiumDiagramGenerator } from 'langium-sprotty';
 import { SCompartment, SLabel } from 'sprotty-protocol';
-import { Attribute, ER2CDS, Entity, Relationship, RelationshipEntity } from './generated/ast.js';
+import { Attribute, ER2CDS, Entity, Relationship, RelationshipAttribute, RelationshipEntity } from './generated/ast.js';
 import { ER2CDSServices } from './er2cds-module.js';
 import { AstNode } from 'langium';
 import { LayoutOptions } from 'elkjs';
 import {
     ER2CDSRoot, Edge, EntityNode, RelationshipNode,
     GRAPH, NODE_ENTITY, NODE_RELATIONSHIP, EDGE,
-    COMP_ATTRIBUTES, COMP_ATTRIBUTES_ROW, COMP_ENTITY_HEADER,
+    COMP_ATTRIBUTES, COMP_ATTRIBUTE, COMP_ENTITY_HEADER,
     LABEL_ATTRIBUTE, LABEL_CARDINALITY, LABEL_ENTITY, LABEL_RELATIONSHIP, LABEL_SEPARATOR,
-    LABEL_ATTRIBUTE_KEY
+    LABEL_ATTRIBUTE_KEY,
+    COMP_JOIN_TABLE,
+    COMP_JOIN_CLAUSE,
+    COMP_JOIN_CLAUSES
 } from './model.js';
 
 export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
@@ -71,7 +74,7 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
 
         const attributesCompartment = <SCompartment>{
             type: COMP_ATTRIBUTES,
-            id: entityId + '.attributes',
+            id: idCache.uniqueId(entityId + '.attributes'),
             layout: 'vbox',
             layoutOptions: <LayoutOptions>{
                 HAlign: 'left',
@@ -87,7 +90,7 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
     protected generateRelationship(relationship: Relationship, { idCache }: GeneratorContext<ER2CDS>): RelationshipNode {
         const relationshipId = idCache.uniqueId(relationship.name, relationship);
 
-        return <RelationshipNode>{
+        const node = <RelationshipNode>{
             type: NODE_RELATIONSHIP,
             id: relationshipId,
             children: [
@@ -102,6 +105,33 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
                 paddingFactor: 2.0
             }
         };
+
+        const joinTableCompartment = <SCompartment>{
+            type: COMP_JOIN_TABLE,
+            id: idCache.uniqueId(relationshipId + '.join-table-comp'),
+            children: [
+                <SLabel>{
+                    type: LABEL_ENTITY,
+                    id: idCache.uniqueId(relationship.first?.target.$refText + '.join-table-label'),
+                    text: relationship.first?.target.$refText
+                },
+                <SLabel>{
+                    type: LABEL_ENTITY,
+                    id: idCache.uniqueId(relationship.second?.target.$refText + '.join-table-label'),
+                    text: relationship.second?.target.$refText
+                }
+            ]
+        };
+        node.children?.push(joinTableCompartment);
+
+        const joinClauseCompartment = <SCompartment>{
+            type: COMP_JOIN_CLAUSES,
+            id: idCache.uniqueId(relationshipId + '.join-clause-comp'),
+            children: relationship.attributes.map(a => this.generateJoinClauseLabels(a, relationshipId, idCache))
+        }
+        node.children?.push(joinClauseCompartment);
+
+        return node;
     }
 
     protected generateEdges(relationship: Relationship, { idCache }: GeneratorContext<ER2CDS>): (Edge | undefined)[] {
@@ -155,7 +185,7 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
         const attributeId = idCache.uniqueId(entityId + '.' + attribute.name, attribute);
 
         return <SCompartment>{
-            type: COMP_ATTRIBUTES_ROW,
+            type: COMP_ATTRIBUTE,
             id: attributeId,
             layout: 'hbox',
             layoutOptions: <LayoutOptions>{
@@ -179,7 +209,7 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
                     type: LABEL_ATTRIBUTE
                 }
             ]
-        }
+        };
     }
 
     protected getAttributeDatatypeString(attribute: Attribute) {
@@ -196,5 +226,26 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
         }
 
         return ' ';
+    }
+
+    protected generateJoinClauseLabels(relationshipAttribute: RelationshipAttribute, relationshipId: string, idCache: IdCache<AstNode>): SCompartment {
+        const attributeId = idCache.uniqueId(relationshipId + '.' + relationshipAttribute.firstAttribute.$refText + '.' + relationshipAttribute.secondAttribute.$refText, relationshipAttribute);
+
+        return <SCompartment>{
+            type: COMP_JOIN_CLAUSE,
+            id: attributeId,
+            children: [
+                <SLabel>{
+                    id: attributeId + '.join-clause-first-label',
+                    text: relationshipAttribute.firstAttribute.$refText,
+                    type: LABEL_ATTRIBUTE
+                },
+                <SLabel>{
+                    id: attributeId + '.join-clause-second-label',
+                    text: relationshipAttribute.secondAttribute.$refText,
+                    type: LABEL_ATTRIBUTE
+                }
+            ]
+        };
     }
 }

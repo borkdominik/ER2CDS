@@ -61,6 +61,21 @@ export namespace CreateAttributeAction {
     }
 }
 
+export interface CreateJoinClauseAction extends Action {
+    kind: typeof CreateJoinClauseAction.KIND;
+    elementId: string;
+}
+export namespace CreateJoinClauseAction {
+    export const KIND = 'createJoinClause';
+
+    export function create(elementId: string): CreateJoinClauseAction {
+        return {
+            kind: KIND,
+            elementId
+        };
+    }
+}
+
 export interface UpdateElementPropertyAction extends Action {
     kind: typeof UpdateElementPropertyAction.KIND,
     elementId: string,
@@ -100,16 +115,18 @@ export namespace DeleteElementAction {
 export interface RequestAutoCompleteAction extends RequestAction<SetAutoCompleteAction> {
     kind: typeof RequestAutoCompleteAction.KIND,
     elementId: string;
+    type: string;
     search: string;
 }
 export namespace RequestAutoCompleteAction {
     export const KIND = 'requestAutoComplete';
 
-    export function create(elementId: string, search: string): RequestAutoCompleteAction {
+    export function create(elementId: string, type: string, search: string): RequestAutoCompleteAction {
         return {
             kind: KIND,
             requestId: generateRequestId(),
             elementId: elementId,
+            type: type,
             search: search
         };
     }

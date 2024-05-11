@@ -9,7 +9,11 @@ export const EDGE = 'edge';
 
 export const COMP_ENTITY_HEADER = 'comp:entity-header';
 export const COMP_ATTRIBUTES = 'comp:attributes';
-export const COMP_ATTRIBUTES_ROW = 'comp:attributes-row';
+export const COMP_ATTRIBUTE = 'comp:attribute';
+
+export const COMP_JOIN_TABLE = 'comp:join-table';
+export const COMP_JOIN_CLAUSES = 'comp:join-clauses';
+export const COMP_JOIN_CLAUSE = 'comp:join-clause';
 
 export const LABEL_ATTRIBUTE = 'label:attribute';
 export const LABEL_ATTRIBUTE_KEY = 'label:attribute-key';

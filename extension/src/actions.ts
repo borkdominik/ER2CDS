@@ -53,6 +53,7 @@ export namespace UpdateElementPropertyAction {
 export interface RequestAutoCompleteAction extends RequestAction<SetAutoCompleteAction> {
     kind: typeof RequestAutoCompleteAction.KIND,
     elementId: string;
+    type: string;
     search: string;
     sapUrl: string;
     sapClient: string;
@@ -62,11 +63,12 @@ export interface RequestAutoCompleteAction extends RequestAction<SetAutoComplete
 export namespace RequestAutoCompleteAction {
     export const KIND = 'requestAutoComplete';
 
-    export function create(elementId: string, search: string, sapUrl: string, sapClient: string, sapUsername: string, sapPassword: string): RequestAutoCompleteAction {
+    export function create(elementId: string, type: string, search: string, sapUrl: string, sapClient: string, sapUsername: string, sapPassword: string): RequestAutoCompleteAction {
         return {
             kind: KIND,
             requestId: generateRequestId(),
             elementId: elementId,
+            type: type,
             search: search,
             sapUrl: sapUrl,
             sapClient: sapClient,

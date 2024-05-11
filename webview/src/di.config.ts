@@ -1,14 +1,17 @@
 import { Container, ContainerModule } from 'inversify';
 import {
-    configureModelElement, ConsoleLogger, editLabelFeature, expandFeature, HtmlRootImpl, HtmlRootView, loadDefaultModules, LogLevel, overrideViewerOptions, PreRenderedElementImpl,
+    configureModelElement, ConsoleLogger, editLabelFeature, EmptyView, expandFeature, HtmlRootImpl, HtmlRootView, loadDefaultModules, LogLevel, overrideViewerOptions, PreRenderedElementImpl,
     PreRenderedView, SCompartmentImpl, SCompartmentView, SLabelImpl, SLabelView, SModelRootImpl, SRoutingHandleImpl, SRoutingHandleView, TYPES
 } from 'sprotty';
 import {
     ER2CDSRoot, EntityNode, RelationshipNode, Edge, CardinalityLabel,
     GRAPH, NODE_ENTITY, NODE_RELATIONSHIP,
-    COMP_ATTRIBUTES, COMP_ATTRIBUTES_ROW, COMP_ENTITY_HEADER, EDGE,
+    COMP_ATTRIBUTES, COMP_ATTRIBUTE, COMP_ENTITY_HEADER, EDGE,
     LABEL_ENTITY, LABEL_ATTRIBUTE, LABEL_CARDINALITY, LABEL_SEPARATOR, LABEL_RELATIONSHIP,
-    LABEL_ATTRIBUTE_KEY
+    LABEL_ATTRIBUTE_KEY,
+    COMP_JOIN_CLAUSES,
+    COMP_JOIN_CLAUSE,
+    COMP_JOIN_TABLE
 } from './model';
 import { ER2CDSRootView, EdgeView, EntityNodeView, RelationshipNodeView } from './views';
 
@@ -37,11 +40,12 @@ import AttributeToolModule from './tool-palette/tools/attribute-create-tool/di.c
 import EditorPanelModule from './editor-panel/di.config';
 import PropertyPaletteModule from './property-palette/di.config';
 import PopupModule from './popup/di.config';
+import JoinClauseToolModule from './tool-palette/tools/join-clause-create-tool/di.config';
 
 export default (containerId: string) => {
     const DiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
-        rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
+        rebind(TYPES.LogLevel).toConstantValue(LogLevel.info);
 
         const context = { bind, unbind, isBound, rebind };
 
@@ -58,7 +62,10 @@ export default (containerId: string) => {
         // Compartments
         configureModelElement(context, COMP_ENTITY_HEADER, SCompartmentImpl, SCompartmentView);
         configureModelElement(context, COMP_ATTRIBUTES, SCompartmentImpl, SCompartmentView);
-        configureModelElement(context, COMP_ATTRIBUTES_ROW, SCompartmentImpl, SCompartmentView);
+        configureModelElement(context, COMP_ATTRIBUTE, SCompartmentImpl, SCompartmentView);
+        configureModelElement(context, COMP_JOIN_TABLE, SCompartmentImpl, EmptyView);
+        configureModelElement(context, COMP_JOIN_CLAUSES, SCompartmentImpl, EmptyView);
+        configureModelElement(context, COMP_JOIN_CLAUSE, SCompartmentImpl, EmptyView);
 
         // Labels
         configureModelElement(context, LABEL_ENTITY, SLabelImpl, SLabelView);
@@ -90,6 +97,7 @@ export default (containerId: string) => {
     container.load(DeleteToolModule);
     container.load(EdgeCreateToolModule);
     container.load(AttributeToolModule);
+    container.load(JoinClauseToolModule);
 
     container.load(EditorPanelModule);
     container.load(PropertyPaletteModule);

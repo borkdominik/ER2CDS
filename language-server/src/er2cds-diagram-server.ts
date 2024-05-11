@@ -1,6 +1,6 @@
 import { Action, DiagramServer, DiagramServices, RequestAction, ResponseAction } from 'sprotty-protocol';
 import { ER2CDSServices } from './er2cds-module.js';
-import { CreateAttributeAction, CreateEdgeAction, CreateElementAction, CreateElementExternalAction, DeleteElementAction, RequestAutoCompleteAction, RequestPopupConfirmModelAction, UpdateElementPropertyAction } from './actions.js';
+import { CreateAttributeAction, CreateEdgeAction, CreateElementAction, CreateElementExternalAction, CreateJoinClauseAction, DeleteElementAction, RequestAutoCompleteAction, RequestPopupConfirmModelAction, UpdateElementPropertyAction } from './actions.js';
 import { CreateElementActionHandler } from './handler/CreateElementActionHandler.js';
 import { CreateAttributeActionHandler } from './handler/CreateAttributeActionHandler.js';
 import { CreateEdgeActionHandler } from './handler/CreateEdgeActionHandler.js';
@@ -9,6 +9,7 @@ import { DeleteElementActionHandler } from './handler/DeleteElementActionHandler
 import { RequestAutoCompleteActionHandler } from './handler/RequestAutoCompleteActionHandler.js';
 import { RequestPopupConfirmModelActionHandler } from './handler/RequestPopupConfirmModelActionHandler.js';
 import { CreateElementExternalActionHandler } from './handler/CreateElementExternalActionHandler.js';
+import { CreateJoinClauseActionHandler } from './handler/CreateJoinClauseActionHandler.js';
 
 export class ER2CDSDiagramServer extends DiagramServer {
     private services: ER2CDSServices;
@@ -43,6 +44,10 @@ export class ER2CDSDiagramServer extends DiagramServer {
 
             case CreateAttributeAction.KIND:
                 new CreateAttributeActionHandler().handle(action as CreateAttributeAction, this, this.services);
+                break;
+
+            case CreateJoinClauseAction.KIND:
+                new CreateJoinClauseActionHandler().handle(action as CreateJoinClauseAction, this, this.services);
                 break;
 
             case UpdateElementPropertyAction.KIND:

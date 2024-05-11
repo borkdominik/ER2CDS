@@ -64,3 +64,16 @@ export namespace EnableCreateAttributeToolAction {
         };
     }
 }
+
+export interface EnableCreateJoinClauseToolAction extends Action {
+    kind: typeof EnableCreateJoinClauseToolAction.KIND;
+}
+export namespace EnableCreateJoinClauseToolAction {
+    export const KIND = 'enableCreateJoinClauseTool';
+
+    export function create(): EnableCreateJoinClauseToolAction {
+        return {
+            kind: KIND
+        };
+    }
+}
