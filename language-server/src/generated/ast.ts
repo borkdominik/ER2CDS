@@ -61,8 +61,6 @@ export function isAttribute(item: unknown): item is Attribute {
 export interface DataType extends AstNode {
     readonly $container: Attribute;
     readonly $type: 'DataType';
-    d?: number
-    size?: number
     type: string
 }
 
@@ -101,29 +99,17 @@ export function isER2CDS(item: unknown): item is ER2CDS {
 export interface Relationship extends AstNode {
     readonly $container: ER2CDS;
     readonly $type: 'Relationship';
-    attributes: Array<RelationshipAttribute>
-    first?: RelationshipEntity
+    joinClauses: Array<RelationshipJoinClause>
+    joinOrder?: number
     name: string
-    second?: RelationshipEntity
+    source?: RelationshipEntity
+    target?: RelationshipEntity
 }
 
 export const Relationship = 'Relationship';
 
 export function isRelationship(item: unknown): item is Relationship {
     return reflection.isInstance(item, Relationship);
-}
-
-export interface RelationshipAttribute extends AstNode {
-    readonly $container: Relationship;
-    readonly $type: 'RelationshipAttribute';
-    firstAttribute: Reference<Attribute>
-    secondAttribute: Reference<Attribute>
-}
-
-export const RelationshipAttribute = 'RelationshipAttribute';
-
-export function isRelationshipAttribute(item: unknown): item is RelationshipAttribute {
-    return reflection.isInstance(item, RelationshipAttribute);
 }
 
 export interface RelationshipEntity extends AstNode {
@@ -140,20 +126,33 @@ export function isRelationshipEntity(item: unknown): item is RelationshipEntity 
     return reflection.isInstance(item, RelationshipEntity);
 }
 
+export interface RelationshipJoinClause extends AstNode {
+    readonly $container: Relationship;
+    readonly $type: 'RelationshipJoinClause';
+    firstAttribute: Reference<Attribute>
+    secondAttribute: Reference<Attribute>
+}
+
+export const RelationshipJoinClause = 'RelationshipJoinClause';
+
+export function isRelationshipJoinClause(item: unknown): item is RelationshipJoinClause {
+    return reflection.isInstance(item, RelationshipJoinClause);
+}
+
 export type ER2CDSAstType = {
     Attribute: Attribute
     DataType: DataType
     ER2CDS: ER2CDS
     Entity: Entity
     Relationship: Relationship
-    RelationshipAttribute: RelationshipAttribute
     RelationshipEntity: RelationshipEntity
+    RelationshipJoinClause: RelationshipJoinClause
 }
 
 export class ER2CDSAstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return ['Attribute', 'DataType', 'ER2CDS', 'Entity', 'Relationship', 'RelationshipAttribute', 'RelationshipEntity'];
+        return ['Attribute', 'DataType', 'ER2CDS', 'Entity', 'Relationship', 'RelationshipEntity', 'RelationshipJoinClause'];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
@@ -167,12 +166,12 @@ export class ER2CDSAstReflection extends AbstractAstReflection {
     getReferenceType(refInfo: ReferenceInfo): string {
         const referenceId = `${refInfo.container.$type}:${refInfo.property}`;
         switch (referenceId) {
-            case 'RelationshipAttribute:firstAttribute':
-            case 'RelationshipAttribute:secondAttribute': {
-                return Attribute;
-            }
             case 'RelationshipEntity:target': {
                 return Entity;
+            }
+            case 'RelationshipJoinClause:firstAttribute':
+            case 'RelationshipJoinClause:secondAttribute': {
+                return Attribute;
             }
             default: {
                 throw new Error(`${referenceId} is not a valid reference id.`);
@@ -203,7 +202,7 @@ export class ER2CDSAstReflection extends AbstractAstReflection {
                 return {
                     name: 'Relationship',
                     mandatory: [
-                        { name: 'attributes', type: 'array' }
+                        { name: 'joinClauses', type: 'array' }
                     ]
                 };
             }

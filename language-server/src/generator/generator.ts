@@ -1,6 +1,6 @@
 import { LangiumServices, URI, expandToString } from 'langium';
 import { createER2CDSServices } from '../er2cds-module.js';
-import { Attribute, ER2CDS, Entity, Relationship, RelationshipAttribute } from '../generated/ast.js';
+import { Attribute, ER2CDS, Entity, Relationship, RelationshipJoinClause } from '../generated/ast.js';
 import { ER2CDSFileSystem } from '../er2cds-file-system-provider.js';
 
 export async function generateCDS(fileName: string): Promise<void> {
@@ -28,8 +28,6 @@ async function extractAstFromFile<T extends ER2CDS>(fileUri: URI, services: Lang
 
     return document.parseResult?.value as T;
 }
-
-
 
 function generateSourceCode(model: ER2CDS): string {
     return expandToString`
@@ -67,7 +65,7 @@ function generateHeader(model: ER2CDS): string {
 function generateFromClause(model: ER2CDS): string {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-            from ${model.relationships[0].first?.target.ref?.name}
+            from ${model.relationships[0].source?.target.ref?.name}
         `;
     }
 
@@ -79,10 +77,10 @@ function generateInnerJoins(model: ER2CDS): string {
         return model.relationships.map(r => {
             let join = '';
 
-            if (r.first?.cardinality === '1' && r.second?.cardinality === '1') {
+            if (r.source?.cardinality === '1' && r.target?.cardinality === '1') {
                 join = generateInnerJoin(model, r)
 
-            } else if (r.first?.cardinality === '1' && r.second?.cardinality === 'N') {
+            } else if (r.source?.cardinality === '1' && r.target?.cardinality === '0..N') {
                 join = generateLeftJoin(model, r)
 
             } else {
@@ -99,7 +97,7 @@ function generateInnerJoins(model: ER2CDS): string {
 function generateInnerJoin(model: ER2CDS, relationship: Relationship): string {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-                inner join ${relationship.second?.target.ref?.name} on ${generateJoinClause(relationship, relationship.attributes)}
+                inner join ${relationship.target?.target.ref?.name} on ${generateJoinClause(relationship, relationship.joinClauses)}
             `;
     }
 
@@ -109,19 +107,19 @@ function generateInnerJoin(model: ER2CDS, relationship: Relationship): string {
 function generateLeftJoin(model: ER2CDS, relationship: Relationship): string {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-                left join ${relationship.second?.target.ref?.name} on ${generateJoinClause(relationship, relationship.attributes)}
+                left join ${relationship.target?.target.ref?.name} on ${generateJoinClause(relationship, relationship.joinClauses)}
             `;
     }
 
     return '';
 }
 
-function generateJoinClause(relationship: Relationship, attributes: RelationshipAttribute[]): string {
+function generateJoinClause(relationship: Relationship, joinClauses: RelationshipJoinClause[]): string {
     let joinClause = '';
 
-    joinClause = attributes.map(a => {
+    joinClause = joinClauses.map(jc => {
         return expandToString`
-            ${relationship.first?.target.ref?.name}.${a.firstAttribute.ref?.name} = ${relationship.second?.target.ref?.name}.${a.secondAttribute.ref?.name}
+            ${relationship.source?.target.ref?.name}.${jc.firstAttribute.ref?.name} = ${relationship.target?.target.ref?.name}.${jc.secondAttribute.ref?.name}
         `
     }).join(' and ');
 

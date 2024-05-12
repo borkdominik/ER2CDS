@@ -1,10 +1,10 @@
+import fetch from 'node-fetch';
 import { RequestAutoCompleteAction, SetAutoCompleteAction } from '../actions.js';
 import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
 import { ER2CDSServices } from '../er2cds-module.js';
 import { SModelIndex } from 'sprotty-protocol';
 import { COMP_ATTRIBUTE, NODE_ENTITY } from '../model.js';
 import { Agent } from 'https';
-import fetch from 'node-fetch';
 import { SapAttribute, SapEntity } from '../model-external.js';
 
 export class RequestAutoCompleteActionHandler {

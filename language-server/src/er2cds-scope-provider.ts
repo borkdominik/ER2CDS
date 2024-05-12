@@ -10,12 +10,12 @@ export class ER2CDSScopeProvider extends DefaultScopeProvider {
 
     public override getScope(context: ReferenceInfo): Scope {
         if (context.property === 'firstAttribute') {
-            const entity = (context.container.$container as Relationship).first?.target.ref!;
+            const entity = (context.container.$container as Relationship).source?.target.ref!;
             return this.createScope(stream(entity.attributes.map(attr => this.services.workspace.AstNodeDescriptionProvider.createDescription(attr, attr.name))));
         }
 
         if (context.property === 'secondAttribute') {
-            const entity = (context.container.$container as Relationship).second?.target.ref!;
+            const entity = (context.container.$container as Relationship).target?.target.ref!;
             return this.createScope(stream(entity.attributes.map(attr => this.services.workspace.AstNodeDescriptionProvider.createDescription(attr, attr.name))));
         }
 

@@ -4,15 +4,11 @@ import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
 import { ER2CDSServices } from '../er2cds-module.js';
 import { SModelIndex } from 'sprotty-protocol';
 import { ER2CDS } from '../generated/ast.js';
-import { Range } from 'vscode-languageserver'
-import { WorkspaceEdit } from 'vscode-languageserver-protocol';
-import { WorkspaceEditAction } from 'sprotty-vscode-protocol/lib/lsp/editing';
 import { COMP_ATTRIBUTE, COMP_JOIN_CLAUSE, EDGE, Edge, NODE_ENTITY, NODE_RELATIONSHIP } from '../model.js';
+import { synchronizeModelToText } from '../serializer/serializer.js';
 
 
 export class DeleteElementActionHandler {
-    private workspaceEdit: WorkspaceEdit | undefined;
-
     public handle(action: DeleteElementAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {
         const sourceUriString = server.state.options?.sourceUri?.toString();
         if (!sourceUriString)
@@ -36,31 +32,20 @@ export class DeleteElementActionHandler {
                 const element = modelIndex.getById(id);
 
                 if (element?.type === NODE_ENTITY) {
-                    model.entities.forEach((e) => {
-                        if (e.name === element?.id && e.$cstNode?.range)
-                            this.createWorkspaceEditDeleteAction(sourceUri, e.$cstNode?.range);
-                    });
+                    model.entities = model.entities.filter(e => e.name !== id);
                 }
 
                 if (element?.type === NODE_RELATIONSHIP) {
-                    model.relationships.forEach((r) => {
-                        if (r.name === element?.id && r.$cstNode?.range)
-                            this.createWorkspaceEditDeleteAction(sourceUri, r.$cstNode?.range);
-                    });
+                    model.relationships = model.relationships.filter(r => r.name !== id);
                 }
 
                 if (element?.type === EDGE) {
                     const edge = element as Edge;
 
-                    model.relationships.forEach((r) => {
-                        if (r.name === edge.sourceId || r.name === edge.targetId) {
-                            if ((r.first?.target.$refText === edge.sourceId || r.first?.target.$refText === edge.targetId) && r.first?.$cstNode?.range)
-                                this.createWorkspaceEditDeleteAction(sourceUri, r.first.$cstNode?.range);
-
-                            if ((r.second?.target.$refText === edge.sourceId || r.second?.target.$refText === edge.targetId) && r.second.$cstNode?.range)
-                                this.createWorkspaceEditDeleteAction(sourceUri, r.second.$cstNode?.range);
-                        }
-                    });
+                    model.relationships = model.relationships.filter(r =>
+                        (r.source?.target.$refText !== edge.sourceId && r.source?.target.$refText !== edge.targetId) &&
+                        (r.target?.target.$refText !== edge.sourceId && r.target?.target.$refText !== edge.targetId)
+                    );
                 }
 
                 if (element?.type === COMP_ATTRIBUTE) {
@@ -68,10 +53,9 @@ export class DeleteElementActionHandler {
                     const entityId = split[0];
                     const attributeId = split[1];
 
-                    model.entities.filter(e => e.name === entityId).map(e => e.attributes.forEach(a => {
-                        if (a.name === attributeId && a.$cstNode?.range)
-                            this.createWorkspaceEditDeleteAction(sourceUri, a.$cstNode?.range);
-                    }));
+                    model.entities.filter(e => e.name === entityId).map(e => {
+                        e.attributes = e.attributes.filter(a => a.name !== attributeId)
+                    });
                 }
 
                 if (element?.type === COMP_JOIN_CLAUSE) {
@@ -80,41 +64,13 @@ export class DeleteElementActionHandler {
                     const firstJoinClauseAttributeId = split[1];
                     const secondJoinClauseAttributeId = split[2];
 
-                    model.relationships.filter(e => e.name === relationshipId).map(e => e.attributes.forEach(a => {
-                        if (a.firstAttribute.$refText === firstJoinClauseAttributeId && a.secondAttribute.$refText === secondJoinClauseAttributeId && a.$cstNode?.range)
-                            this.createWorkspaceEditDeleteAction(sourceUri, a.$cstNode?.range);
-                    }));
+                    model.relationships.filter(e => e.name === relationshipId).map(e => {
+                        e.joinClauses = e.joinClauses.filter(jc => jc.firstAttribute.$refText !== firstJoinClauseAttributeId || jc.secondAttribute.$refText !== secondJoinClauseAttributeId);
+                    });
                 }
             });
         }
 
-        if (this.workspaceEdit) {
-            const workspaceEditAction: WorkspaceEditAction = {
-                kind: WorkspaceEditAction.KIND,
-                workspaceEdit: this.workspaceEdit
-            }
-
-            server.dispatch(workspaceEditAction);
-        }
-
-        return Promise.resolve();
-    }
-
-    private createWorkspaceEditDeleteAction(sourceUri: URI, range: Range) {
-        if (!this.workspaceEdit) {
-            this.workspaceEdit = {
-                changes: {
-                    [sourceUri.toString()]: []
-                }
-            }
-        }
-
-        const textEdit = {
-            range: range,
-            newText: ''
-        };
-
-        if (this.workspaceEdit.changes)
-            this.workspaceEdit.changes[sourceUri.toString()].push(textEdit);
+        return synchronizeModelToText(model, sourceUri, server, services);
     }
 }

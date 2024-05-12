@@ -1,7 +1,7 @@
 
 import { GeneratorContext, IdCache, LangiumDiagramGenerator } from 'langium-sprotty';
 import { SCompartment, SLabel } from 'sprotty-protocol';
-import { Attribute, ER2CDS, Entity, Relationship, RelationshipAttribute, RelationshipEntity } from './generated/ast.js';
+import { Attribute, ER2CDS, Entity, Relationship, RelationshipJoinClause, RelationshipEntity } from './generated/ast.js';
 import { ER2CDSServices } from './er2cds-module.js';
 import { AstNode } from 'langium';
 import { LayoutOptions } from 'elkjs';
@@ -13,7 +13,9 @@ import {
     LABEL_ATTRIBUTE_KEY,
     COMP_JOIN_TABLE,
     COMP_JOIN_CLAUSE,
-    COMP_JOIN_CLAUSES
+    COMP_JOIN_CLAUSES,
+    LABEL_JOIN_TABLE,
+    LABEL_JOIN_ORDER
 } from './model.js';
 
 export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
@@ -111,14 +113,19 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
             id: idCache.uniqueId(relationshipId + '.join-table-comp'),
             children: [
                 <SLabel>{
-                    type: LABEL_ENTITY,
-                    id: idCache.uniqueId(relationship.first?.target.$refText + '.join-table-label'),
-                    text: relationship.first?.target.$refText
+                    type: LABEL_JOIN_TABLE,
+                    id: idCache.uniqueId(relationshipId + '.source-join-table-label'),
+                    text: relationship.source?.target.$refText
                 },
                 <SLabel>{
-                    type: LABEL_ENTITY,
-                    id: idCache.uniqueId(relationship.second?.target.$refText + '.join-table-label'),
-                    text: relationship.second?.target.$refText
+                    type: LABEL_JOIN_TABLE,
+                    id: idCache.uniqueId(relationshipId + '.target-join-table-label'),
+                    text: relationship.target?.target.$refText
+                },
+                <SLabel>{
+                    type: LABEL_JOIN_ORDER,
+                    id: idCache.uniqueId(relationshipId + '.join-order-label'),
+                    text: relationship.joinOrder?.toString()
                 }
             ]
         };
@@ -127,7 +134,7 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
         const joinClauseCompartment = <SCompartment>{
             type: COMP_JOIN_CLAUSES,
             id: idCache.uniqueId(relationshipId + '.join-clause-comp'),
-            children: relationship.attributes.map(a => this.generateJoinClauseLabels(a, relationshipId, idCache))
+            children: relationship.joinClauses.map(jc => this.generateJoinClauseLabels(jc, relationshipId, idCache))
         }
         node.children?.push(joinClauseCompartment);
 
@@ -137,18 +144,18 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
     protected generateEdges(relationship: Relationship, { idCache }: GeneratorContext<ER2CDS>): (Edge | undefined)[] {
         let edges: (Edge | undefined)[] = [];
 
-        if (relationship.first && relationship.first.$container) {
-            const source = idCache.getId(relationship.first.target.ref)
+        if (relationship.source && relationship.source.$container) {
+            const source = idCache.getId(relationship.source.target.ref)
             const target = idCache.getId(relationship)
 
-            edges.push(this.generateEdge(relationship.first, source!, target!, idCache));
+            edges.push(this.generateEdge(relationship.source, source!, target!, idCache));
         }
 
-        if (relationship.second && relationship.second.$container) {
+        if (relationship.target && relationship.target.$container) {
             const source = idCache.getId(relationship);
-            const target = idCache.getId(relationship.second.target.ref);
+            const target = idCache.getId(relationship.target.target.ref);
 
-            edges.push(this.generateEdge(relationship.second, source!, target!, idCache));
+            edges.push(this.generateEdge(relationship.target, source!, target!, idCache));
         }
 
         return edges;
@@ -214,22 +221,14 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
 
     protected getAttributeDatatypeString(attribute: Attribute) {
         if (attribute.datatype) {
-            if (attribute.datatype?.size && attribute.datatype?.d) {
-                return attribute.datatype?.type + '(' + attribute.datatype?.size + ', ' + attribute.datatype?.d + ')';
-
-            } else if (attribute.datatype.size && !attribute.datatype.d) {
-                return attribute.datatype.type + '(' + attribute.datatype.size + ')';
-
-            }
-
             return attribute.datatype.type;
         }
 
         return ' ';
     }
 
-    protected generateJoinClauseLabels(relationshipAttribute: RelationshipAttribute, relationshipId: string, idCache: IdCache<AstNode>): SCompartment {
-        const attributeId = idCache.uniqueId(relationshipId + '.' + relationshipAttribute.firstAttribute.$refText + '.' + relationshipAttribute.secondAttribute.$refText, relationshipAttribute);
+    protected generateJoinClauseLabels(relationshipJoinClause: RelationshipJoinClause, relationshipId: string, idCache: IdCache<AstNode>): SCompartment {
+        const attributeId = idCache.uniqueId(relationshipId + '.' + relationshipJoinClause.firstAttribute.$refText + '.' + relationshipJoinClause.secondAttribute.$refText, relationshipJoinClause);
 
         return <SCompartment>{
             type: COMP_JOIN_CLAUSE,
@@ -237,12 +236,12 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
             children: [
                 <SLabel>{
                     id: attributeId + '.join-clause-first-label',
-                    text: relationshipAttribute.firstAttribute.$refText,
+                    text: relationshipJoinClause.firstAttribute.$refText,
                     type: LABEL_ATTRIBUTE
                 },
                 <SLabel>{
                     id: attributeId + '.join-clause-second-label',
-                    text: relationshipAttribute.secondAttribute.$refText,
+                    text: relationshipJoinClause.secondAttribute.$refText,
                     type: LABEL_ATTRIBUTE
                 }
             ]

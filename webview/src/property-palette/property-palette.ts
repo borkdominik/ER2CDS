@@ -383,14 +383,14 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
 
         const sourceJoinTableAutoComplete = new AutoCompleteWidget(
             { provideValues: input => this.retrieveSuggestionsEntity(sourceJoinTable, '', input) },
-            { executeFromValue: input => this.update(sourceJoinTable, 'source-join-table', input.label) },
-            { executeFromTextOnlyInput: input => this.update(sourceJoinTable, 'source-join-table', input) }
+            { executeFromValue: input => this.update(relationship.id, 'source-join-table', input.label) },
+            { executeFromTextOnlyInput: input => this.update(relationship.id, 'source-join-table', input) }
         );
 
         const targetJoinTableAutoComplete = new AutoCompleteWidget(
             { provideValues: input => this.retrieveSuggestionsEntity(targetJoinTable, '', input) },
-            { executeFromValue: input => this.update(targetJoinTable, 'target-join-table', input.label) },
-            { executeFromTextOnlyInput: input => this.update(targetJoinTable, 'target-join-table', input) }
+            { executeFromValue: input => this.update(relationship.id, 'target-join-table', input.label) },
+            { executeFromTextOnlyInput: input => this.update(relationship.id, 'target-join-table', input) }
         );
 
         const relationshipSourceJoinTablePaletteItem = <ElementAutoCompletePropertyItem>{
@@ -412,6 +412,15 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             autoComplete: targetJoinTableAutoComplete
         }
         propertyPaletteItems.push(relationshipTargetJoinTablePaletteItem);
+
+        const relationshipJoinOrderPaletteItem = <ElementTextPropertyItem>{
+            type: ElementTextPropertyItem.TYPE,
+            elementId: relationship.id,
+            propertyId: 'join-order',
+            label: 'Join Order',
+            text: ((relationship.children[1] as SCompartmentImpl).children[2] as SLabelImpl)?.text,
+        }
+        propertyPaletteItems.push(relationshipJoinOrderPaletteItem);
 
         const relationshipJoinClausesPaletteItems = <ElementReferencePropertyItem>{
             type: ElementReferencePropertyItem.TYPE,
@@ -536,6 +545,9 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
 
     private createNewElementId(elementId: string, oldAttributeElementId: string, newAttributeElementId: string): string {
         const split = elementId.split('.');
+
+        if (split.length <= 1)
+            return elementId;
 
         if (split.length >= 4) {
             if (split[1] === oldAttributeElementId) {

@@ -1,13 +1,9 @@
-import { CompositeCstNodeImpl, URI, expandToString } from 'langium';
-import { SModelElement, SModelIndex } from 'sprotty-protocol';
+import { URI } from 'langium';
 import { CreateAttributeAction } from '../actions.js';
 import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
 import { ER2CDSServices } from '../er2cds-module.js';
-import { COMP_ATTRIBUTES, COMP_ATTRIBUTE } from '../model.js';
-import { WorkspaceEditAction } from 'sprotty-vscode-protocol/lib/lsp/editing';
-import { WorkspaceEdit } from 'vscode-languageserver-protocol';
-import { Range, Position } from 'vscode-languageserver-types';
-import { ER2CDS } from '../generated/ast.js';
+import { Attribute, DataType, ER2CDS } from '../generated/ast.js';
+import { synchronizeModelToText } from '../serializer/serializer.js';
 
 export class CreateAttributeActionHandler {
     public async handle(action: CreateAttributeAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {
@@ -24,42 +20,29 @@ export class CreateAttributeActionHandler {
             return Promise.resolve();
 
         const model = document.parseResult.value as ER2CDS;
-
-        const modelIndex = new SModelIndex();
-        modelIndex.add(server.state.currentRoot);
-
-        const entity = modelIndex.getById(action.elementId);
+        const entity = model.entities.find(e => e.name === action.elementId);
         if (!entity)
             return Promise.resolve();
 
-        const childrenNodes = ((model.entities.find((e) => e.name === entity?.id)?.$cstNode) as CompositeCstNodeImpl).content;
-        const lastChild = childrenNodes[childrenNodes.length - 1];
+        const newAttribute: Attribute = {
+            $type: 'Attribute',
+            $container: entity,
+            name: this.getNewName('Attribute', entity?.name, entity?.attributes),
+        };
 
-        const newText = this.getNewName(COMP_ATTRIBUTE, 'Attribute', entity?.id, entity?.children?.find(c => c.type === COMP_ATTRIBUTES)?.children);
-        const workspaceEdit: WorkspaceEdit = {
-            changes: {
-                [sourceUri.toString()]: [
-                    {
-                        range: Range.create(Position.create(lastChild.range.start.line, 0), Position.create(lastChild.range.end.line, lastChild.range.end.character)),
-                        newText: expandToString`
-                            ${newText} : STRING
-                        }`
-                    }
-                ]
-            }
+        const newDatatype: DataType = {
+            $type: 'DataType',
+            $container: newAttribute,
+            type: 'STRING'
         }
 
-        const workspaceEditAction: WorkspaceEditAction = {
-            kind: WorkspaceEditAction.KIND,
-            workspaceEdit: workspaceEdit
-        }
+        newAttribute.datatype = newDatatype;
+        entity.attributes.push(newAttribute);
 
-        await server.dispatch(workspaceEditAction);
-
-        return Promise.resolve();
+        return synchronizeModelToText(model, sourceUri, server, services);
     }
 
-    private getNewName(type: string, prefix: string, entityName: string, elements: SModelElement[] | undefined): string {
+    private getNewName(prefix: string, entityName: string, elements: Attribute[] | undefined): string {
         if (!elements)
             return this.createName(prefix, 0);
 
@@ -67,11 +50,10 @@ export class CreateAttributeActionHandler {
         for (let i = 0; i < elements.length; i += 1) {
             let name = this.createName(prefix, count);
 
-            if (!elements.some(e => e.id === (entityName + '.' + name)))
+            if (!elements.some(e => e.name === name))
                 return name;
 
-            if (elements[i].type === type)
-                count += 1
+            count += 1
         }
 
         return this.createName(prefix, count);

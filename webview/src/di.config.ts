@@ -1,6 +1,6 @@
 import { Container, ContainerModule } from 'inversify';
 import {
-    configureModelElement, ConsoleLogger, editLabelFeature, EmptyView, expandFeature, HtmlRootImpl, HtmlRootView, loadDefaultModules, LogLevel, overrideViewerOptions, PreRenderedElementImpl,
+    configureModelElement, ConsoleLogger, EmptyView, expandFeature, HtmlRootImpl, HtmlRootView, loadDefaultModules, LogLevel, overrideViewerOptions, PreRenderedElementImpl,
     PreRenderedView, SCompartmentImpl, SCompartmentView, SLabelImpl, SLabelView, SModelRootImpl, SRoutingHandleImpl, SRoutingHandleView, TYPES
 } from 'sprotty';
 import {
@@ -11,7 +11,10 @@ import {
     LABEL_ATTRIBUTE_KEY,
     COMP_JOIN_CLAUSES,
     COMP_JOIN_CLAUSE,
-    COMP_JOIN_TABLE
+    COMP_JOIN_TABLE,
+    LABEL_JOIN_TABLE,
+    LABEL_JOIN_ORDER,
+    LABEL_JOIN_CLAUSE
 } from './model';
 import { ER2CDSRootView, EdgeView, EntityNodeView, RelationshipNodeView } from './views';
 
@@ -69,11 +72,16 @@ export default (containerId: string) => {
 
         // Labels
         configureModelElement(context, LABEL_ENTITY, SLabelImpl, SLabelView);
-        configureModelElement(context, LABEL_RELATIONSHIP, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_ATTRIBUTE, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_ATTRIBUTE_KEY, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_SEPARATOR, SLabelImpl, SLabelView);
+
+        configureModelElement(context, LABEL_RELATIONSHIP, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_CARDINALITY, CardinalityLabel, SLabelView);
+
+        configureModelElement(context, LABEL_JOIN_TABLE, SLabelImpl, SLabelView);
+        configureModelElement(context, LABEL_JOIN_ORDER, SLabelImpl, SLabelView);
+        configureModelElement(context, LABEL_JOIN_CLAUSE, SLabelImpl, SLabelView);
 
         // Sprotty
         configureModelElement(context, 'html', HtmlRootImpl, HtmlRootView);

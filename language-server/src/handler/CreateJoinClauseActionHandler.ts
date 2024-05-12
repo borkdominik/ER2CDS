@@ -1,12 +1,9 @@
-import { CompositeCstNodeImpl, URI, expandToString } from 'langium';
-import { SModelIndex } from 'sprotty-protocol';
+import { URI } from 'langium';
 import { CreateJoinClauseAction } from '../actions.js';
 import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
 import { ER2CDSServices } from '../er2cds-module.js';
-import { WorkspaceEditAction } from 'sprotty-vscode-protocol/lib/lsp/editing';
-import { WorkspaceEdit } from 'vscode-languageserver-protocol';
-import { Range, Position } from 'vscode-languageserver-types';
-import { ER2CDS } from '../generated/ast.js';
+import { Attribute, ER2CDS, RelationshipJoinClause } from '../generated/ast.js';
+import { synchronizeModelToText } from '../serializer/serializer.js';
 
 export class CreateJoinClauseActionHandler {
     public async handle(action: CreateJoinClauseAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {
@@ -24,36 +21,37 @@ export class CreateJoinClauseActionHandler {
 
         const model = document.parseResult.value as ER2CDS;
 
-        const modelIndex = new SModelIndex();
-        modelIndex.add(server.state.currentRoot);
-
-        const relationship = modelIndex.getById(action.elementId);
+        const relationship = model.relationships.find(r => r.name === action.elementId);
         if (!relationship)
             return Promise.resolve();
 
-        const childrenNodes = ((model.relationships.find((e) => e.name === relationship?.id)?.$cstNode) as CompositeCstNodeImpl).content;
-        const lastChild = childrenNodes[childrenNodes.length - 1];
-
-        const workspaceEdit: WorkspaceEdit = {
-            changes: {
-                [sourceUri.toString()]: [
-                    {
-                        range: Range.create(Position.create(lastChild.range.start.line, 0), Position.create(lastChild.range.end.line, lastChild.range.end.character)),
-                        newText: expandToString`
-                            SOURCE_ATTRIBUTE = TARGET_ATTRIBUTE
-                        }`
-                    }
-                ]
-            }
+        const newFirstAttribute: Attribute = {
+            $type: 'Attribute',
+            $container: null!,
+            name: 'SOURCE_ATTRIBUTE',
         }
 
-        const workspaceEditAction: WorkspaceEditAction = {
-            kind: WorkspaceEditAction.KIND,
-            workspaceEdit: workspaceEdit
+        const newSecondAttribute: Attribute = {
+            $type: 'Attribute',
+            $container: null!,
+            name: 'TARGET_ATTRIBUTE'
         }
 
-        await server.dispatch(workspaceEditAction);
+        const newRelationshipJoinClause: RelationshipJoinClause = {
+            $type: 'RelationshipJoinClause',
+            $container: relationship,
+            firstAttribute: {
+                ref: newFirstAttribute,
+                $refText: 'SOURCE_ATTRIBUTE'
+            },
+            secondAttribute: {
+                ref: newSecondAttribute,
+                $refText: 'TARGET_ATTRIBUTE'
+            },
+        }
 
-        return Promise.resolve();
+        relationship.joinClauses.push(newRelationshipJoinClause);
+
+        return synchronizeModelToText(model, sourceUri, server, services);
     }
 }

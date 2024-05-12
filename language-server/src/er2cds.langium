@@ -13,21 +13,7 @@ Attribute:
 	name=ID (':' datatype=DataType)? (type=AttributeType)?;
 
 DataType:
-	type=ID ('(' size=INT (',' d=INT)? ')')?;
-
-Relationship:
-	'relationship' name=ID '{'
-		((first=RelationshipEntity)? (('->' second=RelationshipEntity))?)?
-		(attributes+=RelationshipAttribute)*
-	'}';
-
-RelationshipEntity:
-	target=[Entity] ('[' 
-		cardinality=CardinalityType ('|' role=STRING)?
-	']')?;
-
-RelationshipAttribute:
-	(firstAttribute=[Attribute] '=' secondAttribute=[Attribute]);
+	type=ID;
 
 type AttributeType = 'key';
 AttributeType returns AttributeType:
@@ -35,6 +21,21 @@ AttributeType returns AttributeType:
 ;
 KEY returns string:
 	'key';
+
+Relationship:
+	'relationship' name=ID '{'
+		((source=RelationshipEntity)? (('->' target=RelationshipEntity))?)?
+		('join' 'order' joinOrder=INT)?
+		(joinClauses+=RelationshipJoinClause)*
+	'}';
+
+RelationshipEntity:
+	target=[Entity] ('[' 
+		cardinality=CardinalityType ('|' role=STRING)?
+	']')?;
+
+RelationshipJoinClause:
+	(firstAttribute=[Attribute] '=' secondAttribute=[Attribute]);
 
 type CardinalityType = '1' | '0..N' | '1..N';
 CardinalityType returns CardinalityType:

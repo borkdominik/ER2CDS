@@ -1,21 +1,15 @@
+import fetch from 'node-fetch';
 import { URI } from 'vscode-uri';
 import { CreateElementExternalAction } from '../actions.js';
 import { ER2CDSServices } from '../er2cds-module.js';
 import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
 import { Agent } from 'https';
-import { WorkspaceEditAction } from 'sprotty-vscode-protocol/lib/lsp/editing';
-import { WorkspaceEdit } from 'vscode-languageserver-protocol';
-import { Range } from 'vscode-languageserver-types';
-import { TextDocument } from 'vscode-languageserver-textdocument';
-import { EntityNode } from '../model.js';
-import fetch from 'node-fetch';
-import { SModelIndex } from 'sprotty-protocol';
-import { expandToString } from 'langium';
 import { SapAttribute } from '../model-external.js';
-import { ER2CDS } from '../generated/ast.js';
+import { Attribute, DataType, ER2CDS, Entity } from '../generated/ast.js';
+import { synchronizeModelToText } from '../serializer/serializer.js';
 
 export class CreateElementExternalActionHandler {
-    public handle(action: CreateElementExternalAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {
+    public async handle(action: CreateElementExternalAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {
         const sourceUriString = server.state.options?.sourceUri?.toString();
         if (!sourceUriString)
             return Promise.resolve();
@@ -30,50 +24,38 @@ export class CreateElementExternalActionHandler {
 
         const model = document.parseResult.value as ER2CDS;
 
-        const modelIndex = new SModelIndex();
-        modelIndex.add(server.state.currentRoot);
+        const newEntity = await this.getAttributes(action).then((attributes: SapAttribute[]) => {
+            const newEntity: Entity = {
+                $type: 'Entity',
+                $container: model,
+                name: action.elementId,
+                attributes: []
+            }
 
-        const entity = modelIndex.getById(action.elementId);
-        if (!entity)
-            return Promise.resolve();
+            const newAttributes = attributes.map(a => {
+                const newAttribute: Attribute = {
+                    $type: 'Attribute',
+                    $container: newEntity,
+                    name: a.Attribute,
+                };
 
-        const range = model.entities.find(e => e.name === entity.id)?.$cstNode?.range;
-        if (!range)
-            return Promise.resolve();
+                const newDatatype: DataType = {
+                    $type: 'DataType',
+                    $container: newAttribute,
+                    type: a.Datatype
+                };
 
-        this.getAttributes(action).then((attributes: SapAttribute[]) => {
-            this.createEntity(entity, attributes, range, server, sourceUri, document.textDocument);
+                newAttribute.datatype = newDatatype;
+                return newAttribute;
+            });
+
+            newEntity.attributes = newAttributes;
+            return newEntity;
         });
 
-        return Promise.resolve();
-    }
+        model.entities.push(newEntity);
 
-    protected createEntity(entity: EntityNode, attributes: SapAttribute[], range: Range, server: ER2CDSDiagramServer, sourceUri: URI, textDocument: TextDocument) {
-        const workspaceEdit: WorkspaceEdit = {
-            changes: {
-                [sourceUri.toString()]: [
-                    {
-                        range: range,
-                        newText: expandToString`\n
-                        entity ${entity.id} {
-                            ${attributes.map(a => this.createAttribute(a)).join('\n')}
-                        }
-                        `
-                    }
-                ]
-            }
-        }
-
-        const workspaceEditAction: WorkspaceEditAction = {
-            kind: WorkspaceEditAction.KIND,
-            workspaceEdit: workspaceEdit
-        }
-
-        server.dispatch(workspaceEditAction);
-    }
-
-    protected createAttribute(attribute: SapAttribute): string {
-        return expandToString`${attribute.Attribute} : ${attribute.Datatype}`;
+        return synchronizeModelToText(model, sourceUri, server, services);
     }
 
     protected async getAttributes(action: CreateElementExternalAction): Promise<SapAttribute[]> {
