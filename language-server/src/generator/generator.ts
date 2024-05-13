@@ -30,11 +30,24 @@ async function extractAstFromFile<T extends ER2CDS>(fileUri: URI, services: Lang
 }
 
 function generateSourceCode(model: ER2CDS): string {
+    model.relationships.sort((r1, r2) => {
+        if (r1.joinOrder && r2.joinOrder)
+            return r1.joinOrder - r2.joinOrder;
+
+        if (r1.joinOrder)
+            return -1;
+
+        if (r2.joinOrder)
+            return 1;
+
+        return 0;
+    });
+
     return expandToString`
         ${generateHeaderAnnotations(model)}
         ${generateHeader(model)}
             ${generateFromClause(model)}
-            ${generateInnerJoins(model)}
+            ${generateJoins(model)}
         {
             ${generateKeyAttributes(model)}${model.entities.find(e => e.attributes.find(a => a.type === 'key')) && model.entities.find(e => e.attributes.find(a => a.type !== 'key')) ? ',' : ''}
             ${generateAttributes(model)}
@@ -63,7 +76,7 @@ function generateHeader(model: ER2CDS): string {
 }
 
 function generateFromClause(model: ER2CDS): string {
-    if (model.entities && model.entities.length > 0) {
+    if (model.relationships && model.relationships.length > 0) {
         return expandToString`
             from ${model.relationships[0].source?.target.ref?.name}
         `;
@@ -72,19 +85,23 @@ function generateFromClause(model: ER2CDS): string {
     return '';
 }
 
-function generateInnerJoins(model: ER2CDS): string {
+function generateJoins(model: ER2CDS): string {
     if (model.relationships) {
         return model.relationships.map(r => {
             let join = '';
 
             if (r.source?.cardinality === '1' && r.target?.cardinality === '1') {
-                join = generateInnerJoin(model, r)
+                join = generateInnerJoin(model, r);
 
             } else if (r.source?.cardinality === '1' && r.target?.cardinality === '0..N') {
-                join = generateLeftJoin(model, r)
+                join = generateLeftJoin(model, r);
+
+            } else if (r.source?.cardinality === '0..N' && r.target?.cardinality === '1') {
+                join = generateRightJoin(model, r);
 
             } else {
                 join = generateInnerJoin(model, r);
+
             }
 
             return join;
@@ -107,7 +124,17 @@ function generateInnerJoin(model: ER2CDS, relationship: Relationship): string {
 function generateLeftJoin(model: ER2CDS, relationship: Relationship): string {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-                left join ${relationship.target?.target.ref?.name} on ${generateJoinClause(relationship, relationship.joinClauses)}
+                left outer join ${relationship.target?.target.ref?.name} on ${generateJoinClause(relationship, relationship.joinClauses)}
+            `;
+    }
+
+    return '';
+}
+
+function generateRightJoin(model: ER2CDS, relationship: Relationship): string {
+    if (model.entities && model.entities.length > 0) {
+        return expandToString`
+                right outer join ${relationship.target?.target.ref?.name} on ${generateJoinClause(relationship, relationship.joinClauses)}
             `;
     }
 

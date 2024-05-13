@@ -132,9 +132,10 @@ export class Edge extends SEdgeImpl {
 }
 
 export class CardinalityLabel extends SLabelImpl {
-    override edgePlacement = <EdgePlacement>{
+    override edgePlacement?: EdgePlacement = {
         position: 0.5,
         side: 'top',
-        rotate: false
-    };
+        rotate: false,
+        offset: 0
+    }
 }

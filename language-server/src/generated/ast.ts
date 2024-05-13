@@ -18,7 +18,7 @@ export const ER2CDSTerminals = {
 
 export type AttributeType = 'key';
 
-export type CardinalityType = '0..N' | '1' | '1..N';
+export type CardinalityType = '0..N' | '1';
 
 export type KEY = 'key';
 
@@ -30,12 +30,6 @@ export type ONE = '1';
 
 export function isONE(item: unknown): item is ONE {
     return item === '1';
-}
-
-export type ONE_MANY = '1..N';
-
-export function isONE_MANY(item: unknown): item is ONE_MANY {
-    return item === '1..N';
 }
 
 export type ZERO_MANY = '0..N';

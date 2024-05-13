@@ -37,16 +37,14 @@ RelationshipEntity:
 RelationshipJoinClause:
 	(firstAttribute=[Attribute] '=' secondAttribute=[Attribute]);
 
-type CardinalityType = '1' | '0..N' | '1..N';
+type CardinalityType = '1' | '0..N';
 CardinalityType returns CardinalityType:
-	ONE | ZERO_MANY | ONE_MANY
+	ONE | ZERO_MANY
 ;
 ONE returns string:
 	'1';
 ZERO_MANY returns string:
 	'0..N';
-ONE_MANY returns string:
-	'1..N';
 
 terminal ID: /[_a-zA-Z\/][\w_]*/;
 terminal INT returns number: /[0-9]+/;
