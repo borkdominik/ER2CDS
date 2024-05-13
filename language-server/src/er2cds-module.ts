@@ -4,13 +4,17 @@ import { AbstractExecuteCommandHandler, URI, createDefaultModule, createDefaultS
 import { DefaultDiagramServerManager, DiagramActionNotification, LangiumSprottyServices, LangiumSprottySharedServices, SprottyDiagramServices, SprottySharedServices } from 'langium-sprotty';
 import { DefaultElementFilter, DefaultLayoutConfigurator, ElkFactory, ElkLayoutEngine, IElementFilter, ILayoutConfigurator } from 'sprotty-elk/lib/elk-layout.js';
 import { ER2CDSGeneratedModule, ER2CDSGeneratedSharedModule } from './generated/module.js';
-import { ER2CDSValidator, registerValidationChecks } from './er2cds-validator.js';
+import { ER2CDSValidator, registerValidationChecks, registerValidationMarkers } from './validation/validation.js';
 import { ER2CDSDiagramGenerator } from './er2cds-diagram-generator.js';
 import { ER2CDSDiagramServer } from './er2cds-diagram-server.js';
 import { generateCDS } from './generator/generator.js';
 import { ER2CDSScopeProvider } from './er2cds-scope-provider.js';
 
 const ElkConstructor = require('elkjs/lib/elk.bundled.js').default;
+
+export namespace ER2CDS {
+    export let clientId: string;
+}
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -39,7 +43,7 @@ export type ER2CDSServices = LangiumSprottyServices & ER2CDSAddedServices
  */
 export const ER2CDSModule: Module<ER2CDSServices, PartialLangiumServices & SprottyDiagramServices & ER2CDSAddedServices> = {
     validation: {
-        ER2CDSValidator: () => new ER2CDSValidator()
+        ER2CDSValidator: (services) => new ER2CDSValidator(services)
     },
     references: {
         ScopeProvider: (services) => new ER2CDSScopeProvider(services),
@@ -58,7 +62,7 @@ export const ER2CDSModule: Module<ER2CDSServices, PartialLangiumServices & Sprot
 /**
  * Handles VSC extension commands
  */
-class ER2CDSCommandHandler extends AbstractExecuteCommandHandler {
+export class ER2CDSCommandHandler extends AbstractExecuteCommandHandler {
     registerCommands(acceptor: ExecuteCommandAcceptor): void {
         acceptor('er2cds.generate.cds', args => {
             generateCDS(args[0]);
@@ -100,6 +104,7 @@ export function createER2CDSServices(context: DefaultSharedModuleContext): {
 
     shared.ServiceRegistry.register(ER2CDS);
     registerValidationChecks(ER2CDS);
+    registerValidationMarkers(shared);
 
     return { shared, ER2CDS };
 }
@@ -109,6 +114,8 @@ const ER2CDSDiagramServerFactory = (services: LangiumSprottySharedServices): ((c
     const serviceRegistry = services.ServiceRegistry;
 
     return (clientId, options) => {
+        ER2CDS.clientId = clientId;
+
         const sourceUri = options?.sourceUri;
 
         if (!sourceUri)

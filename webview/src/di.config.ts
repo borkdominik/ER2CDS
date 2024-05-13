@@ -44,11 +44,12 @@ import EditorPanelModule from './editor-panel/di.config';
 import PropertyPaletteModule from './property-palette/di.config';
 import PopupModule from './popup/di.config';
 import JoinClauseToolModule from './tool-palette/tools/join-clause-create-tool/di.config';
+import ValidationModule from './validation/di.config';
 
 export default (containerId: string) => {
     const DiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
-        rebind(TYPES.LogLevel).toConstantValue(LogLevel.info);
+        rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
 
         const context = { bind, unbind, isBound, rebind };
 
@@ -99,6 +100,11 @@ export default (containerId: string) => {
 
     container.load(ServicesModule);
 
+    container.load(EditorPanelModule);
+    container.load(HelperLineModule);
+    container.load(PopupModule);
+    container.load(PropertyPaletteModule);
+
     container.load(ToolPaletteModule);
     container.load(ToolsModule);
     container.load(MarqueeToolModule);
@@ -107,11 +113,7 @@ export default (containerId: string) => {
     container.load(AttributeToolModule);
     container.load(JoinClauseToolModule);
 
-    container.load(EditorPanelModule);
-    container.load(PropertyPaletteModule);
-
-    container.load(PopupModule);
-    container.load(HelperLineModule);
+    container.load(ValidationModule);
 
     overrideViewerOptions(container, {
         needsClientLayout: true,

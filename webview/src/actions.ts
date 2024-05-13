@@ -170,3 +170,31 @@ export namespace RequestPopupConfirmModelAction {
         };
     }
 }
+
+export namespace MarkerKind {
+    export const INFO = 'info';
+    export const WARNING = 'warning';
+    export const ERROR = 'error';
+}
+export interface Marker {
+    readonly label: string;
+    readonly description: string;
+    readonly elementId: string;
+    readonly kind: string;
+}
+export interface SetMarkersAction extends ResponseAction {
+    kind: typeof SetMarkersAction.KIND;
+    readonly markers: Marker[];
+}
+export namespace SetMarkersAction {
+    export const KIND = 'setMarkers';
+
+    export function create(markers: Marker[], options: { responseId?: string; reason?: string } = {}): SetMarkersAction {
+        return {
+            kind: KIND,
+            responseId: '',
+            markers,
+            ...options
+        };
+    }
+}
