@@ -1,7 +1,7 @@
-import { URI, expandToString } from "langium";
-import { ER2CDSDiagramServer } from "../er2cds-diagram-server.js";
-import { ER2CDSServices } from "../er2cds-module.js";
-import { Attribute, ER2CDS, Entity, Relationship, RelationshipJoinClause } from "../generated/ast.js";
+import { URI, expandToString } from 'langium';
+import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
+import { ER2CDSServices } from '../er2cds-module.js';
+import { Attribute, ER2CDS, Entity, Relationship, RelationshipJoinClause } from '../generated/ast.js';
 import { Range, Position } from 'vscode-languageserver-types';
 import { WorkspaceEditAction } from 'sprotty-vscode-protocol/lib/lsp/editing';
 
@@ -69,39 +69,63 @@ export function serializeRelationships(relationships: Relationship[]): string {
 export function serializeRelationship(relationship: Relationship): string {
     return expandToString`
     relationship ${relationship.name} {
-        ${serializeSourceJoinTable(relationship)} ${serializeSourceJoinTableCardinality(relationship)} -> ${serializeTargetJoinTable(relationship)} ${serializeTargetJoinTableCardinality(relationship)}
-        ${relationship.joinOrder ? `join order ${relationship.joinOrder}` : undefined}
-        ${relationship.joinClauses.length > 0 ? relationship.joinClauses.map(jc => serializeRelationshipJoinClause(jc)).join('\n') : undefined}
+        ${serializeSourceJoinTable(relationship)}${serializeSourceJoinTableCardinality(relationship)} -> ${serializeTargetJoinTable(relationship)}${serializeTargetJoinTableCardinality(relationship)}
+        ${serializeJoinOrder(relationship)}
+        ${serializeJoinClauses(relationship)}
     }
     `;
 }
 
-export function serializeSourceJoinTable(relationship: Relationship) {
+export function serializeSourceJoinTable(relationship: Relationship): string {
     return expandToString`
         ${relationship.source?.target.ref ? relationship.source.target.ref.name : relationship.source?.target.$refText}
     `;
 }
 
 export function serializeSourceJoinTableCardinality(relationship: Relationship) {
+    if (!relationship.source?.cardinality)
+        return undefined;
+
     return expandToString`
-        ${relationship.source?.cardinality ? `[${relationship.source?.cardinality}]` : undefined}
+        [${relationship.source?.cardinality}]
     `;
 }
 
-export function serializeTargetJoinTable(relationship: Relationship) {
+export function serializeTargetJoinTable(relationship: Relationship): string {
     return expandToString`
         ${relationship.target?.target.ref ? relationship.target.target.ref.name : relationship.target?.target.$refText}
     `;
 }
 
-export function serializeTargetJoinTableCardinality(relationship: Relationship) {
+export function serializeTargetJoinTableCardinality(relationship: Relationship): string | undefined {
+    if (!relationship.target?.cardinality)
+        return undefined;
+
     return expandToString`
-        ${relationship.target?.cardinality ? `[${relationship.target?.cardinality}]` : undefined}
+        [${relationship.target?.cardinality}]
     `;
 }
 
-export function serializeRelationshipJoinClause(relationshipJoinClause: RelationshipJoinClause): string {
+export function serializeJoinOrder(relationship: Relationship): string | undefined {
+    if (!relationship.joinOrder)
+        return undefined;
+
+    return expandToString`
+        join order ${relationship.joinOrder}
+    `;
+}
+
+export function serializeJoinClauses(relationship: Relationship): string | undefined {
+    if (relationship.joinClauses.length <= 0)
+        return undefined;
+
+    return expandToString`
+        ${relationship.joinClauses.map(jc => serializeJoinClause(jc)).join('\n')}
+    `;
+}
+
+export function serializeJoinClause(relationshipJoinClause: RelationshipJoinClause): string {
     return expandToString`
         ${relationshipJoinClause.firstAttribute.$refText} = ${relationshipJoinClause.secondAttribute.$refText}
-        `;
+    `;
 }
