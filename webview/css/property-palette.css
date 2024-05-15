@@ -119,9 +119,9 @@
 }
 
 .property-reference-item .reference-create-reference {
-    color: var(--uml-successBackground);
+    color: var(--vscode-charts-green);
 }
 
 .property-reference-item .reference-delete {
-    color: var(--uml-errorForeground);
+    color: var(--vscode-errorForeground);
 }

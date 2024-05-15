@@ -1,6 +1,6 @@
 import { Action, DiagramServer, DiagramServices, RequestAction, ResponseAction } from 'sprotty-protocol';
 import { ER2CDSServices } from './er2cds-module.js';
-import { CreateAttributeAction, CreateEdgeAction, CreateElementAction, CreateElementExternalAction, CreateJoinClauseAction, DeleteElementAction, RequestAutoCompleteAction, RequestPopupConfirmModelAction, UpdateElementPropertyAction } from './actions.js';
+import { CreateAttributeAction, CreateEdgeAction, CreateElementAction, CreateElementExternalAction, CreateJoinClauseAction, DeleteElementAction, RequestAutoCompleteAction, RequestMarkersAction, RequestPopupConfirmModelAction, UpdateElementPropertyAction } from './actions.js';
 import { CreateElementActionHandler } from './handler/CreateElementActionHandler.js';
 import { CreateAttributeActionHandler } from './handler/CreateAttributeActionHandler.js';
 import { CreateEdgeActionHandler } from './handler/CreateEdgeActionHandler.js';
@@ -10,6 +10,7 @@ import { RequestAutoCompleteActionHandler } from './handler/RequestAutoCompleteA
 import { RequestPopupConfirmModelActionHandler } from './handler/RequestPopupConfirmModelActionHandler.js';
 import { CreateElementExternalActionHandler } from './handler/CreateElementExternalActionHandler.js';
 import { CreateJoinClauseActionHandler } from './handler/CreateJoinClauseActionHandler.js';
+import { RequestMarkersActionHandler } from './handler/RequestMarkersActionHandler.js';
 
 export class ER2CDSDiagramServer extends DiagramServer {
     private services: ER2CDSServices;
@@ -64,6 +65,10 @@ export class ER2CDSDiagramServer extends DiagramServer {
 
             case RequestPopupConfirmModelAction.KIND:
                 new RequestPopupConfirmModelActionHandler().handle(action as RequestPopupConfirmModelAction, this, this.services);
+                break;
+
+            case RequestMarkersAction.KIND:
+                new RequestMarkersActionHandler().handle(action as RequestMarkersAction, this, this.services);
                 break;
 
         }

@@ -2,7 +2,7 @@ import { injectable } from 'inversify';
 import { ActionHandlerRegistry } from 'sprotty';
 import { Action } from 'sprotty-protocol';
 import { VscodeLspEditDiagramServer } from 'sprotty-vscode-webview/lib/lsp/editing';
-import { CreateElementAction, DeleteElementAction, CreateEdgeAction, CreateAttributeAction, UpdateElementPropertyAction, RequestAutoCompleteAction, CreateElementExternalAction, RequestPopupConfirmModelAction, CreateJoinClauseAction } from './actions';
+import { CreateElementAction, DeleteElementAction, CreateEdgeAction, CreateAttributeAction, UpdateElementPropertyAction, RequestAutoCompleteAction, CreateElementExternalAction, RequestPopupConfirmModelAction, CreateJoinClauseAction, RequestMarkersAction } from './actions';
 
 @injectable()
 export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
@@ -21,6 +21,7 @@ export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
 
         registry.register(RequestAutoCompleteAction.KIND, this);
         registry.register(RequestPopupConfirmModelAction.KIND, this);
+        registry.register(RequestMarkersAction.KIND, this);
     }
 
     public override handleLocally(action: Action): boolean {
@@ -47,6 +48,12 @@ export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
                 return true;
 
             case RequestAutoCompleteAction.KIND:
+                return true;
+
+            case RequestPopupConfirmModelAction.KIND:
+                return true;
+
+            case RequestMarkersAction.KIND:
                 return true;
 
             default:

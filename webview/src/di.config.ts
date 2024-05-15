@@ -30,6 +30,7 @@ import '../css/helper-lines.css';
 import '../css/labels.css';
 import '../css/popup.css';
 import '../css/property-palette.css';
+import '../css/status.css';
 import '../css/tool-palette.css';
 
 import ToolPaletteModule from './tool-palette/di.config';

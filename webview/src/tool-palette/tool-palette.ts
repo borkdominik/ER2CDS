@@ -4,7 +4,7 @@ import { Action } from 'sprotty-protocol';
 import { matchesKeystroke } from 'sprotty/lib/utils/keyboard';
 import { ToolPaletteItem } from './tool-palette-item';
 import { EnableCreateAttributeToolAction, EnableCreateEdgeToolAction, EnableCreateJoinClauseToolAction, EnableDefaultToolsAction, EnableDeleteMouseToolAction, EnableMarqueeMouseToolAction } from './tools/actions';
-import { CreateElementAction } from '../actions';
+import { CreateElementAction, RequestMarkersAction } from '../actions';
 import { NODE_ENTITY, NODE_RELATIONSHIP } from '../model';
 import { EnableToolPaletteAction } from './actions';
 
@@ -206,19 +206,24 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
     }
 
     private createValidateButton(): HTMLElement {
-        const validateActionButton = createIcon('pass');
-        validateActionButton.title = 'Validate model';
-        validateActionButton.onclick = _event => {
-            // const modelIds: string[] = [this.modelRootId];
-            // this.actionDispatcher.dispatch(RequestMarkersAction.create(modelIds, { reason: MarkersReason.BATCH }));
-            // validateActionButton.focus();
-            this.changeActiveButton(validateActionButton);
-        };
-        validateActionButton.ariaLabel = validateActionButton.title;
-        validateActionButton.tabIndex = 1;
-        validateActionButton.onkeydown = ev => this.clearToolOnEscape(ev);
-        return validateActionButton;
+        const validateToolButton = createIcon('pass');
+        validateToolButton.title = 'Validate model';
+        validateToolButton.onclick = this.onValidateToolButton(validateToolButton);
+        validateToolButton.ariaLabel = validateToolButton.title;
+        validateToolButton.tabIndex = 1;
+        validateToolButton.onkeydown = ev => this.clearToolOnEscape(ev);
+        return validateToolButton;
     }
+
+    private onValidateToolButton(button: HTMLElement) {
+        return (_ev: MouseEvent) => {
+            const action = RequestMarkersAction.create();
+            this.actionDispatcher.dispatch(action);
+            this.changeActiveButton(button);
+            button.focus();
+        };
+    }
+
 
     private clearToolOnEscape(event: KeyboardEvent): void {
         if (matchesKeystroke(event, 'Escape')) {

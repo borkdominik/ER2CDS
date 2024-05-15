@@ -1,0 +1,80 @@
+.sprotty-issue-background {
+    fill: rgb(255 255 255 / 85%);
+    background-color: rgb(255 255 255 / 85%);
+}
+
+.sprotty-issue.sprotty-error {
+    fill: red;
+    background-color: red;
+}
+
+.sprotty-issue.sprotty-warning {
+    fill: yellow;
+    background-color: yellow;
+}
+
+.sprotty-issue.sprotty-info {
+    fill: lightblue;
+    background-color: lightblue;
+}
+
+.sprotty-status {
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.sprotty-status .fatal {
+    color: red;
+}
+
+.sprotty-status .error {
+    color: red;
+}
+
+.sprotty-status .warning {
+    color: yellow;
+}
+
+.sprotty-status .info {
+    color: lightblue;
+}
+
+.sprotty-error {
+    fill: rgb(255 255 255 / 85%);
+    color: red;
+}
+
+.sprotty-warning {
+    fill: rgb(255 255 255 / 85%);
+    color: yellow;
+}
+
+.sprotty-info {
+    fill: rgb(255 255 255 / 85%);
+    color: var();
+}
+
+.sprotty-infoRow .codicon {
+    margin-right: 8px;
+}
+
+.sprotty-status .ok {
+    visibility: hidden;
+}
+
+.sprotty-status-message {
+    visibility: hidden;
+    padding-left: 10px;
+}
+
+.sprotty-status-message.fatal {
+    visibility: visible;
+    padding-left: 10px;
+}
+
+.sprotty-status:hover .sprotty-status-message {
+    visibility: visible;
+}

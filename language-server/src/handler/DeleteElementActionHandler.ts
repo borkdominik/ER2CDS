@@ -42,10 +42,13 @@ export class DeleteElementActionHandler {
                 if (element?.type === EDGE) {
                     const edge = element as Edge;
 
-                    model.relationships = model.relationships.filter(r =>
-                        (r.source?.target.$refText !== edge.sourceId && r.source?.target.$refText !== edge.targetId) &&
-                        (r.target?.target.$refText !== edge.sourceId && r.target?.target.$refText !== edge.targetId)
-                    );
+                    model.relationships.map(r => {
+                        if (r.source?.target.$refText === edge.sourceId || r.source?.target.$refText === edge.targetId) {
+                            r.source = undefined;
+                        } else if (r.target?.target.$refText === edge.sourceId || r.target?.target.$refText === edge.targetId) {
+                            r.target = undefined;
+                        }
+                    });
                 }
 
                 if (element?.type === COMP_ATTRIBUTE) {

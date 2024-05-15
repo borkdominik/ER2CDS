@@ -1,15 +1,24 @@
-import { injectable, inject } from 'inversify';
+import { injectable, inject, postConstruct } from 'inversify';
 import { IActionDispatcher, IActionHandler, ICommand, SModelElementImpl, SParentElementImpl, TYPES } from 'sprotty';
 import { SetMarkersAction, Marker } from '../actions';
 import { IssueMarker, getSeverity } from './issue-marker';
 import { Action } from 'sprotty-protocol';
 import { ApplyMarkersAction, DeleteMarkersAction } from './actions';
 import { remove } from 'lodash';
+import { DiagramEditorService } from '../services/diagram-editor-service';
 
 @injectable()
 export class SetMarkersActionHandler implements IActionHandler {
     @inject(TYPES.IActionDispatcher)
     protected actionDispatcher: IActionDispatcher;
+
+    @inject(DiagramEditorService)
+    protected diagramEditorService: DiagramEditorService;
+
+    @postConstruct()
+    protected initialize() {
+        this.diagramEditorService.onModelRootChanged(() => this.modelRootChanged());
+    }
 
     protected previousMarkers: Marker[];
 
@@ -18,11 +27,16 @@ export class SetMarkersActionHandler implements IActionHandler {
     }
 
     async setMarkers(markers: Marker[]): Promise<void> {
-        if(this.previousMarkers)
+        if (this.previousMarkers)
             await this.actionDispatcher.dispatch(DeleteMarkersAction.create(this.previousMarkers));
 
         this.previousMarkers = markers;
         this.actionDispatcher.dispatch(ApplyMarkersAction.create(markers));
+    }
+
+    protected modelRootChanged() {
+        if (this.previousMarkers)
+            this.actionDispatcher.dispatch(ApplyMarkersAction.create(this.previousMarkers));
     }
 }
 

@@ -12,7 +12,7 @@ import { ER2CDSScopeProvider } from './er2cds-scope-provider.js';
 
 const ElkConstructor = require('elkjs/lib/elk.bundled.js').default;
 
-export namespace ER2CDS {
+export namespace ER2CDSGlobal {
     export let clientId: string;
 }
 
@@ -114,7 +114,7 @@ const ER2CDSDiagramServerFactory = (services: LangiumSprottySharedServices): ((c
     const serviceRegistry = services.ServiceRegistry;
 
     return (clientId, options) => {
-        ER2CDS.clientId = clientId;
+        ER2CDSGlobal.clientId = clientId;
 
         const sourceUri = options?.sourceUri;
 

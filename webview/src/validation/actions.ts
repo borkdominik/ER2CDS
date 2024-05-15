@@ -31,7 +31,7 @@ export class ApplyMarkersCommand extends Command {
     execute(context: CommandExecutionContext): CommandReturn {
         this.action.markers.forEach(marker => {
             const modelElement = context.root.index.getById(marker.elementId);
-            
+
             if (modelElement instanceof SParentElementImpl) {
                 const issueMarker = getOrCreateIssueMarker(modelElement);
                 const issue = createIssue(marker);

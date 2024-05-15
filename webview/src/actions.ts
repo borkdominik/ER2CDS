@@ -171,6 +171,21 @@ export namespace RequestPopupConfirmModelAction {
     }
 }
 
+export interface RequestMarkersAction extends RequestAction<SetMarkersAction> {
+    kind: typeof RequestMarkersAction.KIND;
+}
+export namespace RequestMarkersAction {
+    export const KIND = 'requestMarkers';
+
+    export function create(options: { requestId?: string } = {}): RequestMarkersAction {
+        return {
+            kind: KIND,
+            requestId: '',
+            ...options
+        };
+    }
+}
+
 export namespace MarkerKind {
     export const INFO = 'info';
     export const WARNING = 'warning';
