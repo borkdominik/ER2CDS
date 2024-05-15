@@ -28,6 +28,21 @@ export const LABEL_JOIN_TABLE = 'label:join-table';
 export const LABEL_JOIN_ORDER = 'label:join-order';
 export const LABEL_JOIN_CLAUSE = 'label:join-clause';
 
+export const CARDINALITIES = [
+    {
+        label: '',
+        value: ''
+    },
+    {
+        label: '1',
+        value: '1'
+    },
+    {
+        label: '0..N',
+        value: '0..N'
+    }
+]
+
 export const DATATYPES = [
     {
         label: 'Calculation/amount field',

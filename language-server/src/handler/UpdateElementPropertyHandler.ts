@@ -4,7 +4,7 @@ import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
 import { ER2CDSGlobal, ER2CDSServices } from '../er2cds-module.js';
 import { UpdateElementPropertyAction } from '../actions.js';
 import { URI } from 'langium';
-import { Attribute, AttributeType, ER2CDS } from '../generated/ast.js';
+import { Attribute, AttributeType, CardinalityType, ER2CDS } from '../generated/ast.js';
 import { Agent } from 'https';
 import { SapAttribute } from '../model-external.js';
 import { synchronizeModelToText } from '../serializer/serializer.js';
@@ -53,8 +53,16 @@ export class UpdateElementPropertyHandler {
                 await this.handleSourceJoinTableEdit(action, model);
                 break;
 
+            case 'source-join-table-cardinality':
+                await this.handleSourceJoinTableCardinalityEdit(action, model);
+                break;
+
             case 'target-join-table':
                 await this.handleTargetJoinTableEdit(action, model);
+                break;
+
+            case 'target-join-table-cardinality':
+                await this.handleTargetJoinTableCardinalityEdit(action, model);
                 break;
 
             case 'join-order':
@@ -188,6 +196,13 @@ export class UpdateElementPropertyHandler {
         };
     }
 
+    protected async handleSourceJoinTableCardinalityEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
+        const relationship = model.relationships.find(r => r.name === action.elementId);
+
+        if (relationship && relationship?.source)
+            relationship.source.cardinality = action.value as CardinalityType;
+    }
+
     protected async handleTargetJoinTableEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
         const relationship = model.relationships.find(r => r.name === action.elementId);
         const target = model.entities.find(e => e.name === action.value);
@@ -205,6 +220,13 @@ export class UpdateElementPropertyHandler {
         };
     }
 
+    protected async handleTargetJoinTableCardinalityEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
+        const relationship = model.relationships.find(r => r.name === action.elementId);
+
+        if (relationship && relationship?.target)
+            relationship.target.cardinality = action.value as CardinalityType;
+    }
+
     protected async handleJoinOrderEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
         const relationship = model.relationships.find(r => r.name === action.elementId);
 
@@ -220,7 +242,7 @@ export class UpdateElementPropertyHandler {
         const firstJoinClauseAttributeId = split[1];
 
         const relationship = model.relationships.find(r => r.name === relationshipId);
-        const attribute = relationship?.joinClauses.find(jc=> jc.firstAttribute.$refText === firstJoinClauseAttributeId);
+        const attribute = relationship?.joinClauses.find(jc => jc.firstAttribute.$refText === firstJoinClauseAttributeId);
 
         if (!relationship || !attribute)
             return Promise.resolve();

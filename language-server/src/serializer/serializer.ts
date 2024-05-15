@@ -69,10 +69,34 @@ export function serializeRelationships(relationships: Relationship[]): string {
 export function serializeRelationship(relationship: Relationship): string {
     return expandToString`
     relationship ${relationship.name} {
-        ${relationship.source?.target || relationship.target?.target.$refText ? `${relationship.source?.target.ref?.name} -> ${relationship.target?.target.ref?.name}` : undefined}
+        ${serializeSourceJoinTable(relationship)} ${serializeSourceJoinTableCardinality(relationship)} -> ${serializeTargetJoinTable(relationship)} ${serializeTargetJoinTableCardinality(relationship)}
         ${relationship.joinOrder ? `join order ${relationship.joinOrder}` : undefined}
         ${relationship.joinClauses.length > 0 ? relationship.joinClauses.map(jc => serializeRelationshipJoinClause(jc)).join('\n') : undefined}
     }
+    `;
+}
+
+export function serializeSourceJoinTable(relationship: Relationship) {
+    return expandToString`
+        ${relationship.source?.target.ref ? relationship.source.target.ref.name : relationship.source?.target.$refText}
+    `;
+}
+
+export function serializeSourceJoinTableCardinality(relationship: Relationship) {
+    return expandToString`
+        ${relationship.source?.cardinality ? `[${relationship.source?.cardinality}]` : undefined}
+    `;
+}
+
+export function serializeTargetJoinTable(relationship: Relationship) {
+    return expandToString`
+        ${relationship.target?.target.ref ? relationship.target.target.ref.name : relationship.target?.target.$refText}
+    `;
+}
+
+export function serializeTargetJoinTableCardinality(relationship: Relationship) {
+    return expandToString`
+        ${relationship.target?.cardinality ? `[${relationship.target?.cardinality}]` : undefined}
     `;
 }
 
