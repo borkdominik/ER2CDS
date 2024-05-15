@@ -104,7 +104,7 @@ export function createER2CDSServices(context: DefaultSharedModuleContext): {
 
     shared.ServiceRegistry.register(ER2CDS);
     registerValidationChecks(ER2CDS);
-    registerValidationMarkers(shared);
+    registerValidationMarkers(ER2CDS);
 
     return { shared, ER2CDS };
 }

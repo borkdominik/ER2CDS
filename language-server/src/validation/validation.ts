@@ -1,7 +1,7 @@
 import { DocumentState, LangiumDocument, type ValidationAcceptor, type ValidationChecks } from 'langium';
 import type { ER2CDS, ER2CDSAstType, Entity } from '../generated/ast.js';
 import { ER2CDSGlobal, type ER2CDSServices } from '../er2cds-module.js';
-import { DiagramActionNotification, LangiumSprottySharedServices } from 'langium-sprotty';
+import { DiagramActionNotification } from 'langium-sprotty';
 import { Marker, MarkerKind, SetMarkersAction } from '../actions.js';
 import { Range } from 'vscode-languageserver-types';
 
@@ -16,14 +16,14 @@ export function registerValidationChecks(services: ER2CDSServices) {
     registry.register(checks, validator);
 }
 
-export function registerValidationMarkers(shared: LangiumSprottySharedServices) {
-    shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, async (documents, cancelToken) => {
+export function registerValidationMarkers(services: ER2CDSServices) {
+    services.shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, async (documents, cancelToken) => {
         for (const document of documents) {
             const markers = createMarkersForDocument(document);
 
             if (markers) {
                 const setMarker = SetMarkersAction.create(markers);
-                shared.lsp.Connection?.sendNotification(DiagramActionNotification.type, { clientId: ER2CDSGlobal.clientId, action: setMarker });
+                services.shared.lsp.Connection?.sendNotification(DiagramActionNotification.type, { clientId: ER2CDSGlobal.clientId, action: setMarker });
             }
         }
     });
