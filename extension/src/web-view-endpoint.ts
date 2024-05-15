@@ -1,8 +1,6 @@
 import * as vscode from 'vscode';
 import { isActionMessage, SelectAction } from 'sprotty-protocol';
 import { LspWebviewEndpoint, LspWebviewEndpointOptions } from 'sprotty-vscode/lib/lsp';
-import { Action } from 'sprotty-protocol';
-import { CreateElementExternalAction, RequestAutoCompleteAction, UpdateElementPropertyAction } from './actions';
 
 export class ER2CDSWebviewEndpoint extends LspWebviewEndpoint {
     protected context: vscode.ExtensionContext;
@@ -17,12 +15,6 @@ export class ER2CDSWebviewEndpoint extends LspWebviewEndpoint {
             switch (message.action.kind) {
                 case SelectAction.KIND:
                     this.handleSelectAction(message.action as SelectAction);
-                    break;
-
-                case CreateElementExternalAction.KIND:
-                case UpdateElementPropertyAction.KIND:
-                case RequestAutoCompleteAction.KIND:
-                    message.action = await this.extendActionWithSecrets(message.action);
                     break;
             }
         }
@@ -39,15 +31,6 @@ export class ER2CDSWebviewEndpoint extends LspWebviewEndpoint {
                 uri: uriString,
             });
         }
-    }
-
-    protected async extendActionWithSecrets(action: any): Promise<Action> {
-        action.sapUrl = await this.context.secrets.get('sapUrl');
-        action.sapClient = await this.context.secrets.get('sapClient');
-        action.sapUsername = await this.context.secrets.get('sapUsername');
-        action.sapPassword = await this.context.secrets.get('sapPassword');
-
-        return Promise.resolve(action);
     }
 
     protected deserializeUriOfDiagramIdentifier(): string {

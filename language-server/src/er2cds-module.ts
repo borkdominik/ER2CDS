@@ -4,7 +4,7 @@ import { AbstractExecuteCommandHandler, URI, createDefaultModule, createDefaultS
 import { DefaultDiagramServerManager, DiagramActionNotification, LangiumSprottyServices, LangiumSprottySharedServices, SprottyDiagramServices, SprottySharedServices } from 'langium-sprotty';
 import { DefaultElementFilter, DefaultLayoutConfigurator, ElkFactory, ElkLayoutEngine, IElementFilter, ILayoutConfigurator } from 'sprotty-elk/lib/elk-layout.js';
 import { ER2CDSGeneratedModule, ER2CDSGeneratedSharedModule } from './generated/module.js';
-import { ER2CDSValidator, registerValidationChecks, registerValidationMarkers } from './validation/validation.js';
+import { ER2CDSValidator, registerValidationChecks } from './validation/validation.js';
 import { ER2CDSDiagramGenerator } from './er2cds-diagram-generator.js';
 import { ER2CDSDiagramServer } from './er2cds-diagram-server.js';
 import { generateCDS } from './generator/generator.js';
@@ -13,7 +13,10 @@ import { ER2CDSScopeProvider } from './er2cds-scope-provider.js';
 const ElkConstructor = require('elkjs/lib/elk.bundled.js').default;
 
 export namespace ER2CDSGlobal {
-    export let clientId: string;
+    export let sapUrl: string;
+    export let sapClient: string;
+    export let sapUsername: string;
+    export let sapPassword: string;
 }
 
 /**
@@ -67,6 +70,13 @@ export class ER2CDSCommandHandler extends AbstractExecuteCommandHandler {
         acceptor('er2cds.generate.cds', args => {
             generateCDS(args[0]);
         });
+
+        acceptor('er2cds.add.system', args => {
+            ER2CDSGlobal.sapUrl = args[0];
+            ER2CDSGlobal.sapClient = args[1];
+            ER2CDSGlobal.sapUsername = args[2];
+            ER2CDSGlobal.sapPassword = args[3];
+        });
     }
 }
 
@@ -104,7 +114,6 @@ export function createER2CDSServices(context: DefaultSharedModuleContext): {
 
     shared.ServiceRegistry.register(ER2CDS);
     registerValidationChecks(ER2CDS);
-    registerValidationMarkers(ER2CDS);
 
     return { shared, ER2CDS };
 }
@@ -114,8 +123,6 @@ const ER2CDSDiagramServerFactory = (services: LangiumSprottySharedServices): ((c
     const serviceRegistry = services.ServiceRegistry;
 
     return (clientId, options) => {
-        ER2CDSGlobal.clientId = clientId;
-
         const sourceUri = options?.sourceUri;
 
         if (!sourceUri)

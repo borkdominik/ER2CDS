@@ -1,8 +1,7 @@
-import { DocumentState, LangiumDocument, type ValidationAcceptor, type ValidationChecks } from 'langium';
-import type { ER2CDS, ER2CDSAstType, Entity } from '../generated/ast.js';
-import { ER2CDSGlobal, type ER2CDSServices } from '../er2cds-module.js';
-import { DiagramActionNotification } from 'langium-sprotty';
-import { Marker, MarkerKind, SetMarkersAction } from '../actions.js';
+import { LangiumDocument, type ValidationAcceptor, type ValidationChecks } from 'langium';
+import { Attribute, DataType, ER2CDS, ER2CDSAstType, Entity, Relationship, RelationshipEntity, RelationshipJoinClause } from '../generated/ast.js';
+import { type ER2CDSServices } from '../er2cds-module.js';
+import { Marker, MarkerKind } from '../actions.js';
 import { Range } from 'vscode-languageserver-types';
 
 export function registerValidationChecks(services: ER2CDSServices) {
@@ -10,23 +9,16 @@ export function registerValidationChecks(services: ER2CDSServices) {
     const validator = services.validation.ER2CDSValidator;
 
     const checks: ValidationChecks<ER2CDSAstType> = {
-        Entity: validator.checkEntityStartsWithCapital
+        ER2CDS: validator.checkER2CDS,
+        Entity: validator.checkEntity,
+        Attribute: validator.checkAttribute,
+        DataType: validator.checkDataType,
+        Relationship: validator.checkRelationship,
+        RelationshipEntity: validator.checkRelationshipEntity,
+        RelationshipJoinClause: validator.checkRelationshipJoinClause
     };
 
     registry.register(checks, validator);
-}
-
-export function registerValidationMarkers(services: ER2CDSServices) {
-    services.shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, async (documents, cancelToken) => {
-        for (const document of documents) {
-            const markers = createMarkersForDocument(document);
-
-            if (markers) {
-                const setMarker = SetMarkersAction.create(markers);
-                services.shared.lsp.Connection?.sendNotification(DiagramActionNotification.type, { clientId: ER2CDSGlobal.clientId, action: setMarker });
-            }
-        }
-    });
 }
 
 export function createMarkersForDocument(document: LangiumDocument): Marker[] | undefined {
@@ -52,7 +44,6 @@ export function createMarkersForDocument(document: LangiumDocument): Marker[] | 
                 kind = MarkerKind.INFO;
                 break;
         }
-
 
         return <Marker>{
             kind: kind,
@@ -84,16 +75,38 @@ export function isInRange(outer: Range | undefined, inner: Range | undefined): b
 }
 
 export class ER2CDSValidator {
-    constructor(protected services: ER2CDSServices) {
+    constructor(protected services: ER2CDSServices) { }
+
+    checkER2CDS(er2cds: ER2CDS, accept: ValidationAcceptor): void {
+        if (!er2cds.name) {
+            accept('error', 'Name for ER2CDS mandatory.', { node: er2cds, property: 'name' });
+        }
     }
 
-    checkEntityStartsWithCapital(entity: Entity, accept: ValidationAcceptor): void {
-        if (entity.name) {
-            const firstChar = entity.name.substring(0, 1);
+    checkEntity(entity: Entity, accept: ValidationAcceptor): void {
+        // TODO check if tabel exits in SAP
+        // TODO check if attributes exist
+    }
 
-            if (firstChar.toUpperCase() !== firstChar) {
-                accept('warning', 'Person name should start with a capital.', { node: entity, property: 'name' });
-            }
-        }
+    checkAttribute(attribute: Attribute, accept: ValidationAcceptor): void {
+        // TODO check if attribute exits on SAP table
+    }
+
+    checkDataType(datatype: DataType, accept: ValidationAcceptor): void {
+        // TODO check if datatype is correct
+    }
+
+    checkRelationship(relationship: Relationship, accept: ValidationAcceptor): void {
+        // TODO check if source is given
+        // TODO check if target is given
+        // TODO check if at least one join clause is given
+    }
+
+    checkRelationshipEntity(relationshipEntity: RelationshipEntity, accept: ValidationAcceptor): void {
+        // TODO check if target exits
+    }
+
+    checkRelationshipJoinClause(relationshipJoinClause: RelationshipJoinClause, accept: ValidationAcceptor): void {
+        // check if datatypes are compatibel
     }
 }

@@ -5,11 +5,11 @@ import { registerDefaultCommands, registerTextEditorSync } from 'sprotty-vscode'
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node';
 import { ER2CDSWebViewPanelManager } from './web-view-panel-manager';
 import { Messenger } from 'vscode-messenger';
-import { generateCDSHandler } from './commands';
+import { addSystemCommand, generateCDSHandler, sendToServer } from './commands';
 
 let languageClient: LanguageClient;
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
     const openHelp = 'Open Help';
     vscode.window.showInformationMessage('ER2CDS Extension is active.', ...[openHelp])
         .then((selection) => {
@@ -18,7 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
             }
         });
 
-    languageClient = createLanguageClient(context);
+    languageClient = await createLanguageClient(context);
 
     const webviewPanelManager = new ER2CDSWebViewPanelManager(
         context,
@@ -37,11 +37,11 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand('er2cds.generate.cds.proxy', generateCDSHandler));
 
     context.subscriptions.push(vscode.commands.registerCommand('er2cds.add.system.proxy', async () => {
-        const sapsapUrl = await vscode.window.showInputBox({ title: 'SAP System URL' });
-        if (!sapsapUrl)
+        const sapUrl = await vscode.window.showInputBox({ title: 'SAP System URL' });
+        if (!sapUrl)
             return;
 
-        await context.secrets.store('sapUrl', sapsapUrl);
+        await context.secrets.store('sapUrl', sapUrl);
 
         const sapClient = await vscode.window.showInputBox({ title: 'SAP Client' });
         if (!sapClient)
@@ -60,10 +60,20 @@ export function activate(context: vscode.ExtensionContext) {
             return;
 
         await context.secrets.store('sapPassword', sapPassword);
+
+        sendToServer(addSystemCommand, [sapUrl, sapClient, sapUsername, sapPassword]);
     }));
+
+    const sapUrl = await context.secrets.get('sapUrl');
+    const sapClient = await context.secrets.get('sapClient');
+    const sapUsername = await context.secrets.get('sapUsername');
+    const sapPassword = await context.secrets.get('sapPassword');
+    if (sapUrl && sapClient && sapUsername && sapPassword) {
+        sendToServer(addSystemCommand, [sapUrl, sapClient, sapUsername, sapPassword]);
+    }
 }
 
-export function createLanguageClient(context: vscode.ExtensionContext): LanguageClient {
+export async function createLanguageClient(context: vscode.ExtensionContext): Promise<LanguageClient> {
     const serverModule = context.asAbsolutePath(path.join('..', 'language-server', 'out', 'server.cjs'));
 
     // The debug options for the server
@@ -99,7 +109,7 @@ export function createLanguageClient(context: vscode.ExtensionContext): Language
     );
 
     // Start the client. This will also launch the server
-    languageClient.start();
+    await languageClient.start();
     return languageClient;
 }
 

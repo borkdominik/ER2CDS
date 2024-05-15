@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 import { URI } from 'vscode-uri';
 import { CreateElementExternalAction } from '../actions.js';
-import { ER2CDSServices } from '../er2cds-module.js';
+import { ER2CDSGlobal, ER2CDSServices } from '../er2cds-module.js';
 import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
 import { Agent } from 'https';
 import { SapAttribute } from '../model-external.js';
@@ -60,7 +60,7 @@ export class CreateElementExternalActionHandler {
 
     protected async getAttributes(action: CreateElementExternalAction): Promise<SapAttribute[]> {
         const agent = new Agent({ rejectUnauthorized: false });
-        let url = action.sapUrl + "sap/opu/odata/sap/ZER2CDS/Attributes?$filter=Entity eq '" + action.elementId + "'&$format=json&sap-client=" + action.sapClient;
+        let url = ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/Attributes?$filter=Entity eq '" + action.elementId + "'&$format=json&sap-client=" + ER2CDSGlobal.sapClient;
 
         if (!url)
             return Promise.resolve([]);
@@ -75,7 +75,7 @@ export class CreateElementExternalActionHandler {
                     agent: agent,
                     method: 'GET',
                     headers: {
-                        'Authorization': 'Basic ' + btoa(action.sapUsername + ':' + action.sapPassword)
+                        'Authorization': 'Basic ' + btoa(ER2CDSGlobal.sapUsername + ':' + ER2CDSGlobal.sapPassword)
                     }
                 }
             ).then(

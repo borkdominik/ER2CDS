@@ -1,6 +1,6 @@
 import { injectable, inject, postConstruct } from 'inversify';
 import { IActionDispatcher, IActionHandler, ICommand, SModelElementImpl, SParentElementImpl, TYPES } from 'sprotty';
-import { SetMarkersAction, Marker } from '../actions';
+import { SetMarkersAction, Marker, RequestMarkersAction } from '../actions';
 import { IssueMarker, getSeverity } from './issue-marker';
 import { Action } from 'sprotty-protocol';
 import { ApplyMarkersAction, DeleteMarkersAction } from './actions';
@@ -35,8 +35,7 @@ export class SetMarkersActionHandler implements IActionHandler {
     }
 
     protected modelRootChanged() {
-        if (this.previousMarkers)
-            this.actionDispatcher.dispatch(ApplyMarkersAction.create(this.previousMarkers));
+        this.actionDispatcher.dispatch(RequestMarkersAction.create());
     }
 }
 

@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 import { SModelIndex } from 'sprotty-protocol';
 import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
-import { ER2CDSServices } from '../er2cds-module.js';
+import { ER2CDSGlobal, ER2CDSServices } from '../er2cds-module.js';
 import { UpdateElementPropertyAction } from '../actions.js';
 import { URI } from 'langium';
 import { Attribute, AttributeType, ER2CDS } from '../generated/ast.js';
@@ -97,7 +97,7 @@ export class UpdateElementPropertyHandler {
         const attributeId = split[1];
 
         const agent = new Agent({ rejectUnauthorized: false });
-        const url = action.sapUrl + "sap/opu/odata/sap/ZER2CDS/Attributes(Entity='" + entityId + "',Attribute='" + action.value + "')?$format=json&sap-client=" + action.sapClient;
+        const url = ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/Attributes(Entity='" + entityId + "',Attribute='" + action.value + "')?$format=json&sap-client=" + ER2CDSGlobal.sapClient;
 
         return fetch(
             url,
@@ -105,7 +105,7 @@ export class UpdateElementPropertyHandler {
                 agent: agent,
                 method: 'GET',
                 headers: {
-                    'Authorization': 'Basic ' + btoa(action.sapUsername + ':' + action.sapPassword)
+                    'Authorization': 'Basic ' + btoa(ER2CDSGlobal.sapUsername + ':' + ER2CDSGlobal.sapPassword)
                 }
             }
         ).then(

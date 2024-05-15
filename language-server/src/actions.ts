@@ -1,7 +1,7 @@
 import { Action, RequestAction, ResponseAction, generateRequestId, Bounds, SetPopupModelAction } from 'sprotty-protocol';
 
 export interface CreateElementAction extends Action {
-    kind: typeof CreateElementAction.KIND,
+    kind: typeof CreateElementAction.KIND;
     elementType: string;
 }
 export namespace CreateElementAction {
@@ -16,24 +16,16 @@ export namespace CreateElementAction {
 }
 
 export interface CreateElementExternalAction extends Action {
-    kind: typeof CreateElementExternalAction.KIND,
+    kind: typeof CreateElementExternalAction.KIND;
     elementId: string;
-    sapUrl: string;
-    sapClient: string;
-    sapUsername: string;
-    sapPassword: string;
 }
 export namespace CreateElementExternalAction {
     export const KIND = 'createElementExternalAction';
 
-    export function create(elementId: string, sapUrl: string, sapClient: string, sapUsername: string, sapPassword: string): CreateElementExternalAction {
+    export function create(elementId: string): CreateElementExternalAction {
         return {
             kind: KIND,
-            elementId: elementId,
-            sapUrl: sapUrl,
-            sapClient: sapClient,
-            sapUsername: sapUsername,
-            sapPassword: sapPassword
+            elementId: elementId
         };
     }
 }
@@ -85,28 +77,20 @@ export namespace CreateJoinClauseAction {
 }
 
 export interface UpdateElementPropertyAction extends Action {
-    kind: typeof UpdateElementPropertyAction.KIND,
-    elementId: string,
-    propertyId: string,
-    value: string,
-    sapUrl: string;
-    sapClient: string;
-    sapUsername: string;
-    sapPassword: string;
+    kind: typeof UpdateElementPropertyAction.KIND;
+    elementId: string;
+    propertyId: string;
+    value: string;
 }
 export namespace UpdateElementPropertyAction {
     export const KIND = 'updateElementProperty';
 
-    export function create(elementId: string, propertyId: string, value: string, sapUrl: string, sapClient: string, sapUsername: string, sapPassword: string): UpdateElementPropertyAction {
+    export function create(elementId: string, propertyId: string, value: string): UpdateElementPropertyAction {
         return {
             kind: KIND,
             elementId: elementId,
             propertyId: propertyId,
-            value: value,
-            sapUrl: sapUrl,
-            sapClient: sapClient,
-            sapUsername: sapUsername,
-            sapPassword: sapPassword
+            value: value
         };
     }
 }
@@ -127,29 +111,21 @@ export namespace DeleteElementAction {
 }
 
 export interface RequestAutoCompleteAction extends RequestAction<SetAutoCompleteAction> {
-    kind: typeof RequestAutoCompleteAction.KIND,
+    kind: typeof RequestAutoCompleteAction.KIND;
     elementId: string;
     type: string;
     search: string;
-    sapUrl: string;
-    sapClient: string;
-    sapUsername: string;
-    sapPassword: string;
 }
 export namespace RequestAutoCompleteAction {
     export const KIND = 'requestAutoComplete';
 
-    export function create(elementId: string, type: string, search: string, sapUrl: string, sapClient: string, sapUsername: string, sapPassword: string): RequestAutoCompleteAction {
+    export function create(elementId: string, type: string, search: string): RequestAutoCompleteAction {
         return {
             kind: KIND,
             requestId: generateRequestId(),
             elementId: elementId,
             type: type,
-            search: search,
-            sapUrl: sapUrl,
-            sapClient: sapClient,
-            sapUsername: sapUsername,
-            sapPassword: sapPassword
+            search: search
         };
     }
 }
@@ -158,8 +134,8 @@ export interface AutoCompleteValue {
     label: string;
 }
 export interface SetAutoCompleteAction extends ResponseAction {
-    kind: typeof SetAutoCompleteAction.KIND,
-    elementId: string,
+    kind: typeof SetAutoCompleteAction.KIND;
+    elementId: string;
     values: AutoCompleteValue[];
 }
 export namespace SetAutoCompleteAction {
@@ -176,9 +152,9 @@ export namespace SetAutoCompleteAction {
 }
 
 export interface RequestPopupConfirmModelAction extends RequestAction<SetPopupModelAction> {
-    kind: typeof RequestPopupConfirmModelAction.KIND
-    elementId: string
-    bounds: Bounds
+    kind: typeof RequestPopupConfirmModelAction.KIND;
+    elementId: string;
+    bounds: Bounds;
 }
 export namespace RequestPopupConfirmModelAction {
     export const KIND = 'requestPopupConfirmModel';
@@ -199,11 +175,10 @@ export interface RequestMarkersAction extends RequestAction<SetMarkersAction> {
 export namespace RequestMarkersAction {
     export const KIND = 'requestMarkers';
 
-    export function create(options: { requestId?: string } = {}): RequestMarkersAction {
+    export function create(): RequestMarkersAction {
         return {
             kind: KIND,
-            requestId: '',
-            ...options
+            requestId: generateRequestId()
         };
     }
 }

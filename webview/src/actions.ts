@@ -1,7 +1,7 @@
 import { Action, RequestAction, ResponseAction, generateRequestId, Bounds, SetPopupModelAction } from 'sprotty-protocol';
 
 export interface CreateElementAction extends Action {
-    kind: typeof CreateElementAction.KIND,
+    kind: typeof CreateElementAction.KIND;
     elementType: string;
 }
 export namespace CreateElementAction {
@@ -16,7 +16,7 @@ export namespace CreateElementAction {
 }
 
 export interface CreateElementExternalAction extends Action {
-    kind: typeof CreateElementExternalAction.KIND,
+    kind: typeof CreateElementExternalAction.KIND;
     elementId: string;
 }
 export namespace CreateElementExternalAction {
@@ -77,11 +77,11 @@ export namespace CreateJoinClauseAction {
 }
 
 export interface UpdateElementPropertyAction extends Action {
-    kind: typeof UpdateElementPropertyAction.KIND,
-    elementId: string,
-    propertyId: string,
-    value: string,
-    datatype?: string
+    kind: typeof UpdateElementPropertyAction.KIND;
+    elementId: string;
+    propertyId: string;
+    value: string;
+    datatype?: string;
 }
 export namespace UpdateElementPropertyAction {
     export const KIND = 'updateElementProperty';
@@ -113,7 +113,7 @@ export namespace DeleteElementAction {
 }
 
 export interface RequestAutoCompleteAction extends RequestAction<SetAutoCompleteAction> {
-    kind: typeof RequestAutoCompleteAction.KIND,
+    kind: typeof RequestAutoCompleteAction.KIND;
     elementId: string;
     type: string;
     search: string;
@@ -136,8 +136,8 @@ export interface AutoCompleteValue {
     label: string;
 }
 export interface SetAutoCompleteAction extends ResponseAction {
-    kind: typeof SetAutoCompleteAction.KIND,
-    elementId: string,
+    kind: typeof SetAutoCompleteAction.KIND;
+    elementId: string;
     values: AutoCompleteValue[];
 }
 export namespace SetAutoCompleteAction {
@@ -154,9 +154,9 @@ export namespace SetAutoCompleteAction {
 }
 
 export interface RequestPopupConfirmModelAction extends RequestAction<SetPopupModelAction> {
-    kind: typeof RequestPopupConfirmModelAction.KIND
-    elementId: string
-    bounds: Bounds
+    kind: typeof RequestPopupConfirmModelAction.KIND;
+    elementId: string;
+    bounds: Bounds;
 }
 export namespace RequestPopupConfirmModelAction {
     export const KIND = 'requestPopupConfirmModel';
