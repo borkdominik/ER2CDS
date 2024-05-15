@@ -34,8 +34,8 @@ export const CARDINALITIES = [
         value: ''
     },
     {
-        label: '1',
-        value: '1'
+        label: '0..1',
+        value: '0..1'
     },
     {
         label: '0..N',

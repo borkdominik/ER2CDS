@@ -564,17 +564,19 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
     protected executeFromSuggestionAttribute(elementId: string, propertyId: string, input: AutoCompleteValue): void {
         this.update(propertyId, 'attribute-name', input.label);
 
-        this.activeElementId = this.createNewElementId(elementId, propertyId.split('.')[1], input.label);
+        this.activeElementId = this.createNewElementId(propertyId, propertyId.split('.')[1], input.label);
     }
 
     protected executeFromTextOnlyInputAttribute(elementId: string, propertyId: string, input: string): void {
         this.update(propertyId, 'attribute-name', input);
 
-        this.activeElementId = this.createNewElementId(elementId, propertyId.split('.')[1], input);
+        this.activeElementId = this.createNewElementId(propertyId, propertyId.split('.')[1], input);
     }
 
     private createNewElementId(elementId: string, oldAttributeElementId: string, newAttributeElementId: string): string {
         const split = elementId.split('.');
+
+        console.log(elementId);
 
         if (split.length <= 1)
             return elementId;

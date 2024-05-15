@@ -37,12 +37,12 @@ RelationshipEntity:
 RelationshipJoinClause:
 	(firstAttribute=[Attribute] '=' secondAttribute=[Attribute]);
 
-type CardinalityType = '1' | '0..N';
+type CardinalityType = '0..1' | '0..N';
 CardinalityType returns CardinalityType:
-	ONE | ZERO_MANY
+	ZERO_ONE | ZERO_MANY
 ;
-ONE returns string:
-	'1';
+ZERO_ONE returns string:
+	'0..1';
 ZERO_MANY returns string:
 	'0..N';
 

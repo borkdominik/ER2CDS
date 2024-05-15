@@ -515,11 +515,11 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
     },
     {
       "$type": "ParserRule",
-      "name": "ONE",
+      "name": "ZERO_ONE",
       "dataType": "string",
       "definition": {
         "$type": "Keyword",
-        "value": "1"
+        "value": "0..1"
       },
       "definesHiddenTokens": false,
       "entry": false,
@@ -629,7 +629,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
         "types": [
           {
             "$type": "SimpleType",
-            "stringType": "1"
+            "stringType": "0..1"
           },
           {
             "$type": "SimpleType",

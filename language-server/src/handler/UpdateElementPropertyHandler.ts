@@ -4,7 +4,7 @@ import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
 import { ER2CDSGlobal, ER2CDSServices } from '../er2cds-module.js';
 import { UpdateElementPropertyAction } from '../actions.js';
 import { URI } from 'langium';
-import { Attribute, AttributeType, CardinalityType, ER2CDS } from '../generated/ast.js';
+import { Attribute, CardinalityType, ER2CDS } from '../generated/ast.js';
 import { Agent } from 'https';
 import { SapAttribute } from '../model-external.js';
 import { synchronizeModelToText } from '../serializer/serializer.js';
@@ -176,7 +176,11 @@ export class UpdateElementPropertyHandler {
         if (!attribute)
             return Promise.resolve();
 
-        attribute.type = action.value as AttributeType;
+        if ((action.value === 'true')) {
+            attribute.type = 'key';
+        } else {
+            attribute.type = undefined;
+        }
     }
 
     protected async handleSourceJoinTableEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
