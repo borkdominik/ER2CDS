@@ -41,7 +41,7 @@ export const CARDINALITIES = [
         label: '0..N',
         value: '0..N'
     }
-]
+];
 
 export const DATATYPES = [
     {
@@ -128,7 +128,7 @@ export const DATATYPES = [
         label: 'Language',
         value: 'LANG'
     }
-]
+];
 
 export class ER2CDSRoot extends SGraphImpl {
     name: string;

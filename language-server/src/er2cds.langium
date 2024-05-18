@@ -31,7 +31,7 @@ Relationship:
 
 RelationshipEntity:
 	target=[Entity] ('[' 
-		cardinality=CardinalityType ('|' role=STRING)?
+		cardinality=CardinalityType
 	']')?;
 
 RelationshipJoinClause:

@@ -10,7 +10,6 @@ import { AbstractAstReflection } from 'langium';
 export const ER2CDSTerminals = {
     ID: /[_a-zA-Z\/][\w_]*/,
     INT: /[0-9]+/,
-    STRING: /[A-Za-z]+/,
     WS: /\s+/,
     ML_COMMENT: /\/\*[\s\S]*?\*\//,
     SL_COMMENT: /\/\/[^\n\r]*/,
@@ -110,7 +109,6 @@ export interface RelationshipEntity extends AstNode {
     readonly $container: Relationship;
     readonly $type: 'RelationshipEntity';
     cardinality?: CardinalityType
-    role?: string
     target: Reference<Entity>
 }
 

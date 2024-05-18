@@ -1,8 +1,11 @@
 import { LangiumDocument, type ValidationAcceptor, type ValidationChecks } from 'langium';
 import { Attribute, DataType, ER2CDS, ER2CDSAstType, Entity, Relationship, RelationshipEntity, RelationshipJoinClause } from '../generated/ast.js';
-import { type ER2CDSServices } from '../er2cds-module.js';
+import { ER2CDSGlobal, type ER2CDSServices } from '../er2cds-module.js';
 import { Marker, MarkerKind } from '../actions.js';
 import { Range } from 'vscode-languageserver-types';
+import { Agent } from 'https';
+import fetch, { Response } from 'node-fetch';
+import { DATATYPES } from '../model.js';
 
 export function registerValidationChecks(services: ER2CDSServices) {
     const registry = services.validation.ValidationRegistry;
@@ -77,36 +80,137 @@ export function isInRange(outer: Range | undefined, inner: Range | undefined): b
 export class ER2CDSValidator {
     constructor(protected services: ER2CDSServices) { }
 
-    checkER2CDS(er2cds: ER2CDS, accept: ValidationAcceptor): void {
+    async checkER2CDS(er2cds: ER2CDS, accept: ValidationAcceptor): Promise<void> {
         if (!er2cds.name) {
-            accept('error', 'Name for ER2CDS mandatory.', { node: er2cds, property: 'name' });
+            accept('error', 'Name for ER2CDS missing', { node: er2cds, property: 'name' });
         }
     }
 
-    checkEntity(entity: Entity, accept: ValidationAcceptor): void {
-        // TODO check if tabel exits in SAP
-        // TODO check if attributes exist
+    async checkEntity(entity: Entity, accept: ValidationAcceptor): Promise<void> {
+        const agent = new Agent({ rejectUnauthorized: false });
+        const url = ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/Entities(Entity='" + entity.name + "')?$format=json&sap-client=" + ER2CDSGlobal.sapClient;
+
+        if (!entity.name) {
+            accept('error', `Name for Entity missing`, { node: entity, property: 'name' });
+        }
+
+        await fetch(
+            url,
+            {
+                agent: agent,
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Basic ' + btoa(ER2CDSGlobal.sapUsername + ':' + ER2CDSGlobal.sapPassword)
+                }
+            }
+        ).then(
+            (response: Response) => {
+                if (response.status === 404) {
+                    accept('error', `Entity ${entity.name} does not exists`, { node: entity, property: 'name' });
+                }
+            }
+        ).catch(
+            () => Promise.resolve()
+        );
+
+        if (!entity.attributes || entity.attributes.length <= 0) {
+            accept('warning', `Entity ${entity.name} has no attributes`, { node: entity, property: 'attributes' });
+        }
     }
 
-    checkAttribute(attribute: Attribute, accept: ValidationAcceptor): void {
-        // TODO check if attribute exits on SAP table
+    async checkAttribute(attribute: Attribute, accept: ValidationAcceptor): Promise<void> {
+        const entity = attribute.$container;
+
+        const agent = new Agent({ rejectUnauthorized: false });
+        const url = ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/Attributes(Entity='" + entity.name + "',Attribute='" + attribute.name + "')?$format=json&sap-client=" + ER2CDSGlobal.sapClient;
+
+        if (!attribute.name) {
+            accept('error', `Name for Attribute missing`, { node: attribute, property: 'name' });
+        }
+
+        if (!attribute.datatype) {
+            accept('error', `Datatype for Attribute ${attribute.name} missing`, { node: attribute, property: 'datatype' });
+        }
+
+        await fetch(
+            url,
+            {
+                agent: agent,
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Basic ' + btoa(ER2CDSGlobal.sapUsername + ':' + ER2CDSGlobal.sapPassword)
+                }
+            }
+        ).then(
+            (response: Response) => {
+                if (response.status === 404)
+                    accept('error', `Attribute ${attribute.name} does not exists on Entity ${entity.name}`, { node: attribute, property: 'name' });
+            }
+        ).catch(
+            () => Promise.resolve()
+        );
     }
 
-    checkDataType(datatype: DataType, accept: ValidationAcceptor): void {
-        // TODO check if datatype is correct
+    async checkDataType(datatype: DataType, accept: ValidationAcceptor): Promise<void> {
+        if (!DATATYPES.some(d => datatype.type === d.value)) {
+            accept('error', `Datatype ${datatype.type} invalid`, { node: datatype, property: 'type' });
+        }
     }
 
-    checkRelationship(relationship: Relationship, accept: ValidationAcceptor): void {
-        // TODO check if source is given
-        // TODO check if target is given
-        // TODO check if at least one join clause is given
+    async checkRelationship(relationship: Relationship, accept: ValidationAcceptor): Promise<void> {
+        if (!relationship.name) {
+            accept('error', `Name for Relationship missing`, { node: relationship, property: 'name' });
+        }
+
+        if (!relationship.source) {
+            accept('error', `Source for Relationship ${relationship.name} missing`, { node: relationship, property: 'source' });
+        }
+
+        if (!relationship.target) {
+            accept('error', `Target for Relationship ${relationship.name} missing`, { node: relationship, property: 'target' });
+        }
+
+        if (!relationship.joinClauses || relationship.joinClauses.length <= 0) {
+            accept('error', `Relationship ${relationship.name} has no join clauses`, { node: relationship, property: 'joinClauses' });
+        }
+
+        if (!relationship.joinOrder) {
+            accept('warning', `Join order for Relationship ${relationship.name} missing`, { node: relationship, property: 'joinOrder' });
+        }
     }
 
-    checkRelationshipEntity(relationshipEntity: RelationshipEntity, accept: ValidationAcceptor): void {
-        // TODO check if target exits
+    async checkRelationshipEntity(relationshipEntity: RelationshipEntity, accept: ValidationAcceptor): Promise<void> {
+        if (relationshipEntity.target.$refText && !relationshipEntity.target.ref) {
+            accept('error', `Entity ${relationshipEntity.target.$refText} does not exists`, { node: relationshipEntity, property: 'target' });
+        }
+
+        if (!relationshipEntity.cardinality) {
+            accept('warning', `Cardinality for ${relationshipEntity.target.$refText} missing`, { node: relationshipEntity, property: 'target' });
+        }
     }
 
-    checkRelationshipJoinClause(relationshipJoinClause: RelationshipJoinClause, accept: ValidationAcceptor): void {
-        // check if datatypes are compatibel
+    async checkRelationshipJoinClause(relationshipJoinClause: RelationshipJoinClause, accept: ValidationAcceptor): Promise<void> {
+        if (!relationshipJoinClause.firstAttribute) {
+            accept('error', `First attribute missing`, { node: relationshipJoinClause, property: 'firstAttribute' });
+        }
+
+        if (!relationshipJoinClause.secondAttribute) {
+            accept('error', `Second attribute missing`, { node: relationshipJoinClause, property: 'secondAttribute' });
+        }
+
+        if (relationshipJoinClause.firstAttribute.$refText && !relationshipJoinClause.firstAttribute.ref) {
+            accept('error', `Attribute ${relationshipJoinClause.firstAttribute.$refText} does not exists`, { node: relationshipJoinClause, property: 'firstAttribute' });
+        }
+
+        if (relationshipJoinClause.secondAttribute.$refText && !relationshipJoinClause.secondAttribute.ref) {
+            accept('error', `Attribute ${relationshipJoinClause.secondAttribute.$refText} does not exists`, { node: relationshipJoinClause, property: 'secondAttribute' });
+        }
+
+        if (relationshipJoinClause.firstAttribute.ref && relationshipJoinClause.secondAttribute.ref) {
+            if (relationshipJoinClause.firstAttribute.ref.datatype?.type !== relationshipJoinClause.secondAttribute.ref.datatype?.type) {
+                accept('warning', `Datatype of attributes ${relationshipJoinClause.firstAttribute.$refText} and ${relationshipJoinClause.firstAttribute.$refText} incompatible`, { node: relationshipJoinClause, property: 'firstAttribute' });
+                accept('warning', `Datatype of attributes ${relationshipJoinClause.firstAttribute.$refText} and ${relationshipJoinClause.firstAttribute.$refText} incompatible`, { node: relationshipJoinClause, property: 'secondAttribute' });
+            }
+        }
     }
 }

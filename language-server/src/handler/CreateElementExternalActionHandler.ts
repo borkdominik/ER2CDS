@@ -66,7 +66,7 @@ export class CreateElementExternalActionHandler {
             return Promise.resolve([]);
 
         let response;
-        const attriutes: SapAttribute[] = [];
+        const attributes: SapAttribute[] = [];
 
         while (true) {
             response = await fetch(
@@ -82,7 +82,7 @@ export class CreateElementExternalActionHandler {
                 (response: any) => response.json()
             );
 
-            attriutes.push(...response.d.results);
+            attributes.push(...response.d.results);
 
             if (response.d.__next) {
                 url = response.d.__next;
@@ -91,6 +91,6 @@ export class CreateElementExternalActionHandler {
             }
         }
 
-        return Promise.resolve(attriutes);
+        return Promise.resolve(attributes);
     }
 }

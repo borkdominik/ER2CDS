@@ -27,6 +27,93 @@ export const LABEL_JOIN_TABLE = 'label:join-table';
 export const LABEL_JOIN_ORDER = 'label:join-order';
 export const LABEL_JOIN_CLAUSE = 'label:join-clause';
 
+export const DATATYPES = [
+    {
+        label: 'Calculation/amount field',
+        value: 'DEC'
+    },
+    {
+        label: 'Single-byte integer',
+        value: 'INT1'
+    },
+    {
+        label: 'Two-byte integer',
+        value: 'INT2'
+    },
+    {
+        label: 'Four-byte integer',
+        value: 'INT4',
+    },
+    {
+        label: 'Currency field',
+        value: 'CURR'
+    },
+    {
+        label: 'Currency key',
+        value: 'CUKY'
+    },
+    {
+        label: 'Quantity',
+        value: 'QUAN'
+    },
+    {
+        label: 'Unit',
+        value: 'UNIT'
+    },
+    {
+        label: 'Floating point number',
+        value: 'FLTP'
+    },
+    {
+        label: 'Numeric text',
+        value: 'NUMC'
+    },
+    {
+        label: 'Character',
+        value: 'CHAR'
+    },
+    {
+        label: 'Long Character',
+        value: 'LCHR'
+    },
+    {
+        label: 'String of variable length',
+        value: 'STRING'
+    },
+    {
+        label: 'Byte string of variable length',
+        value: 'RAWSTRING'
+    },
+    {
+        label: 'Date',
+        value: 'DATS'
+    },
+    {
+        label: 'Accounting period YYYYMM',
+        value: 'ACCP'
+    },
+    {
+        label: 'Time HHMMSS',
+        value: 'TIMS'
+    },
+    {
+        label: 'Byte string',
+        value: 'RAW'
+    },
+    {
+        label: 'Long byte string',
+        value: 'LRAW'
+    },
+    {
+        label: 'Client',
+        value: 'CLNT'
+    },
+    {
+        label: 'Language',
+        value: 'LANG'
+    }
+];
+
 export interface ER2CDSRoot extends SModelRoot {
     name: string;
 }

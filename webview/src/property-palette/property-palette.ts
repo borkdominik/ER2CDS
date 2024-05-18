@@ -372,7 +372,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         const modelIndex = new ModelIndexImpl();
         modelIndex.add(this.diagramEditorService.getModelRoot());
 
-        const edgesIterable = modelIndex.all().filter(e => e instanceof Edge).filter((e: Edge) => e.source.id === relationship.id || e.target.id === relationship.id);
+        const edgesIterable = modelIndex.all().filter(e => e instanceof Edge).filter((e: Edge) => e.source?.id === relationship.id || e.target?.id === relationship.id);
         const edges: Edge[] = [];
         edgesIterable.forEach((e: Edge) => edges.push(e));
 
@@ -418,7 +418,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             elementId: relationship.id,
             propertyId: 'source-join-table-cardinality',
             label: 'Cardinality',
-            choice: soureEdge.cardinality,
+            choice: soureEdge?.cardinality,
             choices: CARDINALITIES
         }
         propertyPaletteItems.push(relationshipSourceJoinTableCardinalityPaletteItem);
@@ -438,7 +438,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             elementId: relationship.id,
             propertyId: 'target-join-table-cardinality',
             label: 'Cardinality',
-            choice: targetEdge.cardinality,
+            choice: targetEdge?.cardinality,
             choices: CARDINALITIES
         }
         propertyPaletteItems.push(relationshipTargetJoinTableCardinalityPaletteItem);
