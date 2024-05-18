@@ -90,14 +90,17 @@ function generateJoins(model: ER2CDS): string {
         return model.relationships.map(r => {
             let join = '';
 
-            if (r.source?.cardinality === '0..1' && r.target?.cardinality === '0..1') {
+            if (r.source?.cardinality === '1' && r.target?.cardinality === '1') {
                 join = generateInnerJoin(model, r);
 
-            } else if (r.source?.cardinality === '0..1' && r.target?.cardinality === '0..N') {
+            } else if (r.source?.cardinality === '1' && r.target?.cardinality === '0..N') {
                 join = generateLeftJoin(model, r);
 
-            } else if (r.source?.cardinality === '0..N' && r.target?.cardinality === '0..1') {
+            } else if (r.source?.cardinality === '0..N' && r.target?.cardinality === '1') {
                 join = generateRightJoin(model, r);
+
+            } else if (r.source?.cardinality === '0..N' && r.target?.cardinality === '0..N') {
+                join = generateFullJoin(model, r);
 
             } else {
                 join = generateInnerJoin(model, r);
@@ -135,6 +138,16 @@ function generateRightJoin(model: ER2CDS, relationship: Relationship): string {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
                 right outer join ${relationship.target?.target.ref?.name} on ${generateJoinClause(relationship, relationship.joinClauses)}
+            `;
+    }
+
+    return '';
+}
+
+function generateFullJoin(model: ER2CDS, relationship: Relationship): string {
+    if (model.entities && model.entities.length > 0) {
+        return expandToString`
+                full join ${relationship.target?.target.ref?.name} on ${generateJoinClause(relationship, relationship.joinClauses)}
             `;
     }
 

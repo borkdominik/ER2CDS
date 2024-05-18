@@ -15,17 +15,10 @@ Attribute:
 DataType:
 	type=ID;
 
-type AttributeType = 'key';
-AttributeType returns AttributeType:
-	KEY
-;
-KEY returns string:
-	'key';
-
 Relationship:
 	'relationship' name=ID '{'
 		((source=RelationshipEntity)? (('->' target=RelationshipEntity))?)?
-		('join' 'order' joinOrder=INT)?
+		('join' 'order' joinOrder=JoinOrderType)?
 		(joinClauses+=RelationshipJoinClause)*
 	'}';
 
@@ -37,18 +30,28 @@ RelationshipEntity:
 RelationshipJoinClause:
 	(firstAttribute=[Attribute] '=' secondAttribute=[Attribute]);
 
-type CardinalityType = '0..1' | '0..N';
-CardinalityType returns CardinalityType:
-	ZERO_ONE | ZERO_MANY
+type AttributeType = 'key';
+AttributeType returns AttributeType:
+	KEY
 ;
-ZERO_ONE returns string:
-	'0..1';
+KEY returns string:
+	'key';
+
+type CardinalityType = '1' | '0..N';
+CardinalityType returns CardinalityType:
+	ONE | ZERO_MANY
+;
+ONE returns string:
+	'1';
 ZERO_MANY returns string:
 	'0..N';
 
+JoinOrderType returns number:
+	INT | ONE
+;
+
 terminal ID: /[_a-zA-Z\/][\w_]*/;
 terminal INT returns number: /[0-9]+/;
-terminal STRING returns string: /[A-Za-z]+/;
 
 hidden terminal WS: /\s+/;
 hidden terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;

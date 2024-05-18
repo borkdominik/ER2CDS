@@ -228,7 +228,7 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
     }
 
     protected generateJoinClauseLabels(relationshipJoinClause: RelationshipJoinClause, relationshipId: string, idCache: IdCache<AstNode>): SCompartment {
-        const attributeId = idCache.uniqueId(relationshipId + '.' + relationshipJoinClause.firstAttribute.$refText + '.' + relationshipJoinClause.secondAttribute.$refText, relationshipJoinClause);
+        const attributeId = idCache.uniqueId(relationshipId + '.' + relationshipJoinClause.firstAttribute?.$refText + '.' + relationshipJoinClause.secondAttribute?.$refText, relationshipJoinClause);
 
         return <SCompartment>{
             type: COMP_JOIN_CLAUSE,
@@ -236,12 +236,12 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
             children: [
                 <SLabel>{
                     id: attributeId + '.join-clause-first-label',
-                    text: relationshipJoinClause.firstAttribute.$refText,
+                    text: relationshipJoinClause.firstAttribute?.$refText,
                     type: LABEL_ATTRIBUTE
                 },
                 <SLabel>{
                     id: attributeId + '.join-clause-second-label',
-                    text: relationshipJoinClause.secondAttribute.$refText,
+                    text: relationshipJoinClause.secondAttribute?.$refText,
                     type: LABEL_ATTRIBUTE
                 }
             ]

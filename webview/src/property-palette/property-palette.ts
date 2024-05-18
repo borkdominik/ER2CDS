@@ -576,8 +576,6 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
     private createNewElementId(elementId: string, oldAttributeElementId: string, newAttributeElementId: string): string {
         const split = elementId.split('.');
 
-        console.log(elementId);
-
         if (split.length <= 1)
             return elementId;
 
