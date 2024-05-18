@@ -1,6 +1,6 @@
 import type { DefaultSharedModuleContext, ExecuteCommandAcceptor, Module, PartialLangiumServices } from 'langium';
 import type { DiagramOptions } from 'sprotty-protocol';
-import { AbstractExecuteCommandHandler, URI, createDefaultModule, createDefaultSharedModule, inject } from 'langium';
+import { AbstractExecuteCommandHandler, DefaultRenameProvider, URI, createDefaultModule, createDefaultSharedModule, inject } from 'langium';
 import { DefaultDiagramServerManager, DiagramActionNotification, LangiumSprottyServices, LangiumSprottySharedServices, SprottyDiagramServices, SprottySharedServices } from 'langium-sprotty';
 import { DefaultElementFilter, DefaultLayoutConfigurator, ElkFactory, ElkLayoutEngine, IElementFilter, ILayoutConfigurator } from 'sprotty-elk/lib/elk-layout.js';
 import { ER2CDSGeneratedModule, ER2CDSGeneratedSharedModule } from './generated/module.js';
@@ -9,6 +9,7 @@ import { ER2CDSDiagramGenerator } from './er2cds-diagram-generator.js';
 import { ER2CDSDiagramServer } from './er2cds-diagram-server.js';
 import { generateCDS } from './generator/generator.js';
 import { ER2CDSScopeProvider } from './er2cds-scope-provider.js';
+import { ER2CDSLanguageServer } from './er2cds-language-server.js';
 
 const ElkConstructor = require('elkjs/lib/elk.bundled.js').default;
 
@@ -59,6 +60,9 @@ export const ER2CDSModule: Module<ER2CDSServices, PartialLangiumServices & Sprot
         ElkFactory: () => () => new ElkConstructor({ algorithms: ['layered'] }),
         ElementFilter: () => new DefaultElementFilter,
         LayoutConfigurator: () => new DefaultLayoutConfigurator
+    },
+    lsp: {
+        RenameProvider: (services) => new DefaultRenameProvider(services)
     }
 };
 
@@ -104,6 +108,7 @@ export function createER2CDSServices(context: DefaultSharedModuleContext): {
         ER2CDSGeneratedSharedModule,
         ER2CDSSprottySharedModule
     );
+    shared.lsp.LanguageServer = new ER2CDSLanguageServer(shared);
     shared.lsp.ExecuteCommandHandler = new ER2CDSCommandHandler();
 
     const ER2CDS = inject(
@@ -111,8 +116,8 @@ export function createER2CDSServices(context: DefaultSharedModuleContext): {
         ER2CDSGeneratedModule,
         ER2CDSModule
     );
-
     shared.ServiceRegistry.register(ER2CDS);
+
     registerValidationChecks(ER2CDS);
 
     return { shared, ER2CDS };
