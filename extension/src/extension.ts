@@ -5,7 +5,7 @@ import { registerDefaultCommands, registerTextEditorSync } from 'sprotty-vscode'
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node';
 import { ER2CDSWebViewPanelManager } from './web-view-panel-manager';
 import { Messenger } from 'vscode-messenger';
-import { addSystemCommand, generateCDSHandler, sendToServer } from './commands';
+import { addSystemCommand, addSystemHandler, generateCDSHandler, sendToServer } from './commands';
 
 let languageClient: LanguageClient;
 
@@ -35,34 +35,7 @@ export async function activate(context: vscode.ExtensionContext) {
     registerTextEditorSync(webviewPanelManager, context);
 
     context.subscriptions.push(vscode.commands.registerCommand('er2cds.generate.cds.proxy', generateCDSHandler));
-
-    context.subscriptions.push(vscode.commands.registerCommand('er2cds.add.system.proxy', async () => {
-        const sapUrl = await vscode.window.showInputBox({ title: 'SAP System URL' });
-        if (!sapUrl)
-            return;
-
-        await context.secrets.store('sapUrl', sapUrl);
-
-        const sapClient = await vscode.window.showInputBox({ title: 'SAP Client' });
-        if (!sapClient)
-            return;
-
-        await context.secrets.store('sapClient', sapClient);
-
-        const sapUsername = await vscode.window.showInputBox({ title: 'SAP Username' });
-        if (!sapUsername)
-            return;
-
-        await context.secrets.store('sapUsername', sapUsername);
-
-        const sapPassword = await vscode.window.showInputBox({ title: 'SAP Password', password: true });
-        if (!sapPassword)
-            return;
-
-        await context.secrets.store('sapPassword', sapPassword);
-
-        sendToServer(addSystemCommand, [sapUrl, sapClient, sapUsername, sapPassword]);
-    }));
+    context.subscriptions.push(vscode.commands.registerCommand('er2cds.add.system.proxy', addSystemHandler));
 
     const sapUrl = await context.secrets.get('sapUrl');
     const sapClient = await context.secrets.get('sapClient');
