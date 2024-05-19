@@ -81,10 +81,12 @@ export class EdgeView extends PolylineEdgeView {
         }
 
 
-        return <g class-sprotty-edge={true} class-mouseover={edge.hoverFeedback}>
-            {this.renderLine(edge, route, context, args)}
-            {this.renderAdditionals(edge, route, context)}
-            {context.renderChildren(edge, { route })}
-        </g>;
+        return (
+            <g class-sprotty-edge={true} class-mouseover={edge.hoverFeedback}>
+                {this.renderLine(edge, route, context, args)}
+                {this.renderAdditionals(edge, route, context)}
+                {context.renderChildren(edge, { route })}
+            </g>
+        );
     }
 }
