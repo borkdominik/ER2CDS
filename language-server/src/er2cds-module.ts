@@ -1,6 +1,6 @@
 import type { DefaultSharedModuleContext, ExecuteCommandAcceptor, Module, PartialLangiumServices } from 'langium';
 import type { DiagramOptions } from 'sprotty-protocol';
-import { AbstractExecuteCommandHandler, DefaultRenameProvider, URI, createDefaultModule, createDefaultSharedModule, inject } from 'langium';
+import { AbstractExecuteCommandHandler, URI, createDefaultModule, createDefaultSharedModule, inject } from 'langium';
 import { DefaultDiagramServerManager, DiagramActionNotification, LangiumSprottyServices, LangiumSprottySharedServices, SprottyDiagramServices, SprottySharedServices } from 'langium-sprotty';
 import { DefaultElementFilter, DefaultLayoutConfigurator, ElkFactory, ElkLayoutEngine, IElementFilter, ILayoutConfigurator } from 'sprotty-elk/lib/elk-layout.js';
 import { ER2CDSGeneratedModule, ER2CDSGeneratedSharedModule } from './generated/module.js';
@@ -60,9 +60,6 @@ export const ER2CDSModule: Module<ER2CDSServices, PartialLangiumServices & Sprot
         ElkFactory: () => () => new ElkConstructor({ algorithms: ['layered'] }),
         ElementFilter: () => new DefaultElementFilter,
         LayoutConfigurator: () => new DefaultLayoutConfigurator
-    },
-    lsp: {
-        RenameProvider: (services) => new DefaultRenameProvider(services)
     }
 };
 
