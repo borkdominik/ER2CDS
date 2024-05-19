@@ -9,7 +9,6 @@ import { ER2CDSDiagramGenerator } from './er2cds-diagram-generator.js';
 import { ER2CDSDiagramServer } from './er2cds-diagram-server.js';
 import { generateCDS } from './generator/generator.js';
 import { ER2CDSScopeProvider } from './er2cds-scope-provider.js';
-import { ER2CDSLanguageServer } from './er2cds-language-server.js';
 
 const ElkConstructor = require('elkjs/lib/elk.bundled.js').default;
 
@@ -105,7 +104,6 @@ export function createER2CDSServices(context: DefaultSharedModuleContext): {
         ER2CDSGeneratedSharedModule,
         ER2CDSSprottySharedModule
     );
-    shared.lsp.LanguageServer = new ER2CDSLanguageServer(shared);
     shared.lsp.ExecuteCommandHandler = new ER2CDSCommandHandler();
 
     const ER2CDS = inject(

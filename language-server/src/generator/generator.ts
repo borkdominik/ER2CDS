@@ -2,6 +2,8 @@ import { URI, expandToString } from 'langium';
 import { createER2CDSServices } from '../er2cds-module.js';
 import { Attribute, ER2CDS, Entity, Relationship, RelationshipJoinClause } from '../generated/ast.js';
 import { ER2CDSFileSystem } from '../er2cds-file-system-provider.js';
+import { MessageType } from 'vscode-languageserver-protocol';
+import { connection } from '../server.js';
 
 export async function generateCDS(fileName: string): Promise<void> {
     const fileUri = URI.parse(fileName);
@@ -13,13 +15,19 @@ export async function generateCDS(fileName: string): Promise<void> {
 
     const parseResult = document.parseResult;
     if ((parseResult.parserErrors && parseResult.parserErrors.length > 0) || (parseResult.lexerErrors && parseResult.lexerErrors.length > 0)) {
-        //TODO set error message
+        connection.sendNotification('window/showMessage', {
+            type: MessageType.Error,
+            message: 'Model contains errors. CDS cannot be generated.'
+        });
         return;
     }
 
     const diagnostics = await services.validation.DocumentValidator.validateDocument(document);
     if (diagnostics.some(d => d.severity === 1)) {
-        //TODO set error message
+        connection.sendNotification('window/showMessage', {
+            type: MessageType.Error,
+            message: 'Model contains errors. CDS cannot be generated.'
+        });
         return;
     }
 
