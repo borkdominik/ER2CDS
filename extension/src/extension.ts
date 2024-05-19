@@ -42,7 +42,12 @@ export async function activate(context: vscode.ExtensionContext) {
     const sapUsername = await context.secrets.get('sapUsername');
     const sapPassword = await context.secrets.get('sapPassword');
     if (sapUrl && sapClient && sapUsername && sapPassword) {
-        sendToServer(addSystemCommand, [sapUrl, sapClient, sapUsername, sapPassword]);
+        await sendToServer(addSystemCommand, [sapUrl, sapClient, sapUsername, sapPassword]);
+
+        // If any files are open, resave to trigger another validation
+        vscode.workspace.textDocuments.forEach(t => {
+            vscode.workspace.save(t.uri);
+        });
     }
 }
 
