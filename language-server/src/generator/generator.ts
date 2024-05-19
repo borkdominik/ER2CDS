@@ -1,4 +1,4 @@
-import { LangiumServices, URI, expandToString } from 'langium';
+import { URI, expandToString } from 'langium';
 import { createER2CDSServices } from '../er2cds-module.js';
 import { Attribute, ER2CDS, Entity, Relationship, RelationshipJoinClause } from '../generated/ast.js';
 import { ER2CDSFileSystem } from '../er2cds-file-system-provider.js';
@@ -8,8 +8,22 @@ export async function generateCDS(fileName: string): Promise<void> {
 
     const services = createER2CDSServices(ER2CDSFileSystem).ER2CDS;
 
-    const model = await extractAstFromFile<ER2CDS>(fileUri, services);
-    const sourceCode = generateSourceCode(model);
+    const document = services.shared.workspace.LangiumDocumentFactory.create(fileUri);
+    await services.shared.workspace.DocumentBuilder.build([document], { validation: true })
+
+    const parseResult = document.parseResult;
+    if ((parseResult.parserErrors && parseResult.parserErrors.length > 0) || (parseResult.lexerErrors && parseResult.lexerErrors.length > 0)) {
+        //TODO set error message
+        return;
+    }
+
+    const diagnostics = await services.validation.DocumentValidator.validateDocument(document);
+    if (diagnostics.some(d => d.severity === 1)) {
+        //TODO set error message
+        return;
+    }
+
+    const sourceCode = generateSourceCode(parseResult.value as ER2CDS);
 
     const fileNameWithExtension = fileUri.fsPath.substring(fileUri.fsPath.lastIndexOf('/') + 1, fileUri.fsPath.length);
     const fileNameWithoutExtension = fileNameWithExtension.substring(0, fileNameWithExtension.lastIndexOf('.'));
@@ -20,13 +34,6 @@ export async function generateCDS(fileName: string): Promise<void> {
     ER2CDSFileSystem.fileSystemProvider().writeFile(URI.parse(generatedFilePath), sourceCode);
 
     return Promise.resolve();
-}
-
-async function extractAstFromFile<T extends ER2CDS>(fileUri: URI, services: LangiumServices): Promise<T> {
-    const document = services.shared.workspace.LangiumDocumentFactory.create(fileUri);
-    await services.shared.workspace.DocumentBuilder.build([document], { validation: true });
-
-    return document.parseResult?.value as T;
 }
 
 function generateSourceCode(model: ER2CDS): string {
