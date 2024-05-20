@@ -95,6 +95,11 @@
         "command": "er2cds.add.system.proxy",
         "title": "Add SAP System",
         "category": "ER2CDS Diagram"
+      },
+      {
+        "command": "er2cds.remove.system.proxy",
+        "title": "Remove SAP System",
+        "category": "ER2CDS Diagram"
       }
     ],
     "menus": {
@@ -126,6 +131,11 @@
         {
           "command": "er2cds.add.system.proxy",
           "title": "Add SAP System",
+          "category": "ER2CDS Diagram"
+        },
+        {
+          "command": "er2cds.remove.system.proxy",
+          "title": "Remove SAP System",
           "category": "ER2CDS Diagram"
         }
       ],

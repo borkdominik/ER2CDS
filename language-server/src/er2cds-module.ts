@@ -77,6 +77,13 @@ export class ER2CDSCommandHandler extends AbstractExecuteCommandHandler {
             ER2CDSGlobal.sapUsername = args[2];
             ER2CDSGlobal.sapPassword = args[3];
         });
+
+        acceptor('er2cds.remove.system', args => {
+            ER2CDSGlobal.sapUrl = undefined!;
+            ER2CDSGlobal.sapClient = undefined!;
+            ER2CDSGlobal.sapUsername = undefined!;
+            ER2CDSGlobal.sapPassword = undefined!;
+        });
     }
 }
 

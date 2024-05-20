@@ -10,6 +10,9 @@ import { synchronizeModelToText } from '../serializer/serializer.js';
 
 export class CreateElementExternalActionHandler {
     public async handle(action: CreateElementExternalAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {
+        if (!ER2CDSGlobal.sapUrl || !ER2CDSGlobal.sapClient || !ER2CDSGlobal.sapUsername || !ER2CDSGlobal.sapPassword)
+            return Promise.resolve();
+
         const sourceUriString = server.state.options?.sourceUri?.toString();
         if (!sourceUriString)
             return Promise.resolve();
@@ -53,6 +56,7 @@ export class CreateElementExternalActionHandler {
             return newEntity;
         });
 
+        model.entities = model.entities.filter(e => e.name !== action.elementId);
         model.entities.push(newEntity);
 
         return synchronizeModelToText(model, sourceUri, server, services);

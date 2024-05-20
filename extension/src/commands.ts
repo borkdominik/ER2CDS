@@ -3,9 +3,16 @@ import fetch, { Response } from 'node-fetch';
 
 export const generateCdsCommand = 'er2cds.generate.cds';
 export const addSystemCommand = 'er2cds.add.system';
+export const removeSystemCommand = 'er2cds.remove.system';
 
 export const generateCDSHandler = async () => {
-    sendToServer(generateCdsCommand);
+    const activeEditor = vscode.window.activeTextEditor;
+
+    if (activeEditor?.document?.languageId === 'er2cds') {
+        sendToServer(generateCdsCommand, [vscode.window.activeTextEditor?.document.uri.toString()]);
+    } else {
+        vscode.window.showErrorMessage('Error! Invalid file');
+    }
 };
 
 export const addSystemHandler = async (context: vscode.ExtensionContext) => {
@@ -98,17 +105,17 @@ export const addSystemHandler = async (context: vscode.ExtensionContext) => {
     }
 };
 
+export const removeSystemHandler = async (context: vscode.ExtensionContext) => {
+    await context.secrets.delete('sapUrl');
+    await context.secrets.delete('sapClient');
+    await context.secrets.delete('sapUsername');
+    await context.secrets.delete('sapPassword');
+
+    vscode.window.showInformationMessage('ER2CDS: SAP System successfully removed.');
+    sendToServer(removeSystemCommand, []);
+};
+
 export const sendToServer = async (command: string, args?: any) => {
-    if (command === generateCdsCommand && !args) {
-        const activeEditor = vscode.window.activeTextEditor;
-
-        if (activeEditor?.document?.languageId === 'er2cds') {
-            args = [vscode.window.activeTextEditor?.document.uri.toString()];
-        } else {
-            vscode.window.showErrorMessage('Error! Invalid file');
-        }
-    }
-
     const response: string | undefined = await vscode.commands.executeCommand(command, ...args);
     if (response) {
         if (response.startsWith('Error')) {
