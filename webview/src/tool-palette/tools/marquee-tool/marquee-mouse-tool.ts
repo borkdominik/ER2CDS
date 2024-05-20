@@ -1,5 +1,5 @@
-import { inject, injectable } from 'inversify';
-import { InternalBoundsAware, KeyListener, MouseListener, SModelElementImpl, TYPES, isSelectable, isSelected } from 'sprotty';
+import { inject, injectable, postConstruct } from 'inversify';
+import { InternalBoundsAware, MouseListener, SModelElementImpl, TYPES, isSelectable, isSelected } from 'sprotty';
 import { Action, SelectAction } from 'sprotty-protocol';
 import { DOMHelper } from 'sprotty/lib/base/views/dom-helper';
 import { getAbsolutePosition, toAbsoluteBounds } from '../../../utils/viewpoint-utils';
@@ -9,6 +9,7 @@ import { RemoveMarqueeAction } from './actions';
 import { ER2CDSMouseTool } from '../mouse-tool';
 import { ER2CDSKeyTool } from '../key-tool';
 import { MarqueeUtil } from './marquee-util';
+import { EnableDefaultToolsAction } from '../actions';
 
 @injectable()
 export class MarqueeMouseTool {
@@ -25,17 +26,14 @@ export class MarqueeMouseTool {
     protected domHelper: DOMHelper;
 
     protected marqueeMouseListener: MarqueeMouseListener;
-    protected shiftKeyListener: ShiftKeyListener;
+
+    @postConstruct()
+    protected initialize() {
+        this.marqueeMouseListener = new MarqueeMouseListener(this.domHelper, this.diagramEditorService);
+    }
 
     enable(): void {
-        if (!this.marqueeMouseListener)
-            this.marqueeMouseListener = new MarqueeMouseListener(this.domHelper, this.diagramEditorService)
-
-        if (!this.shiftKeyListener)
-            this.shiftKeyListener = new ShiftKeyListener();
-
         this.mouseTool.register(this.marqueeMouseListener);
-        this.keyTool.register(this.shiftKeyListener);
     }
 
     disable(): void {
@@ -70,6 +68,7 @@ export class MarqueeMouseListener extends MouseListener {
 
         this.marqueeUtil.updateStartPoint(getAbsolutePosition(target, event));
 
+        console.log(event);
         if (event.ctrlKey)
             this.previouslySelected = Array.from(target.root.index.all().map(e => e as SModelElementImpl & InternalBoundsAware).filter(e => isSelected(e)).map(e => e.id));
 
@@ -104,16 +103,6 @@ export class MarqueeMouseListener extends MouseListener {
         if (event.shiftKey)
             return [RemoveMarqueeAction.create()];
 
-        return [RemoveMarqueeAction.create()];
-    }
-}
-
-@injectable()
-export class ShiftKeyListener extends KeyListener {
-    override keyUp(element: SModelElementImpl, event: KeyboardEvent): Action[] {
-        if (event.shiftKey)
-            return [];
-
-        return [RemoveMarqueeAction.create()];
+        return [RemoveMarqueeAction.create(), EnableDefaultToolsAction.create()];
     }
 }

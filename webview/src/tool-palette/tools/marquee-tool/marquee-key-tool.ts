@@ -1,4 +1,4 @@
-import { inject, injectable } from 'inversify';
+import { inject, injectable, postConstruct } from 'inversify';
 import { KeyListener, SModelElementImpl } from 'sprotty';
 import { Action } from 'sprotty-protocol';
 import { EnableMarqueeMouseToolAction } from '../actions';
@@ -15,10 +15,12 @@ export class MarqueeKeyTool {
 
     protected marqueeKeyListener: MarqueeKeyListener;
 
-    enable(): void {
-        if (!this.marqueeKeyListener)
-            this.marqueeKeyListener = new MarqueeKeyListener(this.diagramEditorService)
+    @postConstruct()
+    protected initialize() {
+        this.marqueeKeyListener = new MarqueeKeyListener(this.diagramEditorService);
+    }
 
+    enable(): void {
         this.keyTool.register(this.marqueeKeyListener);
     }
 

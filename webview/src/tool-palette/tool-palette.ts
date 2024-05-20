@@ -25,6 +25,9 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
 
     private lastActiveButton?: HTMLElement;
     private defaultToolsButton: HTMLElement;
+    private deleteToolButton: HTMLElement;
+    private marqueeToolButton: HTMLElement;
+    private validateActionButton: HTMLElement;
 
     private searchField: HTMLInputElement;
 
@@ -52,7 +55,13 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
             this.actionDispatcher.dispatch(SetUIExtensionVisibilityAction.create({ extensionId: ToolPalette.ID, visible: true }));
         }
 
-        this.changeActiveButton();
+        if (action.kind === EnableMarqueeMouseToolAction.KIND) {
+            this.changeActiveButton(this.marqueeToolButton);
+
+        } else if (action.kind === EnableDefaultToolsAction.KIND) {
+            this.changeActiveButton(this.defaultToolsButton);
+
+        }
     }
 
     protected initializeContents(containerElement: HTMLElement): void {
@@ -134,14 +143,14 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
         this.defaultToolsButton = this.createDefaultToolButton();
         headerTools.appendChild(this.defaultToolsButton);
 
-        const deleteToolButton = this.createMouseDeleteToolButton();
-        headerTools.appendChild(deleteToolButton);
+        this.deleteToolButton = this.createMouseDeleteToolButton();
+        headerTools.appendChild(this.deleteToolButton);
 
-        const marqueeToolButton = this.createMarqueeToolButton();
-        headerTools.appendChild(marqueeToolButton);
+        this.marqueeToolButton = this.createMarqueeToolButton();
+        headerTools.appendChild(this.marqueeToolButton);
 
-        const validateActionButton = this.createValidateButton();
-        headerTools.appendChild(validateActionButton);
+        this.validateActionButton = this.createValidateButton();
+        headerTools.appendChild(this.validateActionButton);
 
         const searchIcon = this.createSearchButton();
         headerTools.appendChild(searchIcon);
@@ -435,18 +444,13 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
         };
     }
 
-    private changeActiveButton(button?: HTMLElement): void {
+    private changeActiveButton(button: HTMLElement): void {
         if (this.lastActiveButton) {
             this.lastActiveButton.classList.remove(CLICKED_CSS_CLASS);
         }
 
-        if (button) {
-            button.classList.add(CLICKED_CSS_CLASS);
-            this.lastActiveButton = button;
-        } else if (this.defaultToolsButton) {
-            this.defaultToolsButton.classList.add(CLICKED_CSS_CLASS);
-            this.lastActiveButton = this.defaultToolsButton;
-        }
+        button.classList.add(CLICKED_CSS_CLASS);
+        this.lastActiveButton = button;
     }
 }
 

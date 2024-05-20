@@ -24,7 +24,7 @@ export class DeleteKeyTool {
 @injectable()
 export class DeleteKeyListener extends KeyListener {
     override keyDown(element: SModelElementImpl, event: KeyboardEvent): Action[] {
-        if (matchesKeystroke(event, 'Delete')) {
+        if (matchesKeystroke(event, 'Delete') || matchesKeystroke(event, 'Backspace')) {
             const deleteElementIds = Array.from(
                 element.root.index
                     .all()

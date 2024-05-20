@@ -1,4 +1,4 @@
-import { injectable, inject } from 'inversify';
+import { injectable, inject, postConstruct } from 'inversify';
 import { TYPES, isCtrlOrCmd, findParentByFeature, isConnectable, ActionDispatcher, MouseTool, MouseListener, SModelElementImpl, SEdgeImpl, AnchorComputerRegistry } from 'sprotty';
 import { EnableDefaultToolsAction } from '../actions';
 import { Action } from 'sprotty-protocol';
@@ -20,13 +20,13 @@ export class EdgeCreateTool {
     protected edgeCreateMouseToolListener: EdgeCreateToolMouseListener;
     protected edgeCreateEndMovingMouseListener: EdgeCreateEndMovingMouseListener;
 
+    @postConstruct()
+    protected initialize() {
+        this.edgeCreateMouseToolListener = new EdgeCreateToolMouseListener(this.actionDispatcher, this);
+        this.edgeCreateEndMovingMouseListener = new EdgeCreateEndMovingMouseListener(this.anchorRegistry, this.actionDispatcher);
+    }
+
     enable(): void {
-        if (!this.edgeCreateMouseToolListener)
-            this.edgeCreateMouseToolListener = new EdgeCreateToolMouseListener(this.actionDispatcher, this);
-
-        if (!this.edgeCreateEndMovingMouseListener)
-            this.edgeCreateEndMovingMouseListener = new EdgeCreateEndMovingMouseListener(this.anchorRegistry, this.actionDispatcher);
-
         this.edgeCreateMouseToolListener.reinitialize();
 
         this.mouseTool.register(this.edgeCreateMouseToolListener);
@@ -103,7 +103,7 @@ export class EdgeCreateToolMouseListener extends MouseListener {
 
             if (this.source && this.target) {
                 result.push(CreateEdgeAction.create({ sourceElementId: this.source, targetElementId: this.target }));
-                
+
                 this.reinitialize();
                 result.push(EnableDefaultToolsAction.create());
             }
