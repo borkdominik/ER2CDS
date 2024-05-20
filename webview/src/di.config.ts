@@ -104,11 +104,7 @@ export default (containerId: string) => {
     container.load(DiagramModule);
 
     container.load(ServicesModule);
-
     container.load(EditorPanelModule);
-    container.load(HelperLineModule);
-    container.load(PopupModule);
-    container.load(PropertyPaletteModule);
 
     container.load(ToolPaletteModule);
     container.load(ToolsModule);
@@ -117,6 +113,11 @@ export default (containerId: string) => {
     container.load(EdgeCreateToolModule);
     container.load(AttributeToolModule);
     container.load(JoinClauseToolModule);
+
+    container.load(PropertyPaletteModule);
+    
+    container.load(HelperLineModule);
+    container.load(PopupModule);
 
     container.load(ValidationModule);
 

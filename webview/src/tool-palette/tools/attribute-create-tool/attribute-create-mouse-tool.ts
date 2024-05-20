@@ -1,5 +1,5 @@
 import { injectable, inject } from 'inversify';
-import { MouseListener, SChildElementImpl, SModelElementImpl, deletableFeature, findParentByFeature } from 'sprotty';
+import { MouseListener, SChildElementImpl, SModelElementImpl, findParentByFeature } from 'sprotty';
 import { Action } from 'sprotty-protocol';
 import { ER2CDSMouseTool } from '../mouse-tool';
 import { EntityNode } from '../../../model';
@@ -8,16 +8,16 @@ import { CreateAttributeAction } from '../../../actions';
 @injectable()
 export class AttributeCreateMouseTool {
     @inject(ER2CDSMouseTool)
-    protected MouseTool: ER2CDSMouseTool;
+    protected mouseTool: ER2CDSMouseTool;
 
     protected attributeCreateMouseListener: AttributeCreateMouseListener = new AttributeCreateMouseListener();
 
     enable(): void {
-        this.MouseTool.register(this.attributeCreateMouseListener);
+        this.mouseTool.register(this.attributeCreateMouseListener);
     }
 
     disable(): void {
-        this.MouseTool.deregister(this.attributeCreateMouseListener);
+        this.mouseTool.deregister(this.attributeCreateMouseListener);
     }
 }
 

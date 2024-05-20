@@ -63,6 +63,7 @@ export class ToolPalette extends AbstractUIExtension implements IActionHandler {
 
         this.defaultToolsButton.classList.add(CLICKED_CSS_CLASS);
         this.lastActiveButton = this.defaultToolsButton;
+        this.actionDispatcher.dispatch(EnableDefaultToolsAction.create());
 
         containerElement.setAttribute('aria-label', 'Tool-Palette');
     }

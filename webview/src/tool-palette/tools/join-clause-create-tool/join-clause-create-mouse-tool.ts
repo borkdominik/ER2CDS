@@ -2,22 +2,22 @@ import { injectable, inject } from 'inversify';
 import { MouseListener, SChildElementImpl, SModelElementImpl, findParentByFeature } from 'sprotty';
 import { Action } from 'sprotty-protocol';
 import { ER2CDSMouseTool } from '../mouse-tool';
-import { EntityNode, RelationshipNode } from '../../../model';
+import { RelationshipNode } from '../../../model';
 import { CreateJoinClauseAction } from '../../../actions';
 
 @injectable()
 export class JoinClauseCreateMouseTool {
     @inject(ER2CDSMouseTool)
-    protected MouseTool: ER2CDSMouseTool;
+    protected mouseTool: ER2CDSMouseTool;
 
     protected joinClauseCreateMouseListener: JoinClauseCreateMouseListener = new JoinClauseCreateMouseListener();
 
     enable(): void {
-        this.MouseTool.register(this.joinClauseCreateMouseListener);
+        this.mouseTool.register(this.joinClauseCreateMouseListener);
     }
 
     disable(): void {
-        this.MouseTool.deregister(this.joinClauseCreateMouseListener);
+        this.mouseTool.deregister(this.joinClauseCreateMouseListener);
     }
 }
 
