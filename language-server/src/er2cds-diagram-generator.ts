@@ -16,7 +16,8 @@ import {
     COMP_JOIN_CLAUSES,
     LABEL_JOIN_TABLE,
     LABEL_JOIN_ORDER,
-    LABEL_ATTRIBUTE_NO_OUT
+    LABEL_ATTRIBUTE_NO_OUT,
+    LABEL_RELATIONSHIP_ASSOCIATION
 } from './model.js';
 
 export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
@@ -98,7 +99,7 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
             id: relationshipId,
             children: [
                 <SLabel>{
-                    type: LABEL_RELATIONSHIP,
+                    type: relationship.type === 'association' ? LABEL_RELATIONSHIP_ASSOCIATION : LABEL_RELATIONSHIP,
                     id: idCache.uniqueId(relationshipId + '.label'),
                     text: relationship.name
                 }

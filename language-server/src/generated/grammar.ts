@@ -30,7 +30,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@14"
+                "$ref": "#/rules@16"
               },
               "arguments": []
             }
@@ -90,7 +90,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@14"
+                "$ref": "#/rules@16"
               },
               "arguments": []
             }
@@ -151,7 +151,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@14"
+                "$ref": "#/rules@16"
               },
               "arguments": []
             }
@@ -192,7 +192,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@14"
+                    "$ref": "#/rules@16"
                   },
                   "arguments": []
                 }
@@ -219,7 +219,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
         "terminal": {
           "$type": "RuleCall",
           "rule": {
-            "$ref": "#/rules@14"
+            "$ref": "#/rules@16"
           },
           "arguments": []
         }
@@ -238,6 +238,19 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
         "$type": "Group",
         "elements": [
           {
+            "$type": "Assignment",
+            "feature": "type",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@10"
+              },
+              "arguments": []
+            },
+            "cardinality": "?"
+          },
+          {
             "$type": "Keyword",
             "value": "relationship"
           },
@@ -248,7 +261,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@14"
+                "$ref": "#/rules@16"
               },
               "arguments": []
             }
@@ -316,7 +329,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@13"
+                    "$ref": "#/rules@15"
                   },
                   "arguments": []
                 }
@@ -382,7 +395,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@10"
+                    "$ref": "#/rules@12"
                   },
                   "arguments": []
                 }
@@ -421,7 +434,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
               "terminal": {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@14"
+                  "$ref": "#/rules@16"
                 },
                 "arguments": []
               },
@@ -444,7 +457,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
               "terminal": {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@14"
+                  "$ref": "#/rules@16"
                 },
                 "arguments": []
               },
@@ -524,9 +537,44 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
     },
     {
       "$type": "ParserRule",
-      "name": "CardinalityType",
+      "name": "RelationshipType",
       "returnType": {
         "$ref": "#/types@1"
+      },
+      "definition": {
+        "$type": "RuleCall",
+        "rule": {
+          "$ref": "#/rules@11"
+        },
+        "arguments": []
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ASSOCIATION",
+      "dataType": "string",
+      "definition": {
+        "$type": "Keyword",
+        "value": "association"
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "CardinalityType",
+      "returnType": {
+        "$ref": "#/types@2"
       },
       "definition": {
         "$type": "Alternatives",
@@ -534,14 +582,14 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@11"
+              "$ref": "#/rules@13"
             },
             "arguments": []
           },
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@12"
+              "$ref": "#/rules@14"
             },
             "arguments": []
           }
@@ -594,14 +642,14 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@15"
+              "$ref": "#/rules@17"
             },
             "arguments": []
           },
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@11"
+              "$ref": "#/rules@13"
             },
             "arguments": []
           }
@@ -685,6 +733,14 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
             "stringType": "no-out"
           }
         ]
+      }
+    },
+    {
+      "$type": "Type",
+      "name": "RelationshipType",
+      "type": {
+        "$type": "SimpleType",
+        "stringType": "association"
       }
     },
     {

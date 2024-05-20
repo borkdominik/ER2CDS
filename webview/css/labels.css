@@ -11,3 +11,12 @@
     fill: var(--vscode-button-foreground);
     text-decoration: line-through
 }
+
+.relationship {
+    fill: var(--vscode-button-foreground);
+}
+
+.relationship-association {
+    fill: var(--vscode-button-foreground);
+    font-style: italic;
+}

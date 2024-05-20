@@ -13,7 +13,7 @@ import { Action, SelectAction, Bounds } from 'sprotty-protocol';
 import { EditorPanelChild } from '../editor-panel/editor-panel';
 import { AutoCompleteValue, CreateAttributeAction, CreateJoinClauseAction, DeleteElementAction, RequestAutoCompleteAction, RequestPopupConfirmModelAction, UpdateElementPropertyAction } from '../actions';
 import { DiagramEditorService } from '../services/diagram-editor-service';
-import { ATTRIBUTE_TYPES, CARDINALITIES, COMP_ATTRIBUTE, DATATYPES, Edge, EntityNode, LABEL_ATTRIBUTE, LABEL_ATTRIBUTE_KEY, LABEL_ATTRIBUTE_NO_OUT, NODE_ENTITY, RelationshipNode } from '../model';
+import { ATTRIBUTE_TYPES, CARDINALITIES, COMP_ATTRIBUTE, DATATYPES, Edge, EntityNode, LABEL_ATTRIBUTE, LABEL_ATTRIBUTE_KEY, LABEL_ATTRIBUTE_NO_OUT, LABEL_RELATIONSHIP_ASSOCIATION, NODE_ENTITY, RelationshipNode } from '../model';
 import { AutoCompleteWidget } from './auto-complete/auto-complete-widget';
 import { ElementAutoCompletePropertyItem } from './auto-complete/auto-complete.model';
 import { createAutoCompleteProperty } from './auto-complete/auto-complete.creator';
@@ -387,6 +387,15 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             text: (relationship.children[0] as SLabelImpl).text
         }
         propertyPaletteItems.push(relationshipNamePaletteItem);
+
+        const relationshipTypePaletteItem = <ElementBoolPropertyItem>{
+            type: ElementBoolPropertyItem.TYPE,
+            elementId: relationship.id,
+            propertyId: 'relationship-type',
+            label: 'Association',
+            value: (relationship.children[0] as SLabelImpl).type === LABEL_RELATIONSHIP_ASSOCIATION
+        }
+        propertyPaletteItems.push(relationshipTypePaletteItem);
 
         const sourceJoinTable = ((relationship.children[1] as SCompartmentImpl).children[0] as SLabelImpl).text;
         const targetJoinTable = ((relationship.children[1] as SCompartmentImpl).children[1] as SLabelImpl).text;

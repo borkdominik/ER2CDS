@@ -15,6 +15,12 @@ export const ER2CDSTerminals = {
     SL_COMMENT: /\/\/[^\n\r]*/,
 };
 
+export type ASSOCIATION = 'association';
+
+export function isASSOCIATION(item: unknown): item is ASSOCIATION {
+    return item === 'association';
+}
+
 export type AttributeType = 'key' | 'no-out';
 
 export type CardinalityType = '0..N' | '1';
@@ -42,6 +48,8 @@ export type ONE = '1';
 export function isONE(item: unknown): item is ONE {
     return item === '1';
 }
+
+export type RelationshipType = 'association';
 
 export type ZERO_MANY = '0..N';
 
@@ -110,6 +118,7 @@ export interface Relationship extends AstNode {
     name: string
     source?: RelationshipEntity
     target?: RelationshipEntity
+    type?: RelationshipType
 }
 
 export const Relationship = 'Relationship';

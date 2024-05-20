@@ -37,6 +37,10 @@ export class UpdateElementPropertyHandler {
                 await this.handleRelationshipNameEdit(action, model);
                 break;
 
+            case 'relationship-type':
+                await this.handleRelationshipTypeEdit(action, model);
+                break;
+
             case 'attribute-name':
                 await this.handleAttributeNameEdit(action, model);
                 break;
@@ -101,6 +105,19 @@ export class UpdateElementPropertyHandler {
             return Promise.resolve();
 
         relationship.name = action.value;
+    }
+
+    protected async handleRelationshipTypeEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
+        const relationship = model.relationships.find(r => r.name === action.elementId);
+
+        if (!relationship)
+            return Promise.resolve();
+
+        if (action.value === 'true') {
+            relationship.type = 'association';
+        } else {
+            relationship.type = undefined;
+        }
     }
 
     protected async handleAttributeNameEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {

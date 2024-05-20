@@ -41,7 +41,7 @@ export function serialize(model: ER2CDS): string {
         ${serializeEntities(model.entities)}
 
         ${serializeRelationships(model.relationships)}
-        `
+    `;
 }
 
 export function serializeEntities(entities: Entity[]): string {
@@ -50,9 +50,9 @@ export function serializeEntities(entities: Entity[]): string {
 
 export function serializeEntity(entity: Entity): string {
     return expandToString`
-    entity ${entity.name} {
-        ${entity.attributes.length > 0 ? entity.attributes.map(a => serializeAttribute(a)).join('\n') : undefined}
-    }
+        entity ${entity.name} {
+            ${entity.attributes.length > 0 ? entity.attributes.map(a => serializeAttribute(a)).join('\n') : undefined}
+        }
     `;
 }
 
@@ -68,11 +68,11 @@ export function serializeRelationships(relationships: Relationship[]): string {
 
 export function serializeRelationship(relationship: Relationship): string {
     return expandToString`
-    relationship ${relationship.name} {
-        ${serializeSourceJoinTable(relationship)}${serializeSourceJoinTableCardinality(relationship)} -> ${serializeTargetJoinTable(relationship)}${serializeTargetJoinTableCardinality(relationship)}
-        ${serializeJoinOrder(relationship)}
-        ${serializeJoinClauses(relationship)}
-    }
+        ${relationship.type === 'association' ? `${relationship.type} ` : undefined}relationship ${relationship.name} {
+            ${serializeSourceJoinTable(relationship)}${serializeSourceJoinTableCardinality(relationship)} -> ${serializeTargetJoinTable(relationship)}${serializeTargetJoinTableCardinality(relationship)}
+            ${serializeJoinOrder(relationship)}
+            ${serializeJoinClauses(relationship)}
+        }
     `;
 }
 

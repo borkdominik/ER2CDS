@@ -22,6 +22,7 @@ export const LABEL_ATTRIBUTE_NO_OUT = 'label:attribute-no-out';
 export const LABEL_SEPARATOR = 'label:separator';
 
 export const LABEL_RELATIONSHIP = 'label:relationship';
+export const LABEL_RELATIONSHIP_ASSOCIATION = 'label:relationship-association';
 export const LABEL_CARDINALITY = 'label:cardinality';
 
 export const LABEL_JOIN_TABLE = 'label:join-table';

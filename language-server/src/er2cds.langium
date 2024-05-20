@@ -16,7 +16,7 @@ DataType:
 	type=ID;
 
 Relationship:
-	'relationship' name=ID '{'
+	(type=RelationshipType)? 'relationship' name=ID '{'
 		((source=RelationshipEntity)? (('->' target=RelationshipEntity))?)?
 		('join' 'order' joinOrder=JoinOrderType)?
 		(joinClauses+=RelationshipJoinClause)*
@@ -38,6 +38,13 @@ KEY returns string:
 	'key';
 NO_OUT returns string:
 	'no-out';
+
+type RelationshipType = 'association';
+RelationshipType returns RelationshipType:
+	ASSOCIATION
+;
+ASSOCIATION returns string:
+	'association';
 
 type CardinalityType = '1' | '0..N';
 CardinalityType returns CardinalityType:
