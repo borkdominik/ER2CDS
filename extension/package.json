@@ -153,6 +153,7 @@
     }
   },
   "dependencies": {
+    "node-fetch": "^3.3.2",
     "sprotty-vscode": "^1.0.0",
     "sprotty-vscode-webview": "^1.0.0",
     "vscode-languageclient": "^9.0.1"

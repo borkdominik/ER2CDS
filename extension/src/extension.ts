@@ -35,7 +35,7 @@ export async function activate(context: vscode.ExtensionContext) {
     registerTextEditorSync(webviewPanelManager, context);
 
     context.subscriptions.push(vscode.commands.registerCommand('er2cds.generate.cds.proxy', generateCDSHandler));
-    context.subscriptions.push(vscode.commands.registerCommand('er2cds.add.system.proxy', addSystemHandler));
+    context.subscriptions.push(vscode.commands.registerCommand('er2cds.add.system.proxy', () => addSystemHandler(context)));
 
     const sapUrl = await context.secrets.get('sapUrl');
     const sapClient = await context.secrets.get('sapClient');
