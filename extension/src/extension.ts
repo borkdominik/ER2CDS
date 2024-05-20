@@ -66,15 +66,12 @@ export async function createLanguageClient(context: vscode.ExtensionContext): Pr
         debug: { module: serverModule, transport: TransportKind.ipc, options: debugOptions }
     };
 
-    const fileSystemWatcher = vscode.workspace.createFileSystemWatcher('**/*.er2cds');
-    context.subscriptions.push(fileSystemWatcher);
-
     // Options to control the language client
     const clientOptions: LanguageClientOptions = {
         documentSelector: [{ scheme: 'file', language: 'er2cds' }],
         synchronize: {
             // Notify the server about file changes to files contained in the workspace
-            fileEvents: fileSystemWatcher
+            fileEvents: vscode.workspace.createFileSystemWatcher('**/*.er2cds')
         }
     };
 

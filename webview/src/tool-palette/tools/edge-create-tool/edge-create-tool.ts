@@ -103,12 +103,9 @@ export class EdgeCreateToolMouseListener extends MouseListener {
 
             if (this.source && this.target) {
                 result.push(CreateEdgeAction.create({ sourceElementId: this.source, targetElementId: this.target }));
-
-                if (!isCtrlOrCmd(event)) {
-                    result.push(EnableDefaultToolsAction.create());
-                } else {
-                    this.reinitialize();
-                }
+                
+                this.reinitialize();
+                result.push(EnableDefaultToolsAction.create());
             }
 
         } else if (event.button === 2) {
