@@ -95,6 +95,10 @@ function generateFromClause(model: ER2CDS): string {
         return expandToString`
             from ${model.relationships[0].source?.target.ref?.name}
         `;
+    }else{
+        return expandToString`
+            from ${model.entities[0].name}
+        `;
     }
 
     return '';
