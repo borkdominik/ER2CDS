@@ -5,11 +5,18 @@ import { ER2CDSFileSystem } from '../er2cds-file-system-provider.js';
 import { MessageType } from 'vscode-languageserver-protocol';
 import { connection } from '../server.js';
 
-export async function generateCDS(fileName: string): Promise<void> {
-    const fileUri = URI.parse(fileName);
+export async function generateCDS(fileName: string | undefined): Promise<void> {
+    if (!fileName) {
+        connection.sendNotification('window/showMessage', {
+            type: MessageType.Error,
+            message: 'No valid ER2CDS file opened.'
+        });
+        return;
+    }
 
     const services = createER2CDSServices(ER2CDSFileSystem).ER2CDS;
 
+    const fileUri = URI.parse(fileName);
     const document = services.shared.workspace.LangiumDocumentFactory.create(fileUri);
     await services.shared.workspace.DocumentBuilder.build([document], { validation: true })
 
@@ -32,6 +39,13 @@ export async function generateCDS(fileName: string): Promise<void> {
     }
 
     const sourceCode = generateSourceCode(parseResult.value as ER2CDS);
+    if (!sourceCode) {
+        connection.sendNotification('window/showMessage', {
+            type: MessageType.Error,
+            message: 'CDS-Generation failed.'
+        });
+        return;
+    }
 
     const fileNameWithExtension = fileUri.fsPath.substring(fileUri.fsPath.lastIndexOf('/') + 1, fileUri.fsPath.length);
     const fileNameWithoutExtension = fileNameWithExtension.substring(0, fileNameWithExtension.lastIndexOf('.'));
@@ -44,7 +58,7 @@ export async function generateCDS(fileName: string): Promise<void> {
     return Promise.resolve();
 }
 
-function generateSourceCode(model: ER2CDS): string {
+function generateSourceCode(model: ER2CDS): string | undefined {
     model.relationships.sort((r1, r2) => {
         if (r1.joinOrder && r2.joinOrder)
             return r1.joinOrder - r2.joinOrder;
@@ -70,7 +84,7 @@ function generateSourceCode(model: ER2CDS): string {
     `;
 }
 
-function generateHeaderAnnotations(model: ER2CDS): string {
+function generateHeaderAnnotations(model: ER2CDS): string | undefined {
     return expandToString`
         @AbapCatalog.viewEnhancementCategory: [#NONE]
         @AccessControl.authorizationCheck: #CHECK
@@ -84,30 +98,28 @@ function generateHeaderAnnotations(model: ER2CDS): string {
     `;
 }
 
-function generateHeader(model: ER2CDS): string {
+function generateHeader(model: ER2CDS): string | undefined {
     return expandToString`
         define view entity ${model.name} as select
     `;
 }
 
-function generateFromClause(model: ER2CDS): string {
+function generateFromClause(model: ER2CDS): string | undefined {
     if (model.relationships && model.relationships.length > 0) {
         return expandToString`
             from ${model.relationships[0].source?.target.ref?.name}
         `;
-    }else{
+    } else {
         return expandToString`
             from ${model.entities[0].name}
         `;
     }
-
-    return '';
 }
 
-function generateJoins(model: ER2CDS): string {
+function generateJoins(model: ER2CDS): string | undefined {
     if (model.relationships) {
         return model.relationships.map(r => {
-            let join = '';
+            let join;
 
             if (r.source?.cardinality === '1' && r.target?.cardinality === '1') {
                 join = generateInnerJoin(model, r);
@@ -119,7 +131,7 @@ function generateJoins(model: ER2CDS): string {
                 join = generateRightJoin(model, r);
 
             } else if (r.source?.cardinality === '0..N' && r.target?.cardinality === '0..N') {
-                join = generateFullJoin(model, r);
+                join = generateLeftJoin(model, r);
 
             } else {
                 join = generateInnerJoin(model, r);
@@ -127,65 +139,55 @@ function generateJoins(model: ER2CDS): string {
             }
 
             return join;
-        }).join('\n');
+        }).filter(Boolean).join('\n');
     }
 
-    return '';
+    return undefined;
 }
 
-function generateInnerJoin(model: ER2CDS, relationship: Relationship): string {
+function generateInnerJoin(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
                 inner join ${relationship.target?.target.ref?.name} on ${generateJoinClause(relationship, relationship.joinClauses)}
             `;
     }
 
-    return '';
+    return undefined;
 }
 
-function generateLeftJoin(model: ER2CDS, relationship: Relationship): string {
+function generateLeftJoin(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
                 left outer join ${relationship.target?.target.ref?.name} on ${generateJoinClause(relationship, relationship.joinClauses)}
             `;
     }
 
-    return '';
+    return undefined;
 }
 
-function generateRightJoin(model: ER2CDS, relationship: Relationship): string {
+function generateRightJoin(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
                 right outer join ${relationship.target?.target.ref?.name} on ${generateJoinClause(relationship, relationship.joinClauses)}
             `;
     }
 
-    return '';
+    return undefined;
 }
 
-function generateFullJoin(model: ER2CDS, relationship: Relationship): string {
-    if (model.entities && model.entities.length > 0) {
-        return expandToString`
-                full join ${relationship.target?.target.ref?.name} on ${generateJoinClause(relationship, relationship.joinClauses)}
-            `;
-    }
-
-    return '';
-}
-
-function generateJoinClause(relationship: Relationship, joinClauses: RelationshipJoinClause[]): string {
-    let joinClause = '';
+function generateJoinClause(relationship: Relationship, joinClauses: RelationshipJoinClause[]): string | undefined {
+    let joinClause;
 
     joinClause = joinClauses.map(jc => {
         return expandToString`
             ${relationship.source?.target.ref?.name}.${jc.firstAttribute.ref?.name} = ${relationship.target?.target.ref?.name}.${jc.secondAttribute.ref?.name}
         `
-    }).join(' and ');
+    }).filter(Boolean).join(' and ');
 
     return joinClause;
 }
 
-function generateKeyAttributes(model: ER2CDS) {
+function generateKeyAttributes(model: ER2CDS): string | undefined {
     if (model.entities) {
         let attributes: string[] = [];
 
@@ -193,39 +195,44 @@ function generateKeyAttributes(model: ER2CDS) {
             const keyFields = e.attributes.filter(a => a.type === 'key');
 
             if (keyFields.length > 0)
-                attributes.push(keyFields.map(a => generateAttribute(e, a)).join(',\n'));
+                attributes.push(keyFields.map(a => generateAttribute(e, a)).filter(Boolean).join(',\n'));
         });
 
-        return attributes.join(',\n');
+        return attributes.filter(Boolean).join(',\n');
     }
 
-    return '';
+    return undefined;
 }
 
-function generateAttributes(model: ER2CDS) {
+function generateAttributes(model: ER2CDS): string | undefined {
     if (model.entities) {
         let attributes: string[] = [];
 
         model.entities.forEach(e => {
             const nonKeyFields = e.attributes.filter(a => a.type !== 'key');
 
-            if (nonKeyFields.length > 0)
-                attributes.push(nonKeyFields.map(a => generateAttribute(e, a)).join(',\n'));
+            if (nonKeyFields.length > 0) {
+                attributes.push(nonKeyFields.map(a => generateAttribute(e, a)).filter(Boolean).join(',\n'));
+            }
         });
 
-        return attributes.join(',\n');
+        return attributes.filter(Boolean).join(',\n');
     }
 
-    return '';
+    return undefined;
 }
 
-function generateAttribute(entity: Entity, attribute: Attribute) {
-    return expandToString`
-        ${attribute.type === 'key' ? 'key' : ''} ${entity.name}.${attribute.name} ${generateAttributeLabel(entity, attribute)}
-    `;
+function generateAttribute(entity: Entity, attribute: Attribute): string | undefined {
+    if (attribute.type !== 'no-out') {
+        return expandToString`
+            ${attribute.type === 'key' ? 'key' : ''} ${entity.name}.${attribute.name} ${generateAttributeLabel(entity, attribute)}
+        `;
+    }
+
+    return undefined;
 }
 
-function generateAttributeLabel(entity: Entity, attribute: Attribute) {
+function generateAttributeLabel(entity: Entity, attribute: Attribute): string | undefined {
     if (attribute.alias) {
         return expandToString`
             as ${attribute.alias}

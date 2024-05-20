@@ -15,7 +15,7 @@ export const ER2CDSTerminals = {
     SL_COMMENT: /\/\/[^\n\r]*/,
 };
 
-export type AttributeType = 'key';
+export type AttributeType = 'key' | 'no-out';
 
 export type CardinalityType = '0..N' | '1';
 
@@ -29,6 +29,12 @@ export type KEY = 'key';
 
 export function isKEY(item: unknown): item is KEY {
     return item === 'key';
+}
+
+export type NO_OUT = 'no-out';
+
+export function isNO_OUT(item: unknown): item is NO_OUT {
+    return item === 'no-out';
 }
 
 export type ONE = '1';

@@ -14,7 +14,8 @@ import {
     COMP_JOIN_TABLE,
     LABEL_JOIN_TABLE,
     LABEL_JOIN_ORDER,
-    LABEL_JOIN_CLAUSE
+    LABEL_JOIN_CLAUSE,
+    LABEL_ATTRIBUTE_NO_OUT
 } from './model';
 import { ER2CDSRootView, EdgeView, EntityNodeView, RelationshipNodeView } from './views';
 
@@ -76,6 +77,7 @@ export default (containerId: string) => {
         configureModelElement(context, LABEL_ENTITY, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_ATTRIBUTE, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_ATTRIBUTE_KEY, SLabelImpl, SLabelView);
+        configureModelElement(context, LABEL_ATTRIBUTE_NO_OUT, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_SEPARATOR, SLabelImpl, SLabelView);
 
         configureModelElement(context, LABEL_RELATIONSHIP, SLabelImpl, SLabelView);

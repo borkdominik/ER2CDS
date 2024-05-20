@@ -13,7 +13,7 @@ import { Action, SelectAction, Bounds } from 'sprotty-protocol';
 import { EditorPanelChild } from '../editor-panel/editor-panel';
 import { AutoCompleteValue, CreateAttributeAction, CreateJoinClauseAction, DeleteElementAction, RequestAutoCompleteAction, RequestPopupConfirmModelAction, UpdateElementPropertyAction } from '../actions';
 import { DiagramEditorService } from '../services/diagram-editor-service';
-import { CARDINALITIES, COMP_ATTRIBUTE, DATATYPES, Edge, EntityNode, LABEL_ATTRIBUTE_KEY, NODE_ENTITY, RelationshipNode } from '../model';
+import { ATTRIBUTE_TYPES, CARDINALITIES, COMP_ATTRIBUTE, DATATYPES, Edge, EntityNode, LABEL_ATTRIBUTE, LABEL_ATTRIBUTE_KEY, LABEL_ATTRIBUTE_NO_OUT, NODE_ENTITY, RelationshipNode } from '../model';
 import { AutoCompleteWidget } from './auto-complete/auto-complete-widget';
 import { ElementAutoCompletePropertyItem } from './auto-complete/auto-complete.model';
 import { createAutoCompleteProperty } from './auto-complete/auto-complete.creator';
@@ -493,14 +493,22 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             }
             propertyPaletteItems.push(entityAttributeDatatypePaletteItem);
 
-            const entityAttributeKeyPaletteItem = <ElementBoolPropertyItem>{
-                type: ElementBoolPropertyItem.TYPE,
+            let attributeType = LABEL_ATTRIBUTE;
+            if ((element.children[0] as SLabelImpl).type === LABEL_ATTRIBUTE_KEY) {
+                attributeType = 'key';
+            } else if ((element.children[0] as SLabelImpl).type === LABEL_ATTRIBUTE_NO_OUT) {
+                attributeType = 'no-out';
+            }
+
+            const entityAttributeTypePaletteItem = <ElementChoicePropertyItem>{
+                type: ElementChoicePropertyItem.TYPE,
                 elementId: element.children[0].id,
                 propertyId: 'attribute-type',
-                label: 'Keyfield',
-                value: (element.children[0] as SLabelImpl).type === LABEL_ATTRIBUTE_KEY
+                label: 'Type',
+                choice: attributeType,
+                choices: ATTRIBUTE_TYPES
             }
-            propertyPaletteItems.push(entityAttributeKeyPaletteItem);
+            propertyPaletteItems.push(entityAttributeTypePaletteItem);
 
             const entityAttributeAliasPaletteItem = <ElementTextPropertyItem>{
                 type: ElementTextPropertyItem.TYPE,
@@ -597,7 +605,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         } else {
             if (split[2] === 'label') {
                 return split[0] + '.' + newAttributeElementId;
-            }else{
+            } else {
                 return split[0] + '.' + split[1];
             }
         }

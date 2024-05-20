@@ -30,12 +30,14 @@ RelationshipEntity:
 RelationshipJoinClause:
 	(firstAttribute=[Attribute:ID] '=' secondAttribute=[Attribute:ID]);
 
-type AttributeType = 'key';
+type AttributeType = 'key' | 'no-out';
 AttributeType returns AttributeType:
-	KEY
+	KEY | NO_OUT
 ;
 KEY returns string:
 	'key';
+NO_OUT returns string:
+	'no-out';
 
 type CardinalityType = '1' | '0..N';
 CardinalityType returns CardinalityType:

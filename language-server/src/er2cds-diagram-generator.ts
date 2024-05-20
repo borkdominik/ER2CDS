@@ -15,7 +15,8 @@ import {
     COMP_JOIN_CLAUSE,
     COMP_JOIN_CLAUSES,
     LABEL_JOIN_TABLE,
-    LABEL_JOIN_ORDER
+    LABEL_JOIN_ORDER,
+    LABEL_ATTRIBUTE_NO_OUT
 } from './model.js';
 
 export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
@@ -191,6 +192,13 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
     protected generateAttributeLabels(attribute: Attribute, entityId: string, idCache: IdCache<AstNode>): SCompartment {
         const attributeId = idCache.uniqueId(entityId + '.' + attribute.name, attribute);
 
+        let attributeType = LABEL_ATTRIBUTE;
+        if (attribute.type === 'key') {
+            attributeType = LABEL_ATTRIBUTE_KEY;
+        } else if (attribute.type === 'no-out') {
+            attributeType = LABEL_ATTRIBUTE_NO_OUT;
+        }
+
         return <SCompartment>{
             type: COMP_ATTRIBUTE,
             id: attributeId,
@@ -203,7 +211,7 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
                 <SLabel>{
                     id: attributeId + '.label',
                     text: attribute.name,
-                    type: attribute.type ? LABEL_ATTRIBUTE_KEY : LABEL_ATTRIBUTE
+                    type: attributeType
                 },
                 <SLabel>{
                     id: attributeId + '.separator',

@@ -6,3 +6,8 @@
     fill: var(--vscode-button-foreground);
     text-decoration: underline;
 }
+
+.attribute-no-out {
+    fill: var(--vscode-button-foreground);
+    text-decoration: line-through
+}

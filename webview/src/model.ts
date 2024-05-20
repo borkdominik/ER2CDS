@@ -19,6 +19,7 @@ export const COMP_JOIN_CLAUSE = 'comp:join-clause';
 export const LABEL_ENTITY = 'label:entity';
 export const LABEL_ATTRIBUTE = 'label:attribute';
 export const LABEL_ATTRIBUTE_KEY = 'label:attribute-key';
+export const LABEL_ATTRIBUTE_NO_OUT = 'label:attribute-no-out';
 export const LABEL_SEPARATOR = 'label:separator';
 
 export const LABEL_RELATIONSHIP = 'label:relationship';
@@ -127,6 +128,21 @@ export const DATATYPES = [
     {
         label: 'Language',
         value: 'LANG'
+    }
+];
+
+export const ATTRIBUTE_TYPES = [
+    {
+        label: '',
+        value: ''
+    },
+    {
+        label: 'Keyfield',
+        value: 'key'
+    },
+    {
+        label: 'No Out',
+        value: 'no-out'
     }
 ];
 
