@@ -49,6 +49,10 @@ export class UpdateElementPropertyHandler {
                 await this.handleAttributeTypeEdit(action, model);
                 break;
 
+            case 'attribute-alias':
+                await this.handleAttributeAliasEdit(action, model);
+                break;
+
             case 'source-join-table':
                 await this.handleSourceJoinTableEdit(action, model);
                 break;
@@ -181,6 +185,20 @@ export class UpdateElementPropertyHandler {
         } else {
             attribute.type = undefined;
         }
+    }
+
+    protected async handleAttributeAliasEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
+        const split = action.elementId.split('.');
+        const entityId = split[0];
+        const attributeId = split[1];
+
+        const entity = model.entities.find(e => e.name === entityId);
+        const attribute = entity?.attributes.find(a => a.name === attributeId);
+
+        if (!attribute)
+            return Promise.resolve();
+
+        attribute.alias = action.value;
     }
 
     protected async handleSourceJoinTableEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {

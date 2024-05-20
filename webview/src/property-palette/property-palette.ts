@@ -501,6 +501,15 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
                 value: (element.children[0] as SLabelImpl).type === LABEL_ATTRIBUTE_KEY
             }
             propertyPaletteItems.push(entityAttributeKeyPaletteItem);
+
+            const entityAttributeAliasPaletteItem = <ElementTextPropertyItem>{
+                type: ElementTextPropertyItem.TYPE,
+                elementId: element.children[3].id,
+                propertyId: 'attribute-alias',
+                label: 'Alias',
+                text: (element.children[3] as SLabelImpl).text
+            }
+            propertyPaletteItems.push(entityAttributeAliasPaletteItem);
         }
     }
 
@@ -586,7 +595,11 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
                 return split[0] + '.' + split[1] + '.' + newAttributeElementId;
             }
         } else {
-            return split[0] + '.' + newAttributeElementId;
+            if (split[2] === 'label') {
+                return split[0] + '.' + newAttributeElementId;
+            }else{
+                return split[0] + '.' + split[1];
+            }
         }
     }
 }

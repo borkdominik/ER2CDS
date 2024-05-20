@@ -217,6 +217,18 @@ function generateAttributes(model: ER2CDS) {
 
 function generateAttribute(entity: Entity, attribute: Attribute) {
     return expandToString`
-        ${attribute.type === 'key' ? 'key' : ''} ${entity.name}.${attribute.name} as ${entity.name}_${attribute.name}
+        ${attribute.type === 'key' ? 'key' : ''} ${entity.name}.${attribute.name} ${generateAttributeLabel(entity, attribute)}
     `;
+}
+
+function generateAttributeLabel(entity: Entity, attribute: Attribute) {
+    if (attribute.alias) {
+        return expandToString`
+            as ${attribute.alias}
+        `;
+    } else {
+        return expandToString`
+            as ${entity.name}_${attribute.name}
+        `;
+    }
 }

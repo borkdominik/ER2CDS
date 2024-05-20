@@ -58,7 +58,7 @@ export function serializeEntity(entity: Entity): string {
 
 export function serializeAttribute(attribute: Attribute): string {
     return expandToString`
-    ${attribute.name} : ${attribute.datatype?.type} ${attribute.type ? `key` : undefined}
+        ${attribute.type ? `key` : undefined} ${attribute.name} : ${attribute.datatype?.type} ${attribute.alias ? `as ${attribute.alias}` : undefined}
     `;
 }
 

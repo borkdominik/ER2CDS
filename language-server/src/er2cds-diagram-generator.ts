@@ -214,6 +214,11 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
                     id: attributeId + '.datatype',
                     text: this.getAttributeDatatypeString(attribute),
                     type: LABEL_ATTRIBUTE
+                },
+                <SLabel>{
+                    id: attributeId + '.alias',
+                    text: attribute.alias,
+                    type: LABEL_ATTRIBUTE
                 }
             ]
         };

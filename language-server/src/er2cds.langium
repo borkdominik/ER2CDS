@@ -10,7 +10,7 @@ Entity:
 	'}';
 
 Attribute:
-	name=ID (':' datatype=DataType)? (type=AttributeType)?;
+	(type=AttributeType)? name=ID (':' datatype=DataType)? ('as' alias=ID)?;
 
 DataType:
 	type=ID;
@@ -28,7 +28,7 @@ RelationshipEntity:
 	']')?;
 
 RelationshipJoinClause:
-	(firstAttribute=[Attribute] '=' secondAttribute=[Attribute]);
+	(firstAttribute=[Attribute:ID] '=' secondAttribute=[Attribute:ID]);
 
 type AttributeType = 'key';
 AttributeType returns AttributeType:

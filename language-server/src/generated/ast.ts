@@ -46,6 +46,7 @@ export function isZERO_MANY(item: unknown): item is ZERO_MANY {
 export interface Attribute extends AstNode {
     readonly $container: Entity;
     readonly $type: 'Attribute';
+    alias?: string
     datatype?: DataType
     name: string
     type?: AttributeType
