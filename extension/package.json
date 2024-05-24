@@ -92,6 +92,11 @@
         "category": "ER2CDS Diagram"
       },
       {
+        "command": "er2cds.import.cds.proxy",
+        "title": "Import CDS",
+        "category": "ER2CDS Diagram"
+      },
+      {
         "command": "er2cds.add.system.proxy",
         "title": "Add SAP System",
         "category": "ER2CDS Diagram"
@@ -129,14 +134,16 @@
           "when": "editorLangId == 'er2cds'"
         },
         {
+          "command": "er2cds.import.cds.proxy",
+          "when": "editorLangId == 'er2cds'"
+        },
+        {
           "command": "er2cds.add.system.proxy",
-          "title": "Add SAP System",
-          "category": "ER2CDS Diagram"
+          "when": "editorLangId == 'er2cds'"
         },
         {
           "command": "er2cds.remove.system.proxy",
-          "title": "Remove SAP System",
-          "category": "ER2CDS Diagram"
+          "when": "editorLangId == 'er2cds'"
         }
       ],
       "editor/context": [

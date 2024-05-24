@@ -9,6 +9,7 @@ import { ER2CDSDiagramGenerator } from './er2cds-diagram-generator.js';
 import { ER2CDSDiagramServer } from './er2cds-diagram-server.js';
 import { generateCDS } from './generator/generator.js';
 import { ER2CDSScopeProvider } from './er2cds-scope-provider.js';
+import { importCds } from './import/import.js';
 
 const ElkConstructor = require('elkjs/lib/elk.bundled.js').default;
 
@@ -70,6 +71,10 @@ export class ER2CDSCommandHandler extends AbstractExecuteCommandHandler {
         acceptor('er2cds.generate.cds', args => {
             generateCDS(args[0]);
         });
+
+        acceptor('er2cds.import.cds', args => {
+            importCds(args[0], args[1]);
+        })
 
         acceptor('er2cds.add.system', args => {
             ER2CDSGlobal.sapUrl = args[0];

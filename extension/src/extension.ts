@@ -5,7 +5,7 @@ import { registerDefaultCommands, registerTextEditorSync } from 'sprotty-vscode'
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node';
 import { ER2CDSWebViewPanelManager } from './web-view-panel-manager';
 import { Messenger } from 'vscode-messenger';
-import { addSystemCommand, addSystemHandler, generateCDSHandler, removeSystemHandler, sendToServer } from './commands';
+import { addSystemCommand, addSystemHandler, generateCDSHandler, importCDSHandler, removeSystemHandler, sendToServer } from './commands';
 
 let languageClient: LanguageClient;
 
@@ -35,6 +35,7 @@ export async function activate(context: vscode.ExtensionContext) {
     registerTextEditorSync(webviewPanelManager, context);
 
     context.subscriptions.push(vscode.commands.registerCommand('er2cds.generate.cds.proxy', generateCDSHandler));
+    context.subscriptions.push(vscode.commands.registerCommand('er2cds.import.cds.proxy', importCDSHandler));
     context.subscriptions.push(vscode.commands.registerCommand('er2cds.add.system.proxy', () => addSystemHandler(context)));
     context.subscriptions.push(vscode.commands.registerCommand('er2cds.remove.system.proxy', () => removeSystemHandler(context)));
 

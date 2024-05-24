@@ -4,6 +4,7 @@ import fetch, { Response } from 'node-fetch';
 export const generateCdsCommand = 'er2cds.generate.cds';
 export const addSystemCommand = 'er2cds.add.system';
 export const removeSystemCommand = 'er2cds.remove.system';
+export const importCdsCommand = 'er2cds.import.cds';
 
 export const generateCDSHandler = async () => {
     const activeEditor = vscode.window.activeTextEditor;
@@ -14,6 +15,15 @@ export const generateCDSHandler = async () => {
         vscode.window.showErrorMessage('Error! Invalid file');
     }
 };
+
+export const importCDSHandler = async () => {
+    let cds = await vscode.window.showInputBox({ title: 'CDS View Entity' });
+    if (!cds)
+        return;
+
+    sendToServer(importCdsCommand, [cds, vscode.window.activeTextEditor?.document.uri.toString()]);
+};
+
 
 export const addSystemHandler = async (context: vscode.ExtensionContext) => {
     let sapUrl = await vscode.window.showInputBox(
