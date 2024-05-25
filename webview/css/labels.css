@@ -24,9 +24,11 @@
 .relationship-association-to-parent {
     fill: var(--vscode-button-foreground);
     font-style: italic;
+    text-decoration: overline;
 }
 
 .relationship-composition {
     fill: var(--vscode-button-foreground);
     font-style: italic;
+    text-decoration: underline;
 }

@@ -132,23 +132,25 @@ export class ER2CDSValidator {
             accept('error', `Datatype for Attribute ${attribute.name} missing`, { node: attribute, property: 'datatype' });
         }
 
-        await fetch(
-            url,
-            {
-                agent: agent,
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Basic ' + btoa(ER2CDSGlobal.sapUsername + ':' + ER2CDSGlobal.sapPassword)
+        if (attribute.name !== 'MANDT') {
+            await fetch(
+                url,
+                {
+                    agent: agent,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Basic ' + btoa(ER2CDSGlobal.sapUsername + ':' + ER2CDSGlobal.sapPassword)
+                    }
                 }
-            }
-        ).then(
-            (response: Response) => {
-                if (response.status === 404)
-                    accept('error', `Attribute ${attribute.name} does not exists on Entity ${entity.name}`, { node: attribute, property: 'name' });
-            }
-        ).catch(
-            () => Promise.resolve()
-        );
+            ).then(
+                (response: Response) => {
+                    if (response.status === 404)
+                        accept('error', `Attribute ${attribute.name} does not exists on Entity ${entity.name}`, { node: attribute, property: 'name' });
+                }
+            ).catch(
+                () => Promise.resolve()
+            );
+        }
     }
 
     async checkDataType(datatype: DataType, accept: ValidationAcceptor): Promise<void> {

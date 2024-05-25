@@ -11,10 +11,10 @@ import { ER2CDSFileSystem } from '../er2cds-file-system-provider.js';
 export async function importCds(entityName: string, fileName: string): Promise<void> {
     const agent = new Agent({ rejectUnauthorized: false });
 
-    const urlFromClause = ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/ImportFromClause?$filter=EntityName eq '" + entityName + "'&$format=json&sap-client=" + ER2CDSGlobal.sapClient;
-    const urlSelectList = ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/ImportSelectList?$filter=EntityName eq '" + entityName + "'&$format=json&sap-client=" + ER2CDSGlobal.sapClient;
-    const urlCondition = ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/ImportCondition?$filter=EntityName eq'" + entityName + "'&$format=json&sap-client=" + ER2CDSGlobal.sapClient;
-    const urlAssocDef = ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/ImportAssocDef?$filter=EntityName eq'" + entityName + "'&$format=json&sap-client=" + ER2CDSGlobal.sapClient;
+    const urlFromClause = ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/ImportFromClause?$filter=EntityName eq '" + entityName + "'&$format=json&$top=9999&sap-client=" + ER2CDSGlobal.sapClient;
+    const urlSelectList = ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/ImportSelectList?$filter=EntityName eq '" + entityName + "'&$format=json&$top=9999&sap-client=" + ER2CDSGlobal.sapClient;
+    const urlCondition = ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/ImportCondition?$filter=EntityName eq'" + entityName + "'&$format=json&$top=9999&sap-client=" + ER2CDSGlobal.sapClient;
+    const urlAssocDef = ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/ImportAssocDef?$filter=EntityName eq'" + entityName + "'&$format=json&$top=9999&sap-client=" + ER2CDSGlobal.sapClient;
 
     const fromClause: IImportFromClause[] = await fetch(
         urlFromClause,
@@ -122,8 +122,14 @@ export async function importCds(entityName: string, fileName: string): Promise<v
         }
     )
 
-    if (!selectionList || !condition)
+    if (!condition || condition.length <= 0) {
+        connection.sendNotification('window/showMessage', {
+            type: MessageType.Error,
+            message: `CDS View Entity cannot be imported. CDS View Entity not found.`
+        });
+
         return Promise.resolve();
+    }
 
     const er2cds = convertToER2CDS(entityName, fromClause, selectionList, condition, assocDef);
     const source = serialize(er2cds);
@@ -133,6 +139,11 @@ export async function importCds(entityName: string, fileName: string): Promise<v
     const generatedFilePath = fileUri.fsPath.substring(0, fileUri.fsPath.lastIndexOf('/')) + '/' + generatedFileName;
 
     ER2CDSFileSystem.fileSystemProvider().writeFile(URI.parse(generatedFilePath), source);
+
+    connection.sendNotification('window/showMessage', {
+        type: MessageType.Info,
+        message: `CDS View Entity imported successfully.`
+    });
 }
 
 export function convertToER2CDS(entityName: string, fromClause: IImportFromClause[], selectionList: IImportSelectionList[], condition: IImportCondition[], assocDef: IImportAssocDef[]): ER2CDS {
@@ -255,6 +266,8 @@ export function convertFromToER2CDSRelationship(er2cds: ER2CDS, fromClause: IImp
                             type: attribute?.Datatype
                         }
                     });
+                } else {
+                    joinClause.firstAttribute = undefined!;
                 }
             }
 
@@ -274,10 +287,15 @@ export function convertFromToER2CDSRelationship(er2cds: ER2CDS, fromClause: IImp
                             type: attribute.Datatype
                         }
                     });
+                } else {
+                    joinClause.secondAttribute = undefined!;
                 }
             }
 
-            relationship.joinClauses.push(joinClause);
+            if (joinClause.firstAttribute && joinClause.secondAttribute) {
+                relationship.joinClauses.push(joinClause);
+            }
+
             joinClause = {
                 $type: 'RelationshipJoinClause',
                 $container: null!,
@@ -508,6 +526,31 @@ export function convertAssociationToER2CDSRelationship(er2cds: ER2CDS, selection
             }
 
             relationship.type = 'association';
+            er2cds.relationships.push(relationship);
+
+            relationship = {
+                $type: 'Relationship',
+                $container: er2cds,
+                name: null!,
+                joinClauses: []
+            };
+        }
+
+        if (c.ExprType === 'TO_PARENT_ASSO' && relationship.source && relationship.target) {
+            const associationToParent = assocDef.find(a => a.AssocName === c.AssocName);
+            if (associationToParent?.CardMin === 1) {
+                relationship.source.cardinality = '1';
+            } else {
+                relationship.source.cardinality = '0..N';
+            }
+
+            if (associationToParent?.CardMax === 1) {
+                relationship.target.cardinality = '1';
+            } else {
+                relationship.target.cardinality = '0..N';
+            }
+
+            relationship.type = 'association-to-parent';
             er2cds.relationships.push(relationship);
 
             relationship = {
