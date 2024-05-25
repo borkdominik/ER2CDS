@@ -170,12 +170,16 @@ export class ER2CDSValidator {
             accept('error', `Target for Relationship ${relationship.name} missing`, { node: relationship, property: 'target' });
         }
 
-        if (!relationship.joinClauses || relationship.joinClauses.length <= 0) {
-            accept('error', `Relationship ${relationship.name} has no join clauses`, { node: relationship, property: 'joinClauses' });
+        if (relationship.type !== 'composition') {
+            if (!relationship.joinClauses || relationship.joinClauses.length <= 0) {
+                accept('error', `Relationship ${relationship.name} has no join clauses`, { node: relationship, property: 'joinClauses' });
+            }
         }
 
-        if (!relationship.joinOrder) {
-            accept('warning', `Join order for Relationship ${relationship.name} missing`, { node: relationship, property: 'joinOrder' });
+        if (!relationship.type) {
+            if (!relationship.joinOrder) {
+                accept('warning', `Join order for Relationship ${relationship.name} missing`, { node: relationship, property: 'joinOrder' });
+            }
         }
     }
 

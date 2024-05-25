@@ -16,7 +16,9 @@ import {
     LABEL_JOIN_ORDER,
     LABEL_JOIN_CLAUSE,
     LABEL_ATTRIBUTE_NO_OUT,
-    LABEL_RELATIONSHIP_ASSOCIATION
+    LABEL_RELATIONSHIP_ASSOCIATION,
+    LABEL_RELATIONSHIP_ASSOCIATION_TO_PARENT,
+    LABEL_RELATIONSHIP_COMPOSITION
 } from './model';
 import { ER2CDSRootView, EdgeView, EntityNodeView, RelationshipNodeView } from './views';
 
@@ -83,6 +85,8 @@ export default (containerId: string) => {
 
         configureModelElement(context, LABEL_RELATIONSHIP, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_RELATIONSHIP_ASSOCIATION, SLabelImpl, SLabelView);
+        configureModelElement(context, LABEL_RELATIONSHIP_ASSOCIATION_TO_PARENT, SLabelImpl, SLabelView);
+        configureModelElement(context, LABEL_RELATIONSHIP_COMPOSITION, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_CARDINALITY, CardinalityLabel, SLabelView);
 
         configureModelElement(context, LABEL_JOIN_TABLE, SLabelImpl, SLabelView);
@@ -115,7 +119,7 @@ export default (containerId: string) => {
     container.load(JoinClauseToolModule);
 
     container.load(PropertyPaletteModule);
-    
+
     container.load(HelperLineModule);
     container.load(PopupModule);
 

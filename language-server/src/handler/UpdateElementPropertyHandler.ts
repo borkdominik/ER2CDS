@@ -4,7 +4,7 @@ import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
 import { ER2CDSGlobal, ER2CDSServices } from '../er2cds-module.js';
 import { UpdateElementPropertyAction } from '../actions.js';
 import { URI } from 'langium';
-import { Attribute, AttributeType, CardinalityType, ER2CDS } from '../generated/ast.js';
+import { Attribute, AttributeType, CardinalityType, ER2CDS, RelationshipType } from '../generated/ast.js';
 import { Agent } from 'https';
 import { SapAttribute } from '../model-external.js';
 import { synchronizeModelToText } from '../serializer/serializer.js';
@@ -113,11 +113,7 @@ export class UpdateElementPropertyHandler {
         if (!relationship)
             return Promise.resolve();
 
-        if (action.value === 'true') {
-            relationship.type = 'association';
-        } else {
-            relationship.type = undefined;
-        }
+        relationship.type = action.value as RelationshipType;
     }
 
     protected async handleAttributeNameEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {

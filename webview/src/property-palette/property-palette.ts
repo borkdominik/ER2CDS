@@ -13,7 +13,7 @@ import { Action, SelectAction, Bounds } from 'sprotty-protocol';
 import { EditorPanelChild } from '../editor-panel/editor-panel';
 import { AutoCompleteValue, CreateAttributeAction, CreateJoinClauseAction, DeleteElementAction, RequestAutoCompleteAction, RequestPopupConfirmModelAction, UpdateElementPropertyAction } from '../actions';
 import { DiagramEditorService } from '../services/diagram-editor-service';
-import { ATTRIBUTE_TYPES, CARDINALITIES, COMP_ATTRIBUTE, DATATYPES, Edge, EntityNode, LABEL_ATTRIBUTE, LABEL_ATTRIBUTE_KEY, LABEL_ATTRIBUTE_NO_OUT, LABEL_RELATIONSHIP_ASSOCIATION, NODE_ENTITY, RelationshipNode } from '../model';
+import { ATTRIBUTE_TYPES, CARDINALITIES, COMP_ATTRIBUTE, DATATYPES, Edge, EntityNode, LABEL_ATTRIBUTE_KEY, LABEL_ATTRIBUTE_NO_OUT, LABEL_RELATIONSHIP_ASSOCIATION, LABEL_RELATIONSHIP_ASSOCIATION_TO_PARENT, LABEL_RELATIONSHIP_COMPOSITION, NODE_ENTITY, RELATIONSHIP_TYPES, RelationshipNode } from '../model';
 import { AutoCompleteWidget } from './auto-complete/auto-complete-widget';
 import { ElementAutoCompletePropertyItem } from './auto-complete/auto-complete.model';
 import { createAutoCompleteProperty } from './auto-complete/auto-complete.creator';
@@ -388,12 +388,22 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         }
         propertyPaletteItems.push(relationshipNamePaletteItem);
 
-        const relationshipTypePaletteItem = <ElementBoolPropertyItem>{
-            type: ElementBoolPropertyItem.TYPE,
+        let relationshipType: string;
+        if ((relationship.children[0] as SLabelImpl).type === LABEL_RELATIONSHIP_ASSOCIATION) {
+            relationshipType = 'association';
+        } else if ((relationship.children[0] as SLabelImpl).type === LABEL_RELATIONSHIP_ASSOCIATION_TO_PARENT) {
+            relationshipType = 'association-to-parent';
+        } else if ((relationship.children[0] as SLabelImpl).type === LABEL_RELATIONSHIP_COMPOSITION) {
+            relationshipType = 'composition';
+        }
+
+        const relationshipTypePaletteItem = <ElementChoicePropertyItem>{
+            type: ElementChoicePropertyItem.TYPE,
             elementId: relationship.id,
             propertyId: 'relationship-type',
-            label: 'Association',
-            value: (relationship.children[0] as SLabelImpl).type === LABEL_RELATIONSHIP_ASSOCIATION
+            label: 'Type',
+            choice: relationshipType,
+            choices: RELATIONSHIP_TYPES
         }
         propertyPaletteItems.push(relationshipTypePaletteItem);
 
@@ -502,7 +512,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             }
             propertyPaletteItems.push(entityAttributeDatatypePaletteItem);
 
-            let attributeType = LABEL_ATTRIBUTE;
+            let attributeType: string;
             if ((element.children[0] as SLabelImpl).type === LABEL_ATTRIBUTE_KEY) {
                 attributeType = 'key';
             } else if ((element.children[0] as SLabelImpl).type === LABEL_ATTRIBUTE_NO_OUT) {

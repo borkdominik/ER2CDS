@@ -21,9 +21,21 @@ export function isASSOCIATION(item: unknown): item is ASSOCIATION {
     return item === 'association';
 }
 
+export type ASSOCIATION_TO_PARENT = 'association-to-parent';
+
+export function isASSOCIATION_TO_PARENT(item: unknown): item is ASSOCIATION_TO_PARENT {
+    return item === 'association-to-parent';
+}
+
 export type AttributeType = 'key' | 'no-out';
 
 export type CardinalityType = '0..N' | '1';
+
+export type COMPOSITION = 'composition';
+
+export function isCOMPOSITION(item: unknown): item is COMPOSITION {
+    return item === 'composition';
+}
 
 export type JoinOrderType = number;
 
@@ -49,7 +61,7 @@ export function isONE(item: unknown): item is ONE {
     return item === '1';
 }
 
-export type RelationshipType = 'association';
+export type RelationshipType = 'association' | 'association-to-parent' | 'composition';
 
 export type ZERO_MANY = '0..N';
 

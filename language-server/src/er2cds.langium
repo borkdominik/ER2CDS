@@ -39,12 +39,16 @@ KEY returns string:
 NO_OUT returns string:
 	'no-out';
 
-type RelationshipType = 'association';
+type RelationshipType = 'association' | 'association-to-parent' | 'composition';
 RelationshipType returns RelationshipType:
-	ASSOCIATION
+	ASSOCIATION | ASSOCIATION_TO_PARENT | COMPOSITION
 ;
 ASSOCIATION returns string:
 	'association';
+ASSOCIATION_TO_PARENT returns string:
+	'association-to-parent';
+COMPOSITION returns string:
+	'composition';
 
 type CardinalityType = '1' | '0..N';
 CardinalityType returns CardinalityType:

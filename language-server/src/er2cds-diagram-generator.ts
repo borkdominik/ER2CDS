@@ -17,7 +17,9 @@ import {
     LABEL_JOIN_TABLE,
     LABEL_JOIN_ORDER,
     LABEL_ATTRIBUTE_NO_OUT,
-    LABEL_RELATIONSHIP_ASSOCIATION
+    LABEL_RELATIONSHIP_ASSOCIATION,
+    LABEL_RELATIONSHIP_ASSOCIATION_TO_PARENT,
+    LABEL_RELATIONSHIP_COMPOSITION
 } from './model.js';
 
 export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
@@ -94,12 +96,30 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
     protected generateRelationship(relationship: Relationship, { idCache }: GeneratorContext<ER2CDS>): RelationshipNode {
         const relationshipId = idCache.uniqueId(relationship.name, relationship);
 
+        let relationshipTypeLabel;
+        switch (relationship.type) {
+            case 'association':
+                relationshipTypeLabel = LABEL_RELATIONSHIP_ASSOCIATION;
+                break;
+
+            case 'association-to-parent':
+                relationshipTypeLabel = LABEL_RELATIONSHIP_ASSOCIATION_TO_PARENT;
+                break;
+
+            case 'composition':
+                relationshipTypeLabel = LABEL_RELATIONSHIP_COMPOSITION;
+                break;
+
+            default:
+                relationshipTypeLabel = LABEL_RELATIONSHIP;
+        }
+
         const node = <RelationshipNode>{
             type: NODE_RELATIONSHIP,
             id: relationshipId,
             children: [
                 <SLabel>{
-                    type: relationship.type === 'association' ? LABEL_RELATIONSHIP_ASSOCIATION : LABEL_RELATIONSHIP,
+                    type: relationshipTypeLabel,
                     id: idCache.uniqueId(relationshipId + '.label'),
                     text: relationship.name
                 }

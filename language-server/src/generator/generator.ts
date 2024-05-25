@@ -78,6 +78,8 @@ function generateSourceCode(model: ER2CDS): string | undefined {
             ${generateFromClause(model)}
             ${generateJoins(model)}
             ${generateAssociations(model)}
+            ${generateAssociationsToParent(model)}
+            ${generateCompositions(model)}
         {
             ${generateKeyAttributes(model)}${model.entities.find(e => e.attributes.find(a => a.type === 'key')) && model.entities.find(e => e.attributes.find(a => a.type !== 'key')) ? ',' : ''}
             ${generateAttributes(model)}${model.entities.find(e => e.attributes.find(a => a.type !== 'key')) && model.relationships.find(r => r.type === 'association') ? ',' : ''}
@@ -120,7 +122,7 @@ function generateFromClause(model: ER2CDS): string | undefined {
 
 function generateJoins(model: ER2CDS): string | undefined {
     if (model.relationships) {
-        return model.relationships.filter(r => r.type !== 'association').map(r => {
+        return model.relationships.filter(r => !r.type).map(r => {
             let join;
 
             if (r.source?.cardinality === '1' && r.target?.cardinality === '1') {
@@ -268,6 +270,144 @@ function generateAssociationClause(relationship: Relationship, joinClauses: Rela
     }).filter(Boolean).join(' and ');
 
     return associationClause;
+}
+
+function generateAssociationsToParent(model: ER2CDS): string | undefined {
+    if (model.relationships) {
+        return model.relationships.filter(r => r.type === 'association-to-parent').map(r => {
+            let association;
+
+            if (r.source?.cardinality === '1' && r.target?.cardinality === '1') {
+                association = generateOneOneAssociationToParent(model, r);
+
+            } else if (r.source?.cardinality === '1' && r.target?.cardinality === '0..N') {
+                association = generateOneManyAssociationToParent(model, r);
+
+            } else if (r.source?.cardinality === '0..N' && r.target?.cardinality === '1') {
+                association = generateZeroOneAssociationToParent(model, r);
+
+            } else if (r.source?.cardinality === '0..N' && r.target?.cardinality === '0..N') {
+                association = generateZeroManyAssociationToParent(model, r);
+
+            } else {
+                association = generateZeroOneAssociationToParent(model, r);
+
+            }
+
+            return association;
+        }).filter(Boolean).join('\n');
+    }
+
+    return undefined;
+}
+
+function generateOneOneAssociationToParent(model: ER2CDS, relationship: Relationship): string | undefined {
+    if (model.entities && model.entities.length > 0) {
+        return expandToString`
+            association[1..1] to parent ${relationship.target?.target.ref?.name} on ${generateAssociationClause(relationship, relationship.joinClauses)}
+        `;
+    }
+
+    return undefined;
+}
+
+function generateOneManyAssociationToParent(model: ER2CDS, relationship: Relationship): string | undefined {
+    if (model.entities && model.entities.length > 0) {
+        return expandToString`
+            association[0..*] to parent ${relationship.target?.target.ref?.name} on ${generateAssociationClause(relationship, relationship.joinClauses)}
+        `;
+    }
+
+    return undefined;
+}
+
+function generateZeroOneAssociationToParent(model: ER2CDS, relationship: Relationship): string | undefined {
+    if (model.entities && model.entities.length > 0) {
+        return expandToString`
+            association[0..1] to parent ${relationship.target?.target.ref?.name} on ${generateAssociationClause(relationship, relationship.joinClauses)}
+        `;
+    }
+
+    return undefined;
+}
+
+function generateZeroManyAssociationToParent(model: ER2CDS, relationship: Relationship): string | undefined {
+    if (model.entities && model.entities.length > 0) {
+        return expandToString`
+            association[0..*] to parent ${relationship.target?.target.ref?.name} on ${generateAssociationClause(relationship, relationship.joinClauses)}
+        `;
+    }
+
+    return undefined;
+}
+
+function generateCompositions(model: ER2CDS): string | undefined {
+    if (model.relationships) {
+        return model.relationships.filter(r => r.type === 'composition').map(r => {
+            let association;
+
+            if (r.source?.cardinality === '1' && r.target?.cardinality === '1') {
+                association = generateOneOneComposition(model, r);
+
+            } else if (r.source?.cardinality === '1' && r.target?.cardinality === '0..N') {
+                association = generateOneManyComposition(model, r);
+
+            } else if (r.source?.cardinality === '0..N' && r.target?.cardinality === '1') {
+                association = generateZeroOneComposition(model, r);
+
+            } else if (r.source?.cardinality === '0..N' && r.target?.cardinality === '0..N') {
+                association = generateZeroManyComposition(model, r);
+
+            } else {
+                association = generateZeroManyComposition(model, r);
+
+            }
+
+            return association;
+        }).filter(Boolean).join('\n');
+    }
+
+    return undefined;
+}
+
+function generateOneOneComposition(model: ER2CDS, relationship: Relationship): string | undefined {
+    if (model.entities && model.entities.length > 0) {
+        return expandToString`
+            composition[1..1] of ${relationship.target?.target.ref?.name}
+        `;
+    }
+
+    return undefined;
+}
+
+function generateOneManyComposition(model: ER2CDS, relationship: Relationship): string | undefined {
+    if (model.entities && model.entities.length > 0) {
+        return expandToString`
+            composition[0..*] of ${relationship.target?.target.ref?.name}
+        `;
+    }
+
+    return undefined;
+}
+
+function generateZeroOneComposition(model: ER2CDS, relationship: Relationship): string | undefined {
+    if (model.entities && model.entities.length > 0) {
+        return expandToString`
+            composition[0..1] of ${relationship.target?.target.ref?.name}
+        `;
+    }
+
+    return undefined;
+}
+
+function generateZeroManyComposition(model: ER2CDS, relationship: Relationship): string | undefined {
+    if (model.entities && model.entities.length > 0) {
+        return expandToString`
+            composition[0..*] of ${relationship.target?.target.ref?.name}
+        `;
+    }
+
+    return undefined;
 }
 
 function generateKeyAttributes(model: ER2CDS): string | undefined {

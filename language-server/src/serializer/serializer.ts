@@ -68,7 +68,7 @@ export function serializeRelationships(relationships: Relationship[]): string {
 
 export function serializeRelationship(relationship: Relationship): string {
     return expandToString`
-        ${relationship.type === 'association' ? `${relationship.type} ` : undefined}relationship ${relationship.name} {
+        ${relationship.type ? `${relationship.type} ` : undefined}relationship ${relationship.name} {
             ${serializeSourceJoinTable(relationship)}${serializeSourceJoinTableCardinality(relationship)} -> ${serializeTargetJoinTable(relationship)}${serializeTargetJoinTableCardinality(relationship)}
             ${serializeJoinOrder(relationship)}
             ${serializeJoinClauses(relationship)}

@@ -20,3 +20,13 @@
     fill: var(--vscode-button-foreground);
     font-style: italic;
 }
+
+.relationship-association-to-parent {
+    fill: var(--vscode-button-foreground);
+    font-style: italic;
+}
+
+.relationship-composition {
+    fill: var(--vscode-button-foreground);
+    font-style: italic;
+}
