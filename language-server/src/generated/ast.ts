@@ -99,6 +99,7 @@ export function isDataType(item: unknown): item is DataType {
 export interface Entity extends AstNode {
     readonly $container: ER2CDS;
     readonly $type: 'Entity';
+    alias?: string
     attributes: Array<Attribute>
     name: string
 }

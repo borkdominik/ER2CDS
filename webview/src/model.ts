@@ -17,6 +17,7 @@ export const COMP_JOIN_CLAUSES = 'comp:join-clauses';
 export const COMP_JOIN_CLAUSE = 'comp:join-clause';
 
 export const LABEL_ENTITY = 'label:entity';
+export const LABEL_ENTITY_ALIAS = 'label:entity-alias'
 export const LABEL_ATTRIBUTE = 'label:attribute';
 export const LABEL_ATTRIBUTE_KEY = 'label:attribute-key';
 export const LABEL_ATTRIBUTE_NO_OUT = 'label:attribute-no-out';

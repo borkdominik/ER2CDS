@@ -1,3 +1,12 @@
+.entity {
+    fill: var(--vscode-button-foreground);
+}
+
+.entity-alias {
+    fill: var(--vscode-button-foreground);
+    font-style: italic;
+}
+
 .attribute {
     fill: var(--vscode-button-foreground);
 }

@@ -7,7 +7,7 @@ import {
     ER2CDSRoot, EntityNode, RelationshipNode, Edge, CardinalityLabel,
     GRAPH, NODE_ENTITY, NODE_RELATIONSHIP,
     COMP_ATTRIBUTES, COMP_ATTRIBUTE, COMP_ENTITY_HEADER, EDGE,
-    LABEL_ENTITY, LABEL_ATTRIBUTE, LABEL_CARDINALITY, LABEL_SEPARATOR, LABEL_RELATIONSHIP,
+    LABEL_ENTITY, LABEL_ENTITY_ALIAS, LABEL_ATTRIBUTE, LABEL_CARDINALITY, LABEL_SEPARATOR, LABEL_RELATIONSHIP,
     LABEL_ATTRIBUTE_KEY,
     COMP_JOIN_CLAUSES,
     COMP_JOIN_CLAUSE,
@@ -78,6 +78,7 @@ export default (containerId: string) => {
 
         // Labels
         configureModelElement(context, LABEL_ENTITY, SLabelImpl, SLabelView);
+        configureModelElement(context, LABEL_ENTITY_ALIAS, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_ATTRIBUTE, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_ATTRIBUTE_KEY, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_ATTRIBUTE_NO_OUT, SLabelImpl, SLabelView);

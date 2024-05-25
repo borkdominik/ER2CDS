@@ -157,6 +157,9 @@ export function convertToER2CDS(entityName: string, fromClause: IImportFromClaus
     convertFromToER2CDS(er2cds, fromClause, selectionList, condition);
     convertAssociationToER2CDS(er2cds, selectionList, assocDef, condition);
 
+    er2cds.entities.map(e => e.attributes.filter(a => a.name === 'MANDT').map(a => a.datatype!.type = 'CLNT'));
+    er2cds.entities.filter(e => e.alias?.charAt(0) === '=').map(e => e.alias = e.alias?.replace('=', ''));
+
     return er2cds;
 }
 
@@ -171,6 +174,7 @@ export function convertFromToER2CDSEntity(er2cds: ER2CDS, selectionList: IImport
             $type: 'Entity',
             $container: er2cds,
             name: c.BaseobjName,
+            alias: c.BaseobjAlias,
             attributes: []
         };
 
@@ -219,7 +223,7 @@ export function convertFromToER2CDSRelationship(er2cds: ER2CDS, fromClause: IImp
                     $type: 'RelationshipEntity',
                     $container: relationship,
                     target: {
-                        ref: er2cds.entities.find(e => e.name === c.BaseobjName)!,
+                        ref: er2cds.entities.find(e => e.name === c.BaseobjName && e.alias === c.BaseobjAlias)!,
                         $refText: c.BaseobjName
                     }
                 }
@@ -228,7 +232,7 @@ export function convertFromToER2CDSRelationship(er2cds: ER2CDS, fromClause: IImp
                     $type: 'RelationshipEntity',
                     $container: relationship,
                     target: {
-                        ref: er2cds.entities.find(e => e.name === c.BaseobjName)!,
+                        ref: er2cds.entities.find(e => e.name === c.BaseobjName && e.alias === c.BaseobjAlias)!,
                         $refText: c.BaseobjName
                     }
                 }
@@ -238,21 +242,22 @@ export function convertFromToER2CDSRelationship(er2cds: ER2CDS, fromClause: IImp
         if (c.ExprType === 'ATOMIC') {
             if (!joinClause.firstAttribute) {
                 joinClause.firstAttribute = {
-                    ref: er2cds.entities.find(e => e.name === c.BaseobjName)?.attributes.find(a => a.name === c.FieldName),
+                    ref: er2cds.entities.find(e => e.name === c.BaseobjName && e.alias === c.BaseobjAlias)?.attributes.find(a => a.name === c.FieldName),
                     $refText: c.FieldName
                 };
             } else if (!joinClause.secondAttribute) {
                 joinClause.secondAttribute = {
-                    ref: er2cds.entities.find(e => e.name === c.BaseobjName)?.attributes.find(a => a.name === c.FieldName),
+                    ref: er2cds.entities.find(e => e.name === c.BaseobjName && e.alias === c.BaseobjAlias)?.attributes.find(a => a.name === c.FieldName),
                     $refText: c.FieldName
                 };
             }
         }
 
         if (c.ExprType === 'COMPARISON' && joinClause.firstAttribute && joinClause.secondAttribute) {
-            const sourceEntity = er2cds.entities.find(e => e.name === relationship.source?.target.$refText);
+            const sourceEntity = er2cds.entities.find(e => e.name === relationship.source?.target.ref?.name && e.alias === relationship.source?.target.ref?.alias);
             if (sourceEntity && !sourceEntity.attributes.some(a => a.name === joinClause.firstAttribute.$refText)) {
-                const attribute = condition.find(sc => sc.ConditionType === 'FROM' && sc.ExprType === 'ATOMIC' && sc.BaseobjName === sourceEntity.name && sc.FieldName === joinClause.firstAttribute.$refText);
+                const attribute = condition.find(sc => sc.ConditionType === 'FROM' && sc.ExprType === 'ATOMIC' &&
+                    sc.BaseobjName === sourceEntity.name && sc.FieldName === joinClause.firstAttribute.$refText);
 
                 if (attribute) {
                     sourceEntity.attributes.push({
@@ -271,9 +276,10 @@ export function convertFromToER2CDSRelationship(er2cds: ER2CDS, fromClause: IImp
                 }
             }
 
-            const targetEntity = er2cds.entities.find(e => e.name === relationship.target?.target.$refText);
+            const targetEntity = er2cds.entities.find(e => e.name === relationship.target?.target.ref?.name && e.alias === relationship.target?.target.ref?.alias);
             if (targetEntity && !targetEntity.attributes.some(a => a.name === joinClause.secondAttribute.$refText)) {
-                const attribute = condition.find(sc => sc.ConditionType === 'FROM' && sc.ExprType === 'ATOMIC' && sc.BaseobjName === targetEntity.name && sc.FieldName === joinClause.secondAttribute.$refText);
+                const attribute = condition.find(sc => sc.ConditionType === 'FROM' && sc.ExprType === 'ATOMIC' &&
+                    sc.BaseobjName === targetEntity.name && sc.FieldName === joinClause.secondAttribute.$refText);
 
                 if (attribute) {
                     targetEntity.attributes.push({
@@ -355,11 +361,13 @@ export function convertAssociationToER2CDS(er2cds: ER2CDS, selectionList: IImpor
 
 export function convertAssociationToER2CDSEntity(er2cds: ER2CDS, condition: IImportCondition[]): void {
     condition.filter(c => c.ConditionType === 'ASSOC_ON' && c.ExprType === 'TABLE_DATASOURCE').forEach(c => {
-        if (!er2cds.entities.some(e => e.name === c.BaseobjName)) {
+        if (!condition.some(sc => sc.ConditionType === 'FROM' && sc.ExprType === 'TABLE_DATASOURCE' && sc.BaseobjName === c.BaseobjName) &&
+            !er2cds.entities.some(e => e.name === c.BaseobjName && e.alias === c.AssocName)) {
             er2cds.entities.push({
                 $type: 'Entity',
                 $container: er2cds,
                 name: c.BaseobjName,
+                alias: c.AssocName,
                 attributes: []
             });
         }
@@ -388,7 +396,7 @@ export function convertAssociationToER2CDSRelationship(er2cds: ER2CDS, selection
                     $type: 'RelationshipEntity',
                     $container: relationship,
                     target: {
-                        ref: er2cds.entities.find(e => e.name === c.BaseobjName)!,
+                        ref: er2cds.entities.find(e => e.name === c.BaseobjName && e.alias === c.AssocName)!,
                         $refText: c.BaseobjName
                     }
                 }
@@ -397,7 +405,7 @@ export function convertAssociationToER2CDSRelationship(er2cds: ER2CDS, selection
                     $type: 'RelationshipEntity',
                     $container: relationship,
                     target: {
-                        ref: er2cds.entities.find(e => e.name === c.BaseobjName)!,
+                        ref: er2cds.entities.find(e => e.name === c.BaseobjName && e.alias === c.AssocName)!,
                         $refText: c.BaseobjName
                     }
                 }
@@ -407,7 +415,7 @@ export function convertAssociationToER2CDSRelationship(er2cds: ER2CDS, selection
                 const ss = selectionList.find(s => s.ElementAlias === c.FieldName);
                 const sss = selectionList.find(s => s.ElementPos === ss?.ElementPos && s.ExprType !== ss?.ExprType);
 
-                const sourceEntity = er2cds.entities.find(e => e.name === sss?.BaseObjName);
+                const sourceEntity = er2cds.entities.find(e => e.name === sss?.BaseObjName && e.alias === sss?.AssocName);
                 const sourceAttribute = sourceEntity?.attributes.find(a => a.name === sss?.BaseElementName);
 
                 if (sourceEntity && sourceAttribute) {
@@ -426,11 +434,12 @@ export function convertAssociationToER2CDSRelationship(er2cds: ER2CDS, selection
                     };
                 }
             } else {
-                const targetEntity = er2cds.entities.find(e => e.name === c.BaseobjName);
-                const targetAttribute = er2cds.entities.find(e => e.name === c.BaseobjName)?.attributes.find(a => a.name === c.FieldName);
+                const targetEntity = er2cds.entities.find(e => e.name === c.BaseobjName && e.alias === c.AssocName);
+                const targetAttribute = targetEntity?.attributes.find(a => a.name === c.FieldName);
 
                 if (!targetAttribute) {
-                    const attribute = condition.find(sc => sc.ConditionType === 'ASSOC_ON' && sc.ExprType === 'ASSOC_ELEMENT' && sc.BaseobjName === targetEntity?.name && sc.FieldName === c.FieldName);
+                    const attribute = condition.find(sc => sc.ConditionType === 'ASSOC_ON' && sc.ExprType === 'ASSOC_ELEMENT' &&
+                        sc.BaseobjName === targetEntity?.name && sc.AssocName === targetEntity?.alias && sc.FieldName === c.FieldName);
 
                     if (attribute) {
                         targetEntity?.attributes.push({
@@ -464,7 +473,7 @@ export function convertAssociationToER2CDSRelationship(er2cds: ER2CDS, selection
         }
 
         if (c.ExprType === 'COMPARISON' && joinClause.firstAttribute && joinClause.secondAttribute) {
-            const sourceEntity = er2cds.entities.find(e => e.name === relationship.source?.target.$refText);
+            const sourceEntity = er2cds.entities.find(e => e.name === relationship.source?.target.ref?.name && e.alias === relationship.source?.target.ref?.alias);
             if (sourceEntity && !sourceEntity.attributes.some(a => a.name === joinClause.firstAttribute.$refText)) {
                 const attribute = condition.find(sc => sc.ConditionType === 'ASSOC_ON' && sc.ExprType === 'ASSOC_ELEMENT' && sc.BaseobjName === sourceEntity.name && sc.FieldName === joinClause.firstAttribute.$refText);
 
@@ -483,9 +492,10 @@ export function convertAssociationToER2CDSRelationship(er2cds: ER2CDS, selection
                 }
             }
 
-            const targetEntity = er2cds.entities.find(e => e.name === relationship.target?.target.$refText);
+            const targetEntity = er2cds.entities.find(e => e.name === relationship.target?.target.ref?.name && e.alias === relationship.source?.target.ref?.alias);
             if (targetEntity && !targetEntity.attributes.some(a => a.name === joinClause.secondAttribute.$refText)) {
-                const attribute = condition.find(sc => sc.ConditionType === 'ASSOC_ON' && sc.ExprType === 'ASSOC_ELEMENT' && sc.BaseobjName === targetEntity.name && sc.FieldName === joinClause.secondAttribute.$refText);
+                const attribute = condition.find(sc => sc.ConditionType === 'ASSOC_ON' && sc.ExprType === 'ASSOC_ELEMENT' &&
+                    sc.BaseobjName === targetEntity.name && sc.FieldName === joinClause.secondAttribute.$refText);
 
                 if (attribute) {
                     targetEntity.attributes.push({
@@ -576,6 +586,7 @@ export function convertAssociationToER2CDSRelationship(er2cds: ER2CDS, selection
             }
 
             relationship.type = 'composition';
+            relationship.joinClauses = [];
             er2cds.relationships.push(relationship);
 
             relationship = {

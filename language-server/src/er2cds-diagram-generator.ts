@@ -19,7 +19,8 @@ import {
     LABEL_ATTRIBUTE_NO_OUT,
     LABEL_RELATIONSHIP_ASSOCIATION,
     LABEL_RELATIONSHIP_ASSOCIATION_TO_PARENT,
-    LABEL_RELATIONSHIP_COMPOSITION
+    LABEL_RELATIONSHIP_COMPOSITION,
+    LABEL_ENTITY_ALIAS
 } from './model.js';
 
 export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
@@ -73,6 +74,11 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
                     type: LABEL_ENTITY,
                     id: idCache.uniqueId(entityId + '.label'),
                     text: entity.name
+                },
+                <SLabel>{
+                    type: LABEL_ENTITY_ALIAS,
+                    id: idCache.uniqueId(entity + '.alias'),
+                    text: entity.alias
                 }
             ]
         };

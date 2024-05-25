@@ -104,11 +104,11 @@ function generateHeader(model: ER2CDS): string | undefined {
 function generateFromClause(model: ER2CDS): string | undefined {
     if (model.relationships && model.relationships.length > 0) {
         return expandToString`
-            from ${model.relationships[0].source?.target.ref?.name}
+            from ${model.relationships[0].source?.target.ref?.name} ${model.relationships[0].source?.target.ref?.alias ? `as ${model.relationships[0].source?.target.ref?.alias}` : undefined}
         `;
     } else {
         return expandToString`
-            from ${model.entities[0].name}
+            from ${model.entities[0].name} ${model.entities[0].alias ? `as ${model.entities[0].alias}` : undefined}
         `;
     }
 }
@@ -145,7 +145,7 @@ function generateJoins(model: ER2CDS): string | undefined {
 function generateInnerJoin(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-            inner join ${relationship.target?.target.ref?.name} on ${generateJoinClause(relationship, relationship.joinClauses)}
+            inner join ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined} on ${generateJoinClause(relationship, relationship.joinClauses)}
         `;
     }
 
@@ -155,7 +155,7 @@ function generateInnerJoin(model: ER2CDS, relationship: Relationship): string | 
 function generateLeftJoin(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-            left outer join ${relationship.target?.target.ref?.name} on ${generateJoinClause(relationship, relationship.joinClauses)}
+            left outer join ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined} on ${generateJoinClause(relationship, relationship.joinClauses)}
         `;
     }
 
@@ -165,7 +165,7 @@ function generateLeftJoin(model: ER2CDS, relationship: Relationship): string | u
 function generateRightJoin(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-            right outer join ${relationship.target?.target.ref?.name} on ${generateJoinClause(relationship, relationship.joinClauses)}
+            right outer join ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined} on ${generateJoinClause(relationship, relationship.joinClauses)}
         `;
     }
 
@@ -177,7 +177,7 @@ function generateJoinClause(relationship: Relationship, joinClauses: Relationshi
 
     joinClause = joinClauses.map(jc => {
         return expandToString`
-            ${relationship.source?.target.ref?.name}.${jc.firstAttribute.ref?.name} = ${relationship.target?.target.ref?.name}.${jc.secondAttribute.ref?.name}
+            ${relationship.source?.target.ref?.alias ? relationship.source?.target.ref?.alias : relationship.source?.target.ref?.name}.${jc.firstAttribute.ref?.name} = ${relationship.target?.target.ref?.alias ? relationship.target?.target.ref?.alias : relationship.target?.target.ref?.name}.${jc.secondAttribute.ref?.name}
         `
     }).filter(Boolean).join(' and ');
 
@@ -216,7 +216,7 @@ function generateAssociations(model: ER2CDS): string | undefined {
 function generateOneOneAssociation(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-            association[1..1] to ${relationship.target?.target.ref?.name} on ${generateAssociationClause(relationship, relationship.joinClauses)}
+            association[1..1] to ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined} on ${generateAssociationClause(relationship, relationship.joinClauses)}
         `;
     }
 
@@ -226,7 +226,7 @@ function generateOneOneAssociation(model: ER2CDS, relationship: Relationship): s
 function generateOneManyAssociation(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-            association[0..*] to ${relationship.target?.target.ref?.name} on ${generateAssociationClause(relationship, relationship.joinClauses)}
+            association[0..*] to ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined} on ${generateAssociationClause(relationship, relationship.joinClauses)}
         `;
     }
 
@@ -236,7 +236,7 @@ function generateOneManyAssociation(model: ER2CDS, relationship: Relationship): 
 function generateZeroOneAssociation(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-            association[0..1] to ${relationship.target?.target.ref?.name} on ${generateAssociationClause(relationship, relationship.joinClauses)}
+            association[0..1] to ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined} on ${generateAssociationClause(relationship, relationship.joinClauses)}
         `;
     }
 
@@ -246,7 +246,7 @@ function generateZeroOneAssociation(model: ER2CDS, relationship: Relationship): 
 function generateZeroManyAssociation(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-            association[0..*] to ${relationship.target?.target.ref?.name} on ${generateAssociationClause(relationship, relationship.joinClauses)}
+            association[0..*] to ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined} on ${generateAssociationClause(relationship, relationship.joinClauses)}
         `;
     }
 
@@ -258,7 +258,7 @@ function generateAssociationClause(relationship: Relationship, joinClauses: Rela
 
     associationClause = joinClauses.map(jc => {
         return expandToString`
-            $projection.${jc.secondAttribute.ref?.alias ? jc.secondAttribute.ref?.alias : jc.secondAttribute.ref?.name} = ${relationship.target?.target.ref?.name}.${jc.secondAttribute.ref?.name}
+            $projection.${jc.secondAttribute.ref?.alias ? jc.secondAttribute.ref?.alias : jc.secondAttribute.ref?.name} = ${relationship.target?.target.ref?.alias ? relationship.target?.target.ref?.alias : relationship.target?.target.ref?.name}.${jc.secondAttribute.ref?.name}
         `
     }).filter(Boolean).join(' and ');
 
@@ -297,7 +297,7 @@ function generateAssociationsToParent(model: ER2CDS): string | undefined {
 function generateOneOneAssociationToParent(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-            association[1..1] to parent ${relationship.target?.target.ref?.name} on ${generateAssociationClause(relationship, relationship.joinClauses)}
+            association[1..1] to parent ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined} on ${generateAssociationClause(relationship, relationship.joinClauses)}
         `;
     }
 
@@ -307,7 +307,7 @@ function generateOneOneAssociationToParent(model: ER2CDS, relationship: Relation
 function generateOneManyAssociationToParent(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-            association[0..*] to parent ${relationship.target?.target.ref?.name} on ${generateAssociationClause(relationship, relationship.joinClauses)}
+            association[0..*] to parent ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined} on ${generateAssociationClause(relationship, relationship.joinClauses)}
         `;
     }
 
@@ -317,7 +317,7 @@ function generateOneManyAssociationToParent(model: ER2CDS, relationship: Relatio
 function generateZeroOneAssociationToParent(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-            association[0..1] to parent ${relationship.target?.target.ref?.name} on ${generateAssociationClause(relationship, relationship.joinClauses)}
+            association[0..1] to parent ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined} on ${generateAssociationClause(relationship, relationship.joinClauses)}
         `;
     }
 
@@ -327,7 +327,7 @@ function generateZeroOneAssociationToParent(model: ER2CDS, relationship: Relatio
 function generateZeroManyAssociationToParent(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-            association[0..*] to parent ${relationship.target?.target.ref?.name} on ${generateAssociationClause(relationship, relationship.joinClauses)}
+            association[0..*] to parent ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined} on ${generateAssociationClause(relationship, relationship.joinClauses)}
         `;
     }
 
@@ -366,7 +366,7 @@ function generateCompositions(model: ER2CDS): string | undefined {
 function generateOneOneComposition(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-            composition[1..1] of ${relationship.target?.target.ref?.name}
+            composition[1..1] of ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined}
         `;
     }
 
@@ -376,7 +376,7 @@ function generateOneOneComposition(model: ER2CDS, relationship: Relationship): s
 function generateOneManyComposition(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-            composition[0..*] of ${relationship.target?.target.ref?.name}
+            composition[0..*] of ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined}
         `;
     }
 
@@ -386,7 +386,7 @@ function generateOneManyComposition(model: ER2CDS, relationship: Relationship): 
 function generateZeroOneComposition(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-            composition[0..1] of ${relationship.target?.target.ref?.name}
+            composition[0..1] of ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined}
         `;
     }
 
@@ -396,7 +396,7 @@ function generateZeroOneComposition(model: ER2CDS, relationship: Relationship): 
 function generateZeroManyComposition(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-            composition[0..*] of ${relationship.target?.target.ref?.name}
+            composition[0..*] of ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined}
         `;
     }
 
@@ -441,7 +441,7 @@ function generateAttributes(model: ER2CDS): string | undefined {
 function generateAttribute(entity: Entity, attribute: Attribute): string | undefined {
     if (attribute.type !== 'no-out') {
         return expandToString`
-            ${attribute.type === 'key' ? 'key' : ''} ${entity.name}.${attribute.name} ${generateAttributeLabel(entity, attribute)}
+            ${attribute.type === 'key' ? 'key' : ''} ${entity.alias ? entity.alias : entity.name}.${attribute.name} ${generateAttributeLabel(entity, attribute)}
         `;
     }
 
@@ -453,11 +453,9 @@ function generateAttributeLabel(entity: Entity, attribute: Attribute): string | 
         return expandToString`
             as ${attribute.alias}
         `;
-    } else {
-        return expandToString`
-            as ${entity.name}_${attribute.name}
-        `;
     }
+
+    return undefined;
 }
 
 function generateAssociationAttributes(model: ER2CDS): string | undefined {
@@ -465,7 +463,7 @@ function generateAssociationAttributes(model: ER2CDS): string | undefined {
         let associationAttributes: string[] = [];
 
         model.relationships.filter(r => r.type === 'association' || r.type === 'association-to-parent' || r.type === 'composition').forEach(r => {
-            associationAttributes.push(expandToString`${r.target?.target.ref?.name}`);
+            associationAttributes.push(expandToString`${r.target?.target.ref?.alias ? r.target?.target.ref?.alias : r.target?.target.ref?.name}`);
         });
 
         return associationAttributes.filter(Boolean).join(',\n');

@@ -6,6 +6,7 @@ entry ER2CDS:
 
 Entity:
 	'entity' name=ID '{'
+		('alias' alias=ID)?
 		(attributes+=Attribute)*
 	'}';
 

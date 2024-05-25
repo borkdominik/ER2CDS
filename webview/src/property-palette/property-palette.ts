@@ -355,6 +355,15 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         };
         propertyPaletteItems.push(entityNamePaletteItem);
 
+        const entityAliasPaletteItem = <ElementTextPropertyItem>{
+            type: ElementTextPropertyItem.TYPE,
+            elementId: entity.id,
+            propertyId: 'entity-alias',
+            label: 'Alias',
+            text: (entity.children[0].children[1] as SLabelImpl).text
+        };
+        propertyPaletteItems.push(entityAliasPaletteItem);
+
         const entityAttributesPaletteItems = <ElementReferencePropertyItem>{
             type: ElementReferencePropertyItem.TYPE,
             elementId: entity.id,

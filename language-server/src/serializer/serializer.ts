@@ -51,6 +51,7 @@ export function serializeEntities(entities: Entity[]): string {
 export function serializeEntity(entity: Entity): string {
     return expandToString`
         entity ${entity.name} {
+            ${entity.alias ? `alias ${entity.alias}` : undefined}
             ${entity.attributes.length > 0 ? entity.attributes.map(a => serializeAttribute(a)).join('\n') : undefined}
         }
     `;

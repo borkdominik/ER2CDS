@@ -33,6 +33,10 @@ export class UpdateElementPropertyHandler {
                 await this.handleEntityNameEdit(action, model);
                 break;
 
+            case 'entity-alias':
+                await this.handleEntityAliasEdit(action, model);
+                break;
+
             case 'relationship-name':
                 await this.handleRelationshipNameEdit(action, model);
                 break;
@@ -96,6 +100,15 @@ export class UpdateElementPropertyHandler {
             return Promise.resolve();
 
         entity.name = action.value;
+    }
+
+    protected async handleEntityAliasEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
+        const entity = model.entities.find(e => e.name === action.elementId);
+
+        if (!entity)
+            return Promise.resolve();
+
+        entity.alias = action.value;
     }
 
     protected async handleRelationshipNameEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
