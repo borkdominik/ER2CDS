@@ -267,67 +267,16 @@ function generateAssociationClause(relationship: Relationship, joinClauses: Rela
 
 function generateAssociationsToParent(model: ER2CDS): string | undefined {
     if (model.relationships) {
-        return model.relationships.filter(r => r.type === 'association-to-parent').map(r => {
-            let association;
-
-            if (r.source?.cardinality === '1' && r.target?.cardinality === '1') {
-                association = generateOneOneAssociationToParent(model, r);
-
-            } else if (r.source?.cardinality === '1' && r.target?.cardinality === '0..N') {
-                association = generateOneManyAssociationToParent(model, r);
-
-            } else if (r.source?.cardinality === '0..N' && r.target?.cardinality === '1') {
-                association = generateZeroOneAssociationToParent(model, r);
-
-            } else if (r.source?.cardinality === '0..N' && r.target?.cardinality === '0..N') {
-                association = generateZeroManyAssociationToParent(model, r);
-
-            } else {
-                association = generateZeroOneAssociationToParent(model, r);
-
-            }
-
-            return association;
-        }).filter(Boolean).join('\n');
+        return model.relationships.filter(r => r.type === 'association-to-parent').map(r => generateAssociationToParent(model, r)).filter(Boolean).join('\n');
     }
 
     return undefined;
 }
 
-function generateOneOneAssociationToParent(model: ER2CDS, relationship: Relationship): string | undefined {
+function generateAssociationToParent(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-            association[1..1] to parent ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined} on ${generateAssociationClause(relationship, relationship.joinClauses)}
-        `;
-    }
-
-    return undefined;
-}
-
-function generateOneManyAssociationToParent(model: ER2CDS, relationship: Relationship): string | undefined {
-    if (model.entities && model.entities.length > 0) {
-        return expandToString`
-            association[0..*] to parent ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined} on ${generateAssociationClause(relationship, relationship.joinClauses)}
-        `;
-    }
-
-    return undefined;
-}
-
-function generateZeroOneAssociationToParent(model: ER2CDS, relationship: Relationship): string | undefined {
-    if (model.entities && model.entities.length > 0) {
-        return expandToString`
-            association[0..1] to parent ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined} on ${generateAssociationClause(relationship, relationship.joinClauses)}
-        `;
-    }
-
-    return undefined;
-}
-
-function generateZeroManyAssociationToParent(model: ER2CDS, relationship: Relationship): string | undefined {
-    if (model.entities && model.entities.length > 0) {
-        return expandToString`
-            association[0..*] to parent ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined} on ${generateAssociationClause(relationship, relationship.joinClauses)}
+            association to parent ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined} on ${generateAssociationClause(relationship, relationship.joinClauses)}
         `;
     }
 
