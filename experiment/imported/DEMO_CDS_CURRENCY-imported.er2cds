@@ -1,0 +1,9 @@
+er2cds DEMO_CDS_CURRENCY
+
+entity TCURC {
+    key WAERS : CUKY as Currency
+    ISOCD : CHAR as CurrencyISOCode
+    ALTWR : CHAR as AlternativeCurrencyKey
+    XPRIMARY : CHAR as IsPrimaryCurrencyForISOCrcy
+}
+

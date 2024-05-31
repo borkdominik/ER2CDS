@@ -1,0 +1,15 @@
+er2cds /DMO/I_TRAVEL_STATUS_VH
+
+entity /DMO/TRVL_STAT {
+    key TRAVEL_STATUS : CHAR as TravelStatus
+}
+
+entity /DMO/I_TRAVEL_STATUS_VH_TEXT {
+    alias _Text
+    no-out TRAVELSTATUS : CHAR
+}
+
+association relationship null {
+    /DMO/TRVL_STAT[0..N] -> /DMO/I_TRAVEL_STATUS_VH_TEXT[0..N]
+    TRAVEL_STATUS = TRAVELSTATUS
+}

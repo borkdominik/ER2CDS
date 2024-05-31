@@ -1,0 +1,27 @@
+er2cds I_ABAPPACKAGETEXT
+
+entity TDEVCT {
+    key DEVCLASS : CHAR as ABAPPackage
+    key SPRAS : LANG as Language
+    CTEXT : CHAR as ABAPPackageName
+}
+
+entity I_ABAPPACKAGE {
+    alias _ABAPPackage
+    no-out ABAPPACKAGE : CHAR
+}
+
+entity I_LANGUAGE {
+    alias _Language
+    no-out LANGUAGE : LANG
+}
+
+association-to-parent relationship null {
+    TDEVCT[1] -> I_ABAPPACKAGE[1]
+    DEVCLASS = ABAPPACKAGE
+}
+
+association relationship null {
+    TDEVCT[0..N] -> I_LANGUAGE[1]
+    SPRAS = LANGUAGE
+}

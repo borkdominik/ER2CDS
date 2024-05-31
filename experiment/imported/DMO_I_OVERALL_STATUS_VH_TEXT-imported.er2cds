@@ -1,0 +1,17 @@
+er2cds /DMO/I_OVERALL_STATUS_VH_TEXT
+
+entity /DMO/OALL_STAT_T {
+    key OVERALL_STATUS : CHAR as OverallStatus
+    key LANGUAGE : LANG as Language
+    TEXT : SSTR as Text
+}
+
+entity /DMO/I_OVERALL_STATUS_VH {
+    alias _OverallStatus
+    no-out OVERALLSTATUS : CHAR
+}
+
+association relationship null {
+    /DMO/OALL_STAT_T[1] -> /DMO/I_OVERALL_STATUS_VH[1]
+    OVERALL_STATUS = OVERALLSTATUS
+}

@@ -1,0 +1,36 @@
+er2cds P_MAINTORDERPURORDLINK
+
+entity EKKN {
+    key EBELN : CHAR as PurchaseOrder
+    key EBELP : NUMC as PurchaseOrderItem
+    key ZEKKN : NUMC as PurchaseOrderAcctAssgmtNumber
+    key AUFNR : CHAR as MaintenanceOrder
+    AUFPL : NUMC as ProjectNetworkInternalID
+    AUFPL_ORD : NUMC as OrderInternalID
+    APLZL_ORD : NUMC as OrderIntBillOfOperationsItem
+    APLZL_ORD : NUMC as OrderOperationInternalID
+}
+
+entity EKPO {
+    ARSNR : NUMC as Reservation
+    ARSPS : NUMC as ReservationItem
+    no-out EBELN : CHAR
+    no-out EBELP : NUMC
+}
+
+entity AUFK {
+    no-out AUFNR : CHAR
+}
+
+relationship null {
+    EKKN[1] -> EKPO[0..N]
+    join order 1
+    EBELN = EBELN
+    EBELP = EBELP
+}
+
+relationship null {
+    AUFK[1] -> EKKN[0..N]
+    join order 1
+    AUFNR = AUFNR
+}

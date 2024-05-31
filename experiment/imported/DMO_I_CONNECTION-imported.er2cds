@@ -1,0 +1,23 @@
+er2cds /DMO/I_CONNECTION
+
+entity /DMO/CONNECTION {
+    alias CONNECTION
+    key CARRIER_ID : CHAR as AirlineID
+    key CONNECTION_ID : NUMC as ConnectionID
+    AIRPORT_FROM_ID : CHAR as DepartureAirport
+    AIRPORT_TO_ID : CHAR as DestinationAirport
+    DEPARTURE_TIME : TIMS as DepartureTime
+    ARRIVAL_TIME : TIMS as ArrivalTime
+    DISTANCE : INT4 as Distance
+    DISTANCE_UNIT : UNIT as DistanceUnit
+}
+
+entity /DMO/I_CARRIER {
+    alias _Airline
+    no-out AIRLINEID : CHAR
+}
+
+association relationship null {
+    /DMO/CONNECTION[1] -> /DMO/I_CARRIER[1]
+    CARRIER_ID = AIRLINEID
+}

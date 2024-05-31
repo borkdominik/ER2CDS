@@ -1,0 +1,45 @@
+er2cds /DMO/I_FLIGHT
+
+entity /DMO/FLIGHT {
+    alias FLIGHT
+    key CARRIER_ID : CHAR as AirlineID
+    key CONNECTION_ID : NUMC as ConnectionID
+    key FLIGHT_DATE : DATS as FlightDate
+    PRICE : CURR as Price
+    CURRENCY_CODE : CUKY as CurrencyCode
+    PLANE_TYPE_ID : CHAR as PlaneType
+    SEATS_MAX : INT4 as MaximumSeats
+    SEATS_OCCUPIED : INT4 as OccupiedSeats
+}
+
+entity /DMO/I_CARRIER {
+    alias _Airline
+    no-out AIRLINEID : CHAR
+}
+
+entity /DMO/I_CONNECTION {
+    alias _Connection
+    no-out CONNECTIONID : NUMC
+    no-out AIRLINEID : CHAR
+}
+
+entity I_CURRENCY {
+    alias _Currency
+    no-out CURRENCY : CUKY
+}
+
+association relationship null {
+    /DMO/FLIGHT[0..N] -> /DMO/I_CARRIER[1]
+    CARRIER_ID = AIRLINEID
+}
+
+association relationship null {
+    /DMO/FLIGHT[0..N] -> /DMO/I_CONNECTION[1]
+    CONNECTION_ID = CONNECTIONID
+    CARRIER_ID = AIRLINEID
+}
+
+association relationship null {
+    /DMO/FLIGHT[0..N] -> I_CURRENCY[1]
+    CURRENCY_CODE = CURRENCY
+}

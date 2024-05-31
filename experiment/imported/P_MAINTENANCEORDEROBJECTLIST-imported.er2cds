@@ -1,0 +1,83 @@
+er2cds P_MAINTENANCEORDEROBJECTLIST
+
+entity I_MAINTENANCEORDEROBJECTLIST {
+    key MAINTENANCEORDEROBJECTLIST : INT8
+    key MAINTENANCEORDEROBJECTLISTITEM : INT4
+    EQUIPMENT : CHAR as TechnicalObject
+    FUNCTIONALLOCATION : CHAR as TechnicalObject
+    EQUIPMENT : CHAR as TechnicalObject
+    EQUIPMENT : CHAR as TechObjIsEquipOrFuncnlLoc
+    FUNCTIONALLOCATION : CHAR as TechObjIsEquipOrFuncnlLoc
+    EQUIPMENT : CHAR as TechObjIsEquipOrFuncnlLoc
+    EQUIPMENT : CHAR
+    FUNCTIONALLOCATION : CHAR
+    EQUIPMENT : CHAR as TechnicalObjectLabel
+    FUNCTIONALLOCATION : CHAR as TechnicalObjectLabel
+    EQUIPMENT : CHAR as TechnicalObjectLabel
+    EQUIPMENT : CHAR as TechnicalObjectLabel
+    EQUIPMENT : CHAR as TechnicalObjectDescription
+    FUNCTIONALLOCATION : CHAR as TechnicalObjectDescription
+    EQUIPMENT : CHAR as TechnicalObjectDescription
+}
+
+entity I_MAINTENANCEORDER {
+    alias _MaintenanceOrder
+    no-out MAINTENANCEORDEROBJECTLIST : INT8
+}
+
+entity I_FUNCTIONALLOCATIONLABEL {
+    alias _FunctionalLocationLabel
+    no-out FUNCTIONALLOCATION : CHAR
+}
+
+entity I_EQUIPMENTTEXT {
+    alias _EquipmentText
+    no-out EQUIPMENT : CHAR
+}
+
+entity I_FUNCTIONALLOCATIONTEXT {
+    alias _FunctionalLocationText
+    no-out FUNCTIONALLOCATION : CHAR
+}
+
+entity I_TECHNICALOBJECT {
+    alias _TechnicalObject
+    no-out TECHNICALOBJECT : CHAR
+    no-out TECHOBJISEQUIPORFUNCNLLOC : CHAR
+}
+
+entity I_TECHOBJISEQUIPORFUNCNLLOC {
+    alias _TechObjIsEquipOrFuncnlLoc
+    no-out TECHOBJISEQUIPORFUNCNLLOC : CHAR
+}
+
+association relationship null {
+    I_MAINTENANCEORDEROBJECTLIST[0..N] -> I_EQUIPMENTTEXT[0..N]
+    EQUIPMENT = EQUIPMENT
+}
+
+association relationship null {
+    I_MAINTENANCEORDEROBJECTLIST[0..N] -> I_FUNCTIONALLOCATIONLABEL[1]
+    FUNCTIONALLOCATION = FUNCTIONALLOCATION
+}
+
+association relationship null {
+    I_MAINTENANCEORDEROBJECTLIST[0..N] -> I_FUNCTIONALLOCATIONTEXT[0..N]
+    FUNCTIONALLOCATION = FUNCTIONALLOCATION
+}
+
+association relationship null {
+    I_MAINTENANCEORDEROBJECTLIST[0..N] -> I_MAINTENANCEORDER[0..N]
+    MAINTENANCEORDEROBJECTLIST = MAINTENANCEORDEROBJECTLIST
+}
+
+association relationship null {
+    I_MAINTENANCEORDEROBJECTLIST[0..N] -> I_TECHNICALOBJECT[1]
+    EQUIPMENT = TECHNICALOBJECT
+    EQUIPMENT = TECHOBJISEQUIPORFUNCNLLOC
+}
+
+association relationship null {
+    I_MAINTENANCEORDEROBJECTLIST[0..N] -> I_TECHOBJISEQUIPORFUNCNLLOC[1]
+    EQUIPMENT = TECHOBJISEQUIPORFUNCNLLOC
+}

@@ -1,0 +1,50 @@
+er2cds A_CFINRPLDPURCHASEORDERITEM
+
+entity R_CFINRPLDPURCHASINGDOCITEMTP {
+    alias CFINRPLDPURCHASINGDOCITEM
+    key SOURCESYSTEMLOGICALSYSTEM : CHAR as SourceSystemLogicalSystem
+    key CFINRPLDPURCHASINGDOCUMENT : CHAR as CFinReplicatedPurchaseOrder
+    key CFINRPLDPURCHASINGDOCUMENTITEM : NUMC as CFinRpldPurchaseOrderItem
+    PURCHASINGDOCUMENTDELETIONCODE : CHAR as PurchasingDocumentDeletionCode
+    LASTCHANGEDDATE : DATS as LastChangedDate
+    PURCHASINGDOCUMENTITEMTEXT : CHAR as PurchaseOrderItemText
+    MATERIAL : CHAR as Material
+    COMPANYCODE : CHAR as CompanyCode
+    PLANT : CHAR as Plant
+    TARGETQUANTITY : QUAN as TargetQuantity
+    ORDERQUANTITY : QUAN as OrderQuantity
+    ORDERQUANTITYUNIT : UNIT as PurchaseOrderQuantityUnit
+    ORDERPRICEUNIT : UNIT as OrderPriceUnit
+    ORDERPRICEUNITTOORDERUNITNMRTR : DEC as OrderPriceUnitToOrderUnitNmrtr
+    ORDPRICEUNITTOORDERUNITDNMNTR : DEC as OrdPriceUnitToOrderUnitDnmntr
+    ORDERITEMQTYTOBASEQTYNMRTR : DEC as OrderItemQtyToBaseQtyNmrtr
+    ORDERITEMQTYTOBASEQTYDNMNTR : DEC as OrderItemQtyToBaseQtyDnmntr
+    NETPRICEAMOUNT : CURR as NetPriceAmount
+    NETPRICEQUANTITY : DEC as NetPriceQuantity
+    NETAMOUNT : CURR as NetAmount
+    TAXCODE : CHAR as TaxCode
+    VALUATIONTYPE : CHAR as ValuationType
+    ISCOMPLETELYDELIVERED : CHAR as IsCompletelyDelivered
+    ISFINALLYINVOICED : CHAR as IsFinallyInvoiced
+    PURCHASINGDOCUMENTITEMCATEGORY : CHAR as PurchaseOrderItemCategory
+    ACCOUNTASSIGNMENTCATEGORY : CHAR as AccountAssignmentCategory
+    CONSUMPTIONPOSTING : CHAR as ConsumptionPosting
+    MULTIPLEACCTASSGMTDISTRIBUTION : CHAR as MultipleAcctAssgmtDistribution
+    PARTIALINVOICEDISTRIBUTION : CHAR as PartialInvoiceDistribution
+    GOODSRECEIPTISEXPECTED : CHAR as GoodsReceiptIsExpected
+    GOODSRECEIPTISNONVALUATED : CHAR as GoodsReceiptIsNonValuated
+    INVOICEISEXPECTED : CHAR as InvoiceIsExpected
+    INVOICEISGOODSRECEIPTBASED : CHAR as InvoiceIsGoodsReceiptBased
+    BASEUNIT : UNIT as BaseUnit
+    NONDEDUCTIBLEINPUTTAXAMOUNT : CURR as NonDeductibleInputTaxAmount
+    TAXJURISDICTION : CHAR as TaxJurisdiction
+    ISSTATISTICALITEM : CHAR as IsStatisticalItem
+    EVALDRCPTSETTLMTISALLOWED : CHAR as EvaldRcptSettlmtIsAllowed
+    ISRETURNSITEM : CHAR as IsReturnsItem
+    INVOICEISMMSERVICEENTRYBASED : CHAR as InvoiceIsMMServiceEntryBased
+    FUNCTIONALAREA : CHAR as FunctionalArea
+    PRODUCTTYPECODE : CHAR as ProductTypeCode
+    REQUISITIONERNAME : CHAR as RequisitionerName
+    DOCUMENTCURRENCY : CUKY as DocumentCurrency
+}
+

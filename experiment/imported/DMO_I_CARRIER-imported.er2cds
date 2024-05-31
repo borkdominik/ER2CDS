@@ -1,0 +1,23 @@
+er2cds /DMO/I_CARRIER
+
+entity /DMO/CARRIER {
+    alias AIRLINE
+    key CARRIER_ID : CHAR as AirlineID
+    NAME : CHAR as Name
+    CURRENCY_CODE : CUKY as CurrencyCode
+    LAST_CHANGED_AT : DEC as LastChangedAt
+    LOCAL_CREATED_AT : DEC as LocalCreatedAt
+    LOCAL_CREATED_BY : CHAR as LocalCreatedBy
+    LOCAL_LAST_CHANGED_AT : DEC as LocalLastChangedAt
+    LOCAL_LAST_CHANGED_BY : CHAR as LocalLastChangedBy
+}
+
+entity I_CURRENCY {
+    alias _Currency
+    no-out CURRENCY : CUKY
+}
+
+association relationship null {
+    /DMO/CARRIER[0..N] -> I_CURRENCY[1]
+    CURRENCY_CODE = CURRENCY
+}

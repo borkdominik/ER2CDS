@@ -1,0 +1,69 @@
+er2cds /DMO/I_TRAVEL_D
+
+entity /DMO/A_TRAVEL_D {
+    key TRAVEL_UUID : RAW as TravelUUID
+    TRAVEL_ID : NUMC as TravelID
+    AGENCY_ID : NUMC as AgencyID
+    CUSTOMER_ID : NUMC as CustomerID
+    BEGIN_DATE : DATS as BeginDate
+    END_DATE : DATS as EndDate
+    BOOKING_FEE : CURR as BookingFee
+    TOTAL_PRICE : CURR as TotalPrice
+    CURRENCY_CODE : CUKY as CurrencyCode
+    DESCRIPTION : SSTR as Description
+    OVERALL_STATUS : CHAR as OverallStatus
+    LOCAL_CREATED_BY : CHAR as LocalCreatedBy
+    LOCAL_CREATED_AT : DEC as LocalCreatedAt
+    LOCAL_LAST_CHANGED_BY : CHAR as LocalLastChangedBy
+    LOCAL_LAST_CHANGED_AT : DEC as LocalLastChangedAt
+    LAST_CHANGED_AT : DEC as LastChangedAt
+}
+
+entity /DMO/I_AGENCY {
+    alias _Agency
+    no-out AGENCYID : NUMC
+}
+
+entity /DMO/I_BOOKING_D {
+    alias _Booking
+    no-out TRAVELUUID : RAW
+}
+
+entity I_CURRENCY {
+    alias _Currency
+    no-out CURRENCY : CUKY
+}
+
+entity /DMO/I_CUSTOMER {
+    alias _Customer
+    no-out CUSTOMERID : NUMC
+}
+
+entity /DMO/I_OVERALL_STATUS_VH {
+    alias _OverallStatus
+    no-out OVERALLSTATUS : CHAR
+}
+
+association relationship null {
+    /DMO/A_TRAVEL_D[0..N] -> /DMO/I_AGENCY[1]
+    AGENCY_ID = AGENCYID
+}
+
+composition relationship null {
+    /DMO/A_TRAVEL_D[0..N] -> /DMO/I_BOOKING_D[0..N]
+}
+
+association relationship null {
+    /DMO/A_TRAVEL_D[0..N] -> I_CURRENCY[1]
+    CURRENCY_CODE = CURRENCY
+}
+
+association relationship null {
+    /DMO/A_TRAVEL_D[0..N] -> /DMO/I_CUSTOMER[1]
+    CUSTOMER_ID = CUSTOMERID
+}
+
+association relationship null {
+    /DMO/A_TRAVEL_D[1] -> /DMO/I_OVERALL_STATUS_VH[1]
+    OVERALL_STATUS = OVERALLSTATUS
+}

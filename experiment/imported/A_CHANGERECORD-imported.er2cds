@@ -1,0 +1,137 @@
+er2cds A_CHANGERECORD
+
+entity I_CHANGERECORDTP_2 {
+    key CHANGERECORDUUID : RAW
+    CHANGERECORD : CHAR
+    CHANGERECORDTYPE : CHAR
+    CHANGERECORDSTATUS : CHAR
+    CHANGENUMBER : CHAR
+    CREATEDBYUSER : CHAR
+    CREATIONDATETIME : DEC
+    LASTCHANGEDBYUSER : CHAR
+    LASTCHANGEDATETIME : DEC as LastChangeDateTime
+    LASTCHANGEDATETIME : DEC as LastChangeDateTime
+    CHANGERECORDLIFECYCLESTATUS : CHAR
+    PARTNER : CHAR
+    CHGRECORDDESCRIPTIONTEXT : CHAR
+    CHANGERECORDDETAILDESCRIPTION : STRG
+    CHGRECDEXPECTEDCOMPLETIONDATE : DATS
+}
+
+entity A_CHANGERECORDREFINSPPLAN {
+    alias _ChangeRecordRefInspPlan
+    no-out CHANGERECORDUUID : RAW
+}
+
+entity A_CHANGERECORDREFLABELSET {
+    alias _ChangeRecordRefLabelSet
+    no-out CHANGERECORDUUID : RAW
+}
+
+entity A_CHANGERECORDREFMASTERRECIPE {
+    alias _ChangeRecordRefMasterRecipe
+    no-out CHANGERECORDUUID : RAW
+}
+
+entity A_CHANGERECORDREFPRODNROUTING {
+    alias _ChangeRecordRefProdnRouting
+    no-out CHANGERECORDUUID : RAW
+}
+
+entity A_CHANGERECORDREFRECIPE {
+    alias _ChangeRecordRefRecipe
+    no-out CHANGERECORDUUID : RAW
+}
+
+entity A_CHANGERECORDREFSPECIFICATION {
+    alias _ChangeRecordRefSpecification
+    no-out CHANGERECORDUUID : RAW
+}
+
+entity A_CHANGERECORDREFTMPLROUTING {
+    alias _ChangeRecordRefTmplRouting
+    no-out CHANGERECORDUUID : RAW
+}
+
+entity E_CHANGERECORDBSC {
+    alias _HeaderExtension
+    no-out CHANGERECORDUUID : RAW
+}
+
+entity A_CHANGERECORDREFERENCEBIT {
+    alias _RefBit
+    no-out CHANGERECORDUUID : RAW
+}
+
+entity A_CHANGERECORDREFERENCEBOM {
+    alias _RefBOM
+    no-out CHANGERECORDUUID : RAW
+}
+
+entity A_CHANGERECORDREFERENCEDOC {
+    alias _RefDoc
+    no-out CHANGERECORDUUID : RAW
+}
+
+entity A_CHANGERECORDREFERENCEMAT {
+    alias _RefMat
+    no-out CHANGERECORDUUID : RAW
+}
+
+entity A_CHANGERECORDREFERENCEPSV {
+    alias _RefPSV
+    no-out CHANGERECORDUUID : RAW
+}
+
+composition relationship null {
+    I_CHANGERECORDTP_2[0..N] -> A_CHANGERECORDREFINSPPLAN[0..N]
+}
+
+composition relationship null {
+    I_CHANGERECORDTP_2[0..N] -> A_CHANGERECORDREFLABELSET[0..N]
+}
+
+composition relationship null {
+    I_CHANGERECORDTP_2[0..N] -> A_CHANGERECORDREFMASTERRECIPE[0..N]
+}
+
+composition relationship null {
+    I_CHANGERECORDTP_2[0..N] -> A_CHANGERECORDREFPRODNROUTING[0..N]
+}
+
+composition relationship null {
+    I_CHANGERECORDTP_2[0..N] -> A_CHANGERECORDREFRECIPE[0..N]
+}
+
+composition relationship null {
+    I_CHANGERECORDTP_2[0..N] -> A_CHANGERECORDREFSPECIFICATION[0..N]
+}
+
+composition relationship null {
+    I_CHANGERECORDTP_2[0..N] -> A_CHANGERECORDREFTMPLROUTING[0..N]
+}
+
+association relationship null {
+    I_CHANGERECORDTP_2[0..N] -> E_CHANGERECORDBSC[1]
+    CHANGERECORDUUID = CHANGERECORDUUID
+}
+
+composition relationship null {
+    I_CHANGERECORDTP_2[0..N] -> A_CHANGERECORDREFERENCEBIT[0..N]
+}
+
+composition relationship null {
+    I_CHANGERECORDTP_2[0..N] -> A_CHANGERECORDREFERENCEBOM[0..N]
+}
+
+composition relationship null {
+    I_CHANGERECORDTP_2[0..N] -> A_CHANGERECORDREFERENCEDOC[0..N]
+}
+
+composition relationship null {
+    I_CHANGERECORDTP_2[0..N] -> A_CHANGERECORDREFERENCEMAT[0..N]
+}
+
+composition relationship null {
+    I_CHANGERECORDTP_2[0..N] -> A_CHANGERECORDREFERENCEPSV[0..N]
+}

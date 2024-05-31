@@ -1,0 +1,15 @@
+er2cds /DMO/I_SUPPLEMENTCATEGORY_VH
+
+entity /DMO/SUPPLCAT {
+    key SUPPLEMENT_CATEGORY : CHAR as SupplementCategory
+}
+
+entity /DMO/I_SUPPLEMENTCATEGORY_VH_T {
+    alias _Text
+    no-out SUPPLEMENTCATEGORY : CHAR
+}
+
+association relationship null {
+    /DMO/SUPPLCAT[0..N] -> /DMO/I_SUPPLEMENTCATEGORY_VH_T[0..N]
+    SUPPLEMENT_CATEGORY = SUPPLEMENTCATEGORY
+}

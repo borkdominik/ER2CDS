@@ -1,0 +1,19 @@
+er2cds /DMO/I_AIRPORT
+
+entity /DMO/AIRPORT {
+    alias AIRPORT
+    key AIRPORT_ID : CHAR as AirportID
+    NAME : CHAR as Name
+    CITY : CHAR as City
+    COUNTRY : CHAR as CountryCode
+}
+
+entity I_COUNTRY {
+    alias _Country
+    no-out COUNTRY : CHAR
+}
+
+association relationship null {
+    /DMO/AIRPORT[0..N] -> I_COUNTRY[1]
+    COUNTRY = COUNTRY
+}

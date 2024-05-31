@@ -1,0 +1,41 @@
+er2cds DEMO_CDS_FLIGHTS
+
+entity DEMO_DBTAB_SPFLI {
+    alias SPFLI
+    key CARRID : CHAR as id
+    key CONNID : NUMC as flight
+    CITYFROM : CHAR as departure
+    COUNTRYFR : CHAR as from_country
+    CITYTO : CHAR as destination
+    COUNTRYTO : CHAR as to_country
+    FLTIME : INT4 as flight_time
+}
+
+entity DEMO_DBTAB_SCARR {
+    alias SCARR
+    key CARRNAME : CHAR as carrier
+    no-out CARRID : CHAR
+}
+
+entity DEMO_DBT_SFLIGHT {
+    alias SFLIGHT
+    FLDATE : DATS as flight_date
+    PLANETYPE : CHAR as plane_type
+    SEATSMAX : INT4 as free_seats
+    SEATSOCC : INT4 as free_seats
+    no-out CARRID : CHAR
+    no-out CONNID : NUMC
+}
+
+relationship null {
+    DEMO_DBTAB_SPFLI[1] -> DEMO_DBTAB_SCARR[1]
+    join order 1
+    CARRID = CARRID
+}
+
+relationship null {
+    DEMO_DBTAB_SPFLI[1] -> DEMO_DBT_SFLIGHT[1]
+    join order 2
+    CARRID = CARRID
+    CONNID = CONNID
+}

@@ -1,0 +1,15 @@
+er2cds /DMO/I_BOOKING_STATUS_VH
+
+entity /DMO/BOOK_STAT {
+    key BOOKING_STATUS : CHAR as BookingStatus
+}
+
+entity /DMO/I_BOOKING_STATUS_VH_TEXT {
+    alias _Text
+    no-out BOOKINGSTATUS : CHAR
+}
+
+association relationship null {
+    /DMO/BOOK_STAT[0..N] -> /DMO/I_BOOKING_STATUS_VH_TEXT[0..N]
+    BOOKING_STATUS = BOOKINGSTATUS
+}

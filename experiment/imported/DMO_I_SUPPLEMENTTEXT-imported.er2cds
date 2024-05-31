@@ -1,0 +1,29 @@
+er2cds /DMO/I_SUPPLEMENTTEXT
+
+entity /DMO/SUPPL_TEXT {
+    alias SUPPLEMENTTEXT
+    key SUPPLEMENT_ID : CHAR as SupplementID
+    key LANGUAGE_CODE : LANG as LanguageCode
+    DESCRIPTION : SSTR as Description
+    LOCAL_LAST_CHANGED_AT : DEC as LocalLastChangedAt
+}
+
+entity I_LANGUAGE {
+    alias _Language
+    no-out LANGUAGE : LANG
+}
+
+entity /DMO/I_SUPPLEMENT {
+    alias _Supplement
+    no-out SUPPLEMENTID : CHAR
+}
+
+association relationship null {
+    /DMO/SUPPL_TEXT[0..N] -> I_LANGUAGE[1]
+    LANGUAGE_CODE = LANGUAGE
+}
+
+association-to-parent relationship null {
+    /DMO/SUPPL_TEXT[1] -> /DMO/I_SUPPLEMENT[1]
+    SUPPLEMENT_ID = SUPPLEMENTID
+}

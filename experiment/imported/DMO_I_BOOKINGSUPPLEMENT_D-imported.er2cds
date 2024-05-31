@@ -1,0 +1,52 @@
+er2cds /DMO/I_BOOKINGSUPPLEMENT_D
+
+entity /DMO/A_BKSUPPL_D {
+    key BOOKSUPPL_UUID : RAW as BookSupplUUID
+    ROOT_UUID : RAW as TravelUUID
+    PARENT_UUID : RAW as BookingUUID
+    BOOKING_SUPPLEMENT_ID : NUMC as BookingSupplementID
+    SUPPLEMENT_ID : CHAR as SupplementID
+    PRICE : CURR as BookSupplPrice
+    CURRENCY_CODE : CUKY as CurrencyCode
+    LOCAL_LAST_CHANGED_AT : DEC as LocalLastChangedAt
+}
+
+entity /DMO/I_BOOKING_D {
+    alias _Booking
+    no-out BOOKINGUUID : RAW
+}
+
+entity /DMO/I_SUPPLEMENT {
+    alias _Product
+    no-out SUPPLEMENTID : CHAR
+}
+
+entity /DMO/I_SUPPLEMENTTEXT {
+    alias _SupplementText
+    no-out SUPPLEMENTID : CHAR
+}
+
+entity /DMO/I_TRAVEL_D {
+    alias _Travel
+    no-out TRAVELUUID : RAW
+}
+
+association-to-parent relationship null {
+    /DMO/A_BKSUPPL_D[1] -> /DMO/I_BOOKING_D[1]
+    PARENT_UUID = BOOKINGUUID
+}
+
+association relationship null {
+    /DMO/A_BKSUPPL_D[1] -> /DMO/I_SUPPLEMENT[1]
+    SUPPLEMENT_ID = SUPPLEMENTID
+}
+
+association relationship null {
+    /DMO/A_BKSUPPL_D[1] -> /DMO/I_SUPPLEMENTTEXT[0..N]
+    SUPPLEMENT_ID = SUPPLEMENTID
+}
+
+association relationship null {
+    /DMO/A_BKSUPPL_D[1] -> /DMO/I_TRAVEL_D[1]
+    ROOT_UUID = TRAVELUUID
+}

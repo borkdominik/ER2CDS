@@ -1,0 +1,17 @@
+er2cds /DMO/I_SUPPLEMENTCATEGORY_VH_T
+
+entity /DMO/SUPPLCAT_T {
+    key SUPPLEMENT_CATEGORY : CHAR as SupplementCategory
+    key LANGUAGE_CODE : LANG as LanguageCode
+    DESCRIPTION : SSTR as Description
+}
+
+entity /DMO/I_SUPPLEMENTCATEGORY_VH {
+    alias _SupplmentCategory
+    no-out SUPPLEMENTCATEGORY : CHAR
+}
+
+association relationship null {
+    /DMO/SUPPLCAT_T[1] -> /DMO/I_SUPPLEMENTCATEGORY_VH[1]
+    SUPPLEMENT_CATEGORY = SUPPLEMENTCATEGORY
+}

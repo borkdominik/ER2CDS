@@ -1,0 +1,25 @@
+er2cds /DMO/I_CUSTOMER
+
+entity /DMO/CUSTOMER {
+    alias CUSTOMER
+    key CUSTOMER_ID : NUMC as CustomerID
+    FIRST_NAME : CHAR as FirstName
+    LAST_NAME : CHAR as LastName
+    TITLE : CHAR as Title
+    STREET : CHAR as Street
+    POSTAL_CODE : CHAR as PostalCode
+    CITY : CHAR as City
+    COUNTRY_CODE : CHAR as CountryCode
+    PHONE_NUMBER : CHAR as PhoneNumber
+    EMAIL_ADDRESS : STRG as EMailAddress
+}
+
+entity I_COUNTRY {
+    alias _Country
+    no-out COUNTRY : CHAR
+}
+
+association relationship null {
+    /DMO/CUSTOMER[0..N] -> I_COUNTRY[1]
+    COUNTRY_CODE = COUNTRY
+}

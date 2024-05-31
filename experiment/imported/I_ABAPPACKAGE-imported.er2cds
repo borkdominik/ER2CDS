@@ -1,0 +1,44 @@
+er2cds I_ABAPPACKAGE
+
+entity TDEVC {
+    key DEVCLASS : CHAR as ABAPPackage
+    AS4USER : CHAR as ABAPPackageResponsibleUser
+    DLVUNIT : CHAR as ABAPSoftwareComponent
+    COMPONENT : CHAR as ABAPApplicationComponent
+    NAMESPACE : CHAR as ABAPNamespace
+    PACKTYPE : CHAR as ABAPPackageTargetEnvironment
+    CREATED_BY : CHAR as CreatedByUser
+    CREATED_ON : DATS as CreationDate
+    CHANGED_BY : CHAR as LastChangedByUser
+    CHANGED_ON : DATS as LastChangeDate
+    PACKAGE_KIND : CHAR as ABAPLanguageVersion
+}
+
+entity I_ABAPAPPLICATIONCOMPONENT {
+    alias _ABAPApplicationComponent
+    no-out ABAPAPPLICATIONCOMPONENT : CHAR
+}
+
+entity I_ABAPSOFTWARECOMPONENT {
+    alias _ABAPSoftwareComponent
+    no-out ABAPSOFTWARECOMPONENT : CHAR
+}
+
+entity I_ABAPPACKAGETEXT {
+    alias _Text
+    no-out ABAPPACKAGE : CHAR
+}
+
+association relationship null {
+    TDEVC[1] -> I_ABAPAPPLICATIONCOMPONENT[1]
+    COMPONENT = ABAPAPPLICATIONCOMPONENT
+}
+
+association relationship null {
+    TDEVC[1] -> I_ABAPSOFTWARECOMPONENT[1]
+    DLVUNIT = ABAPSOFTWARECOMPONENT
+}
+
+composition relationship null {
+    TDEVC[0..N] -> I_ABAPPACKAGETEXT[0..N]
+}

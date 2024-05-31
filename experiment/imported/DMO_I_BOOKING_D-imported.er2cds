@@ -1,0 +1,77 @@
+er2cds /DMO/I_BOOKING_D
+
+entity /DMO/A_BOOKING_D {
+    key BOOKING_UUID : RAW as BookingUUID
+    PARENT_UUID : RAW as TravelUUID
+    BOOKING_ID : NUMC as BookingID
+    BOOKING_DATE : DATS as BookingDate
+    CUSTOMER_ID : NUMC as CustomerID
+    CARRIER_ID : CHAR as AirlineID
+    CONNECTION_ID : NUMC as ConnectionID
+    FLIGHT_DATE : DATS as FlightDate
+    FLIGHT_PRICE : CURR as FlightPrice
+    CURRENCY_CODE : CUKY as CurrencyCode
+    BOOKING_STATUS : CHAR as BookingStatus
+    LOCAL_LAST_CHANGED_AT : DEC as LocalLastChangedAt
+}
+
+entity /DMO/I_BOOKING_STATUS_VH {
+    alias _BookingStatus
+    no-out BOOKINGSTATUS : CHAR
+}
+
+entity /DMO/I_BOOKINGSUPPLEMENT_D {
+    alias _BookingSupplement
+    no-out BOOKINGUUID : RAW
+}
+
+entity /DMO/I_CARRIER {
+    alias _Carrier
+    no-out AIRLINEID : CHAR
+}
+
+entity /DMO/I_CONNECTION {
+    alias _Connection
+    no-out AIRLINEID : CHAR
+    no-out CONNECTIONID : NUMC
+}
+
+entity /DMO/I_CUSTOMER {
+    alias _Customer
+    no-out CUSTOMERID : NUMC
+}
+
+entity /DMO/I_TRAVEL_D {
+    alias _Travel
+    no-out TRAVELUUID : RAW
+}
+
+association relationship null {
+    /DMO/A_BOOKING_D[1] -> /DMO/I_BOOKING_STATUS_VH[1]
+    BOOKING_STATUS = BOOKINGSTATUS
+}
+
+composition relationship null {
+    /DMO/A_BOOKING_D[0..N] -> /DMO/I_BOOKINGSUPPLEMENT_D[0..N]
+}
+
+association relationship null {
+    /DMO/A_BOOKING_D[1] -> /DMO/I_CARRIER[1]
+    CARRIER_ID = AIRLINEID
+}
+
+association relationship null {
+    /DMO/A_BOOKING_D[1] -> /DMO/I_CONNECTION[1]
+    CARRIER_ID = AIRLINEID
+    CONNECTION_ID = CONNECTIONID
+}
+
+association relationship null {
+    /DMO/A_BOOKING_D[1] -> /DMO/I_CUSTOMER[1]
+    CUSTOMER_ID = CUSTOMERID
+}
+
+association-to-parent relationship null {
+    /DMO/A_BOOKING_D[1] -> /DMO/I_TRAVEL_D[1]
+    PARENT_UUID = TRAVELUUID
+}
