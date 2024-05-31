@@ -26,7 +26,7 @@ export class RequestAutoCompleteActionHandler {
 
     protected handleRequestAutoCompleteEntity(action: RequestAutoCompleteAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {
         const agent = new Agent({ rejectUnauthorized: false });
-        const url = ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/Entities?$filter=startswith(Entity,'" + action.search + "')&$format=json&sap-client=" + ER2CDSGlobal.sapClient;
+        const url = encodeURI(ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/Entities?$filter=startswith(Entity,'" + action.search + "')&$format=json&sap-client=" + ER2CDSGlobal.sapClient);
 
         if (!url)
             return this.resolveEmpty(action, server);
@@ -63,7 +63,7 @@ export class RequestAutoCompleteActionHandler {
     protected handleRequestAutoCompleteAttribute(action: RequestAutoCompleteAction, server: ER2CDSDiagramServer, services: ER2CDSServices): Promise<void> {
         const agent = new Agent({ rejectUnauthorized: false });
         const entity = action.elementId.split('.')[0];
-        const url = ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/Attributes?$filter=Entity eq '" + entity + "' and startswith(Attribute,'" + action.search + "')&$format=json&sap-client=" + ER2CDSGlobal.sapClient;
+        const url = encodeURI(ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/Attributes?$filter=Entity eq '" + entity + "' and startswith(Attribute,'" + action.search + "')&$format=json&sap-client=" + ER2CDSGlobal.sapClient);
 
         if (!url)
             return this.resolveEmpty(action, server);

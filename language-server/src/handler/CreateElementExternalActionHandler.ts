@@ -64,7 +64,7 @@ export class CreateElementExternalActionHandler {
 
     protected async getAttributes(action: CreateElementExternalAction): Promise<SapAttribute[]> {
         const agent = new Agent({ rejectUnauthorized: false });
-        let url = ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/Attributes?$filter=Entity eq '" + action.elementId + "'&$format=json&sap-client=" + ER2CDSGlobal.sapClient;
+        let url = encodeURI(ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/Attributes?$filter=Entity eq '" + action.elementId + "'&$format=json&sap-client=" + ER2CDSGlobal.sapClient);
 
         if (!url)
             return Promise.resolve([]);

@@ -135,7 +135,7 @@ export class UpdateElementPropertyHandler {
         const attributeId = split[1];
 
         const agent = new Agent({ rejectUnauthorized: false });
-        const url = ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/Attributes(Entity='" + entityId + "',Attribute='" + action.value + "')?$format=json&sap-client=" + ER2CDSGlobal.sapClient;
+        const url = encodeURI(ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/Attributes(Entity='" + entityId + "',Attribute='" + action.value + "')?$format=json&sap-client=" + ER2CDSGlobal.sapClient);
 
         return fetch(
             url,

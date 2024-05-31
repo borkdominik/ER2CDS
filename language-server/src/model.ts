@@ -83,11 +83,11 @@ export const DATATYPES = [
     },
     {
         label: 'String of variable length',
-        value: 'STRING'
+        value: 'STRG'
     },
     {
         label: 'Byte string of variable length',
-        value: 'RAWSTRING'
+        value: 'RSTR'
     },
     {
         label: 'Date',
@@ -116,6 +116,36 @@ export const DATATYPES = [
     {
         label: 'Language',
         value: 'LANG'
+    },
+    {
+        label: 'Decimal Floating Point Stored in BCD Format',
+        value: 'D16D'
+    },
+    {
+        label: 'Decimal Floating Point Stored as Binary Number',
+        value: 'D16R'
+    },
+
+    {
+        label: 'Decimal Floating Point Stored in BCD Format',
+        value: 'D34D'
+    },
+    {
+        label: 'Decimal Floating Point Stored as Binary Number',
+        value: 'D34R'
+    },
+
+    {
+        label: '8-Byte Integer',
+        value: 'INT8'
+    },
+    {
+        label: 'Two-byte integer',
+        value: 'PREC'
+    },
+    {
+        label: 'Character String',
+        value: 'SSTR'
     }
 ];
 

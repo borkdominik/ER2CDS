@@ -32,7 +32,7 @@ export class RequestPopupConfirmModelActionHandler {
 
         const popupId = action.elementId + '-popup';
         const agent = new Agent({ rejectUnauthorized: false });
-        const url = ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/Entities(Entity='" + action.elementId + "')?$format=json&sap-client=" + ER2CDSGlobal.sapClient;
+        const url = encodeURI(ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/Entities(Entity='" + action.elementId + "')?$format=json&sap-client=" + ER2CDSGlobal.sapClient);
 
         return fetch(
             url,

@@ -88,7 +88,7 @@ export class ER2CDSValidator {
 
     async checkEntity(entity: Entity, accept: ValidationAcceptor): Promise<void> {
         const agent = new Agent({ rejectUnauthorized: false });
-        const url = ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/Entities(Entity='" + entity.name + "')?$format=json&sap-client=" + ER2CDSGlobal.sapClient;
+        const url = encodeURI(ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/Entities(Entity='" + entity.name + "')?$format=json&sap-client=" + ER2CDSGlobal.sapClient);
 
         if (!entity.name) {
             accept('error', `Name for Entity missing`, { node: entity, property: 'name' });
@@ -122,7 +122,7 @@ export class ER2CDSValidator {
         const entity = attribute.$container;
 
         const agent = new Agent({ rejectUnauthorized: false });
-        const url = ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/Attributes(Entity='" + entity.name + "',Attribute='" + attribute.name + "')?$format=json&sap-client=" + ER2CDSGlobal.sapClient;
+        const url = encodeURI(ER2CDSGlobal.sapUrl + "sap/opu/odata/sap/ZER2CDS/Attributes(Entity='" + entity.name + "',Attribute='" + attribute.name + "')?$format=json&sap-client=" + ER2CDSGlobal.sapClient);
 
         if (!attribute.name) {
             accept('error', `Name for Attribute missing`, { node: attribute, property: 'name' });

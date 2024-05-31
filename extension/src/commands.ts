@@ -33,9 +33,10 @@ export const addSystemHandler = async (context: vscode.ExtensionContext) => {
                 if (!input)
                     return null;
 
+                const url = encodeURI(input);
                 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
                 return await fetch(
-                    input,
+                    url,
                     {
                         method: 'GET',
                         headers: {}
@@ -77,7 +78,7 @@ export const addSystemHandler = async (context: vscode.ExtensionContext) => {
     await context.secrets.store('sapPassword', sapPassword);
 
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-    const url = sapUrl + 'sap/opu/odata/sap/ZER2CDS/Entities?sap-client=' + sapClient;
+    const url = encodeURI(sapUrl + 'sap/opu/odata/sap/ZER2CDS/Entities?sap-client=' + sapClient);
     const errorMessage = await fetch(
         url,
         {
