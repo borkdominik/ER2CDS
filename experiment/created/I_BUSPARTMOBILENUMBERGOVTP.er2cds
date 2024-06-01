@@ -1,0 +1,71 @@
+er2cds I_BusPartMobileNumberGovTP
+
+entity I_BusPartMobileNumberGov {
+    key MasterDataChangeProcess : NUMC
+    key MDChgProcessSrceSystem : CHAR
+    key MDChgProcessSrceObject : CHAR
+    key AddressNumber : CHAR
+    key OrdinalNumber : NUMC
+    MDChgProcessStep : NUMC
+    MobilePhoneCountry : CHAR
+    IsDefaultPhoneNumber : CHAR
+    MobilePhoneNumber : CHAR
+    PhoneNumberType : CHAR
+    ValidityStartDateTime : CHAR
+    ValidityEndDateTime : CHAR
+}
+
+entity I_BusinessPartnerAddressGovTP {
+    alias _BusinessPartnerAddress
+    no-out MasterDataChangeProcess : NUMC
+    no-out MDChgProcessSrceSystem : CHAR
+    no-out MDChgProcessSrceObject : CHAR
+    no-out AddressNumber : CHAR
+}
+
+entity I_BusinessPartnerGovTP {
+    alias _BusinessPartner
+    no-out MasterDataChangeProcess : NUMC
+    no-out MDChgProcessSrceSystem : CHAR
+    no-out MDChgProcessSrceObject : CHAR
+}
+
+entity I_Country {
+    alias _Country
+    no-out Country : CHAR
+}
+
+entity I_BusPartTelCountryPrefix {
+    alias _PhoneCountryCode
+    no-out Country : CHAR
+    TelephoneCountryPrefix : CHAR as TelephoneCountryPrefix
+}
+
+association-to-parent relationship null {
+    I_BusPartMobileNumberGov[1] -> I_BusinessPartnerAddressGovTP[1]
+    join order 1
+    MasterDataChangeProcess = MasterDataChangeProcess
+    MDChgProcessSrceSystem = MDChgProcessSrceSystem
+    MDChgProcessSrceObject = MDChgProcessSrceObject
+    AddressNumber = AddressNumber
+}
+
+association relationship null {
+    I_BusPartMobileNumberGov[1] -> I_BusinessPartnerGovTP[1]
+    join order 2
+    MasterDataChangeProcess = MasterDataChangeProcess
+    MDChgProcessSrceSystem = MDChgProcessSrceSystem
+    MDChgProcessSrceObject = MDChgProcessSrceObject
+}
+
+association relationship null {
+    I_BusPartMobileNumberGov[0..N] -> I_Country[1]
+    join order 3
+    MobilePhoneCountry = Country
+}
+
+association relationship null {
+    I_BusPartMobileNumberGov[0..N] -> I_BusPartTelCountryPrefix[1]
+    join order 4
+    MobilePhoneCountry = Country
+}

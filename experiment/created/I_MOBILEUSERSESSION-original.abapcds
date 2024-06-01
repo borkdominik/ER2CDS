@@ -1,0 +1,34 @@
+@AbapCatalog.viewEnhancementCategory: [#NONE]
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'Mobile User Session for MAIF'
+@Metadata.ignorePropagatedAnnotations: true
+@ObjectModel.usageType:{
+    serviceQuality: #X,
+    sizeCategory: #S,
+    dataClass: #MIXED
+}
+@VDM.viewType: #BASIC
+
+define view entity I_MobileUserSession
+  as select from /syclo/mdw01
+  
+  //Other Associations
+  association [1..1] to I_MobileApplicationUser as _MobileUser on _MobileUser.MobileUserInternal = $projection.MobileUserInternal
+  
+{
+  key session_guid  as MobileUserSessionInternal,
+      user_guid     as MobileUserInternal,
+      server_guid   as MobileUserSessionServer,
+      effective_ts  as MblUsrSessionEffectiveDateTime,
+      flag_active   as MobileUserSessionIsActive,
+      flag_login    as MobileUserHasLoggedIn,
+      close_ts      as MobileUserSessionEndDateTime,
+      flag_mdw_call as MobileUserIsExternalCall,
+      created_by    as MobileUserSessionCreatedBy,
+      created_ts    as MblUsrSessionCreationDateTime,
+      changed_by    as MobileUserSessionChangedBy,
+      changed_ts    as MblUsrSessionChangeDateTime,
+      
+      /* Associations */
+      _MobileUser
+}

@@ -1,0 +1,39 @@
+@AccessControl.authorizationCheck: #PRIVILEGED_ONLY
+@EndUserText.label: 'Change document items'
+define view entity Z_I_CHANGEDOCUMENTITEM
+  as select from cdpos
+  association [0..1] to I_ChangeDocument              as _ChangeDocument              on  $projection.ChangeDocObjectClass = _ChangeDocument.ChangeDocObjectClass
+                                                                                      and $projection.ChangeDocObject      = _ChangeDocument.ChangeDocObject
+                                                                                      and $projection.ChangeDocument       = _ChangeDocument.ChangeDocument
+
+  association [0..1] to I_ChangeDocLongTableKey       as _ChangeDocLongTableKey       on  $projection.ChangeDocTableKey = _ChangeDocLongTableKey.ChangeDocKeyGuid
+
+  association [0..1] to I_ChangeDocumentItemExtension as _ChangeDocumentItemExtension on  $projection.ChangeDocTableKey = _ChangeDocumentItemExtension.ChangeDocKeyGuid
+
+{
+
+  key cdpos.objectid   as ChangeDocObject,
+  key cdpos.objectclas as ChangeDocObjectClass,
+
+  key cdpos.changenr   as ChangeDocument,
+  key cdpos.tabname    as DatabaseTable,
+  key cdpos.tabkey     as ChangeDocTableKey,
+  key cdpos.fname      as ChangeDocDatabaseTableField,
+  key cdpos.chngind    as ChangeDocItemChangeType,
+
+      cdpos.unit_old   as ChangeDocPreviousUnit,
+      cdpos.unit_new   as ChangeDocNewUnit,
+      cdpos.cuky_old   as ChangeDocPreviousCurrency,
+      cdpos.cuky_new   as ChangeDocNewCurrency,
+      cdpos.value_new  as ChangeDocNewFieldValue,
+      cdpos.value_old  as ChangeDocPreviousFieldValue,
+
+      _ChangeDocument,
+      _ChangeDocLongTableKey,
+      _ChangeDocumentItemExtension
+
+
+}
+
+//where
+//  cdpos.value_new <> '0.0000000000000000E+00'

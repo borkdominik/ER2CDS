@@ -1,0 +1,17 @@
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'MDO: Data Ownership Model - Field'
+define view entity I_MDOFIELD
+  as select from mdo_field
+  association        to parent I_MDOFIELDGROUP as _Parent        on $projection.ParentId = _Parent.Id
+  association [1..1] to I_MDOODMOBJECTTYPE     as _OdmObjectType on $projection.OdmObjectTypeId = _OdmObjectType.Id
+{
+  key id                    as Id,
+      valuepath             as Valuepath,
+      canonicalpath         as Canonicalpath,
+      parentid              as ParentId,
+      _Parent.LastChangedAt as LastChangedAt,
+      _Parent.ParentId      as OdmObjectTypeId,
+      _Parent,
+      _OdmObjectType      
+}
+ 

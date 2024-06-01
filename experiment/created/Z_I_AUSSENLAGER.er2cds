@@ -1,0 +1,111 @@
+er2cds Z_I_AUSSENLAGER
+
+entity mseg {
+    key mblnr : CHAR
+    zeile : NUMC
+    lgort : CHAR
+    bwart : CHAR
+    wempf : CHAR
+    budat_mkpf : DATS
+    no-out matnr : CHAR
+    no-out vbeln_im : CHAR
+    no-out vbelp_im : NUMC
+}
+
+entity mara {
+    matnr : CHAR
+}
+
+entity lips {
+    no-out vbeln : CHAR
+    no-out posnr : NUMC
+    no-out vbelv : CHAR
+    no-out posnv : NUMC
+}
+
+entity vbap {
+    posnr : NUMC
+    ntgew : QUAN
+    gewei : UNIT
+    wavwr : CURR
+    waerk : CUKY
+    no-out vbeln : CHAR
+}
+
+entity vbak {
+    vbeln : CHAR
+}
+
+entity vbpa {
+    parvw : CHAR
+    no-out vbeln : CHAR
+    no-out kunnr : CHAR
+}
+
+entity kna1 {
+    land1 : CHAR
+    name1 : CHAR
+    kunnr : CHAR
+}
+
+entity but000 {
+    bpext : CHAR
+    no-out partner : CHAR
+}
+
+entity Z_I_SDSERIALNUMBER {
+    SerialNumber : CHAR as Serialnummer
+    no-out salesorder : CHAR
+    no-out salesorderitem : NUMC
+}
+
+relationship mseg_mara {
+    mseg[1] -> mara[1]
+    join order 1
+    matnr = matnr
+}
+
+relationship mseg_lips {
+    mseg[1] -> lips[1]
+    join order 2
+    vbeln_im = vbeln
+    vbelp_im = posnr
+}
+
+relationship lips_vbap {
+    lips[1] -> vbap[1]
+    join order 3
+    vbelv = vbeln
+    posnv = posnr
+}
+
+relationship vbap_vbak {
+    vbap[1] -> vbak[1]
+    join order 4
+    vbeln = vbeln
+}
+
+relationship vbak_vbpa {
+    vbak[1] -> vbpa[1]
+    join order 5
+    vbeln = vbeln
+}
+
+relationship vbpa_kna1 {
+    vbpa[1] -> kna1[1]
+    join order 6
+    kunnr = kunnr
+}
+
+relationship vbpa_but000 {
+    vbpa[1] -> but000[1]
+    join order 7
+    kunnr = partner
+}
+
+relationship vbap_SDSERIALNUMBER {
+    vbap[1] -> Z_I_SDSERIALNUMBER[1]
+    join order 8
+    vbeln = salesorder
+    posnr = salesorderitem
+}

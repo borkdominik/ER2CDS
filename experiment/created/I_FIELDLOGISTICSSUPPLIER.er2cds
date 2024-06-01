@@ -1,0 +1,50 @@
+er2cds I_FieldLogisticsSupplier
+
+entity I_Supplier {
+    alias Supplier
+    key Supplier : CHAR
+    SupplierName : CHAR
+    Country : CHAR
+    OrganizationBPName1 : CHAR
+    OrganizationBPName2 : CHAR
+    PurchasingIsBlocked : CHAR
+    AccountIsBlockedForPosting : CHAR
+    DeletionIndicator : CHAR
+    IsBusinessPurposeCompleted : CHAR
+    PostingIsBlocked : CHAR
+    AuthorizationGroup : CHAR
+    SupplierAccountGroup : CHAR
+}
+
+entity I_SupplierCompany {
+    alias _Vendor
+    no-out Supplier : CHAR
+    no-out CompanyCode : CHAR
+}
+
+entity I_BusinessPartnerSuplrCo {
+    alias _BusinessPartnerSuplrCo
+    no-out Supplier : CHAR
+    key CompanyCode : CHAR
+}
+
+entity I_Supplier_to_BusinessPartner {
+    alias _Supplier_to_BusinessPartner
+    no-out Supplier : CHAR
+}
+
+association relationship Supplier_SupplierCompany {
+    I_Supplier[0..N] -> I_SupplierCompany[1]
+    Supplier = Supplier
+    CompanyCode = CompanyCode
+}
+
+association relationship Supplier_BusinessPartnerSuplrCo {
+    I_Supplier[0..N] -> I_BusinessPartnerSuplrCo[0..N]
+    Supplier = Supplier
+}
+
+association relationship Supplier_BusinessPartner {
+    I_Supplier[1] -> I_Supplier_to_BusinessPartner[1]
+    Supplier = Supplier
+}

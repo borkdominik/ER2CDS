@@ -1,0 +1,47 @@
+@Metadata.ignorePropagatedAnnotations: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Interface View für Einkaufsbeleg'
+define view entity Z_I_PURCHDOCBASE
+  as select from ekbe
+
+  association to ekko as _ekko on  ekbe.ebeln = _ekko.ebeln
+
+  association to ekpo as _EKPO on  ekbe.ebeln = _EKPO.ebeln
+                               and ekbe.ebelp = _EKPO.ebelp
+
+
+
+  association to mkpf as _mkpf on  ekbe.belnr = _mkpf.mblnr
+                               and ekbe.gjahr = _mkpf.mjahr
+
+  association to mseg as _mseg on  ekbe.belnr = _mseg.mblnr
+                               and ekbe.gjahr = _mseg.mjahr
+                               and ekbe.buzei = _mseg.zeile
+
+{
+
+  key ekbe.ebeln,
+  key ekbe.ebelp,
+
+      ekbe.belnr,
+      ekbe.gjahr,
+      ekbe.buzei,
+      ekbe.vgabe,
+      _mseg.zeile as buzei2,
+
+      //EKKO
+      _ekko.lifnr,
+
+      //EKPO
+      _EKPO.matnr,
+      _EKPO.ematn,
+
+
+      // Assoziierte Tabellen
+
+      _EKPO,
+      _ekko,
+      _mkpf,
+      _mseg
+
+}

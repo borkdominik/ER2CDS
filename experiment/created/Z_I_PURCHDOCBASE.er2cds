@@ -1,0 +1,62 @@
+er2cds Z_I_PURCHDOCBASE
+
+entity ekbe {
+    key ebeln : CHAR
+    key ebelp : NUMC
+    belnr : CHAR
+    gjahr : NUMC
+    buzei : NUMC
+    vgabe : CHAR
+}
+
+entity ekko {
+    alias _ekko
+    no-out ebeln : CHAR
+    lifnr : CHAR
+}
+
+entity ekpo {
+    alias _EKPO
+    no-out ebeln : CHAR
+    no-out ebelp : NUMC
+    matnr : CHAR
+    ematn : CHAR
+}
+
+entity mkpf {
+    alias _mkpf
+    no-out mblnr : CHAR
+    no-out mjahr : NUMC
+}
+
+entity mseg {
+    alias _mseg
+    no-out mblnr : CHAR
+    no-out mjahr : NUMC
+    zeile : NUMC as buzei2
+}
+
+
+association relationship ekbe_ekko {
+    ekbe[0..N] -> ekko[1]
+    ebeln = ebeln
+}
+
+association relationship ekbe_ekpo {
+    ekbe[0..N] -> ekpo[1]
+    ebeln = ebeln
+    ebelp = ebelp
+}
+
+association relationship ekbe_mkpf {
+    ekbe[0..N] -> mkpf[1]
+    belnr = mblnr
+    gjahr = mjahr
+}
+
+association relationship ekbe_mseg {
+    ekbe[0..N] -> mseg[1]
+    belnr = mblnr
+    gjahr = mjahr
+    buzei = zeile
+}

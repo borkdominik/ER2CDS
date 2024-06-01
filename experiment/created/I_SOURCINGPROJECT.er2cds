@@ -1,0 +1,284 @@
+er2cds I_SOURCINGPROJECT
+
+entity mmsrcgproj {
+    key sourcingprojectuuid : RAW as SourcingProjectUUID
+    sourcingprojectuuid : RAW as TechnicalWrkflwObject
+    sourcingproject : CHAR as SourcingProject
+    sourcingprojectversion : NUMC as SourcingProjectVersion
+    sourcingprojecttype : CHAR as SourcingProjectType
+    sourcingprojectname : CHAR as SourcingProjectName
+    srcgprojlifecyclestatus : CHAR as SrcgProjLifecycleStatus
+    srcgprojapprovalstatus : CHAR as SrcgProjApprovalStatus
+    sourcingprojectphase : CHAR as SourcingProjectPhase
+    srcgprojrevisionsts : CHAR as SrcgProjRevisionSts
+    srcgprojactvtnsts : CHAR as SrcgProjActvtnSts
+    srcgprojpubgsts : CHAR as SrcgProjPubgSts
+    sourcingsupplierlistuuid : RAW as SourcingSupplierListUUID
+    sourcingprojectname : CHAR as SrcgProjVersionConcatenated1
+    sourcingprojectversion : NUMC as SrcgProjVersionConcatenated2
+    companycode : CHAR as CompanyCode
+    purchasinggroup : CHAR as PurchasingGroup
+    purchasingorganization : CHAR as PurchasingOrganization
+    materialgroup : CHAR as MaterialGroup
+    documentcurrency : CUKY as DocumentCurrency
+    srcgprojtotaltargetamount : CURR as SrcgProjTotalTargetAmount
+    purchaserrespworkagreement : NUMC as PurchaserRespWorkAgreement
+    qtnlatestsubmissiondatetime : DEC as QtnLatestSubmissionDateTime
+    lastchangedbyuser : CHAR as LastChangedByUser
+    createdbyuser : CHAR as CreatedByUser
+    lastchangedatetime : DEC as LastChangeDateTime
+    creationdatetime : DEC as CreationDateTime
+    incotermsclassification : CHAR as IncotermsClassification
+    incotermstransferlocation : CHAR as IncotermsTransferLocation
+    incotermsversion : CHAR as IncotermsVersion
+    incotermslocation1 : CHAR as IncotermsLocation1
+    incotermslocation2 : CHAR as IncotermsLocation2
+    paymentterms : CHAR as PaymentTerms
+    cashdiscount1days : DEC as CashDiscount1Days
+    cashdiscount2days : DEC as CashDiscount2Days
+    cashdiscount1percent : DEC as CashDiscount1Percent
+    cashdiscount2percent : DEC as CashDiscount2Percent
+    netpaymentdays : DEC as NetPaymentDays
+    srcgprojpubgdtetme : DEC as SrcgProjPubgDteTme
+    srcgprojattchsareforbidden : CHAR as SrcgProjAttchsAreForbidden
+    srcgprojnotesareforbidden : CHAR as SrcgProjNotesAreForbidden
+    srcgprojfollowondocumentcat : CHAR as SrcgProjFollowOnDocumentCat
+    srcgprojfollowondocumenttype : CHAR as SrcgProjFollowOnDocumentType
+    purcontrvaliditystartdate : DATS as PurContrValidityStartDate
+    purcontrvalidityenddate : DATS as PurContrValidityEndDate
+    exchangeratetype : CHAR as ExchangeRateType
+    externalsourcingprojectref : CHAR as ExternalSourcingProjectRef
+    logicalsystem : CHAR as LogicalSystem
+}
+
+entity I_SourcingProjectItem {
+    alias _SourcingProjectItem
+    no-out SourcingProjectUUID : RAW
+}
+
+entity I_SourcingProjectQuotation {
+    alias _SourcingProjectQuotation
+    no-out SourcingProjectUUID : RAW
+}
+
+entity I_SrcgProjAllowedCurrency {
+    alias _SrcgProjAllowedCurrency
+    no-out SourcingProjectUUID : RAW
+}
+
+entity I_SourcingProjectMilestone {
+    alias _SourcingProjectMilestone
+    no-out SourcingProjectUUID : RAW
+}
+
+entity I_Currency {
+    alias _DocumentCurrency
+    no-out Currency : CUKY
+}
+
+entity I_CompanyCode {
+    alias _CompanyCode
+    no-out CompanyCode : CHAR
+}
+
+entity I_PurchasingGroup {
+    alias _PurchasingGroup
+    no-out PurchasingGroup : CHAR
+}
+
+entity I_PurchasingOrganization {
+    alias _PurchasingOrganization
+    no-out PurchasingOrganization : CHAR
+}
+
+entity I_MaterialGroup {
+    alias _MaterialGroup
+    no-out MaterialGroup : CHAR
+}
+
+entity I_SrcgProjLifecycleStatus {
+    alias _SrcgProjLifecycleStatus
+    no-out SrcgProjLifecycleStatus : CHAR
+}
+
+entity I_SrcgProjApprovalStatus {
+    alias _SrcgProjApprovalStatus
+    no-out SrcgProjApprovalStatus : CHAR
+}
+
+entity I_SourcingProjectType {
+    alias _SourcingProjectType
+    no-out SourcingProjectType : CHAR
+}
+
+entity I_SourcingProjectPhase {
+    alias _SourcingProjectPhase
+    no-out SourcingProjectPhase : CHAR
+}
+
+entity I_PaymentTerms {
+    alias _PaymentTerms
+    no-out PaymentTerms : CHAR
+}
+
+entity I_IncotermsClassification {
+    alias _IncotermsClassification
+    no-out IncotermsClassification : CHAR
+}
+
+entity I_IncotermsVersion {
+    alias _IncotermsVersion
+    no-out IncotermsVersion : CHAR
+}
+
+entity I_SrcgProjPubdSuplrListBP {
+    alias _SrcgProjPubdSuplrListBP
+    no-out SourcingProjectUUID : RAW
+}
+
+entity I_PurchasingDocumentType {
+    alias _PurchasingDocumentType
+    no-out PurchasingDocumentCategory : CHAR
+    no-out PurchasingDocumentType : CHAR
+}
+
+entity I_PurchasingDocumentCategory {
+    alias _PurchasingDocumentCategory
+    no-out PurchasingDocumentCategory : CHAR
+}
+
+entity I_UserContactCard {
+    alias _ChangedByUser
+    no-out ContactCardID : CHAR
+}
+
+entity I_UserContactCard {
+    alias _CreatedByUser
+    no-out ContactCardID : CHAR
+}
+
+entity I_EmplContactCard {
+    alias _PurchaserResponsible
+    no-out PersonWorkAgreement : NUMC
+}
+
+entity E_SourcingProject {
+    alias _Extension
+    no-out SourcingProjectUUID : RAW
+}
+
+association relationship proj_Item {
+    mmsrcgproj[0..N] -> I_SourcingProjectItem[0..N]
+    SourcingProjectUUID = SourcingProjectUUID
+}
+
+association relationship proj_Quotation {
+    mmsrcgproj[0..N] -> I_SourcingProjectQuotation[0..N]
+    SourcingProjectUUID = SourcingProjectUUID
+}
+
+association relationship proj_AllowedCurrency {
+    mmsrcgproj[0..N] -> I_SrcgProjAllowedCurrency[0..N]
+    SourcingProjectUUID = SourcingProjectUUID
+}
+
+association relationship proj_Milestone {
+    mmsrcgproj[0..N] -> I_SourcingProjectMilestone[0..N]
+    SourcingProjectUUID = SourcingProjectUUID
+}
+
+association relationship proj_Currency {
+    mmsrcgproj[0..N] -> I_Currency[1]
+    documentcurrency = Currency
+}
+
+association relationship proj_CompanyCode {
+    mmsrcgproj[0..N] -> I_CompanyCode[1]
+    CompanyCode = CompanyCode
+}
+
+association relationship proj_PurchasingGroup {
+    mmsrcgproj[0..N] -> I_PurchasingGroup[1]
+    PurchasingGroup = PurchasingGroup
+}
+
+association relationship proj_PurchasingOrganization {
+    mmsrcgproj[0..N] -> I_PurchasingOrganization[1]
+    PurchasingOrganization = PurchasingOrganization
+}
+
+association relationship proj_MaterialGroup {
+    mmsrcgproj[1] -> I_MaterialGroup[1]
+    MaterialGroup = MaterialGroup
+}
+
+association relationship proj_LifecycleStatus {
+    mmsrcgproj[0..N] -> I_SrcgProjLifecycleStatus[1]
+    SrcgProjLifecycleStatus = SrcgProjLifecycleStatus
+}
+
+association relationship proj_ApprovalStatus {
+    mmsrcgproj[0..N] -> I_SrcgProjApprovalStatus[1]
+    SrcgProjApprovalStatus = SrcgProjApprovalStatus
+}
+
+association relationship proj_Type {
+    mmsrcgproj[0..N] -> I_SourcingProjectType[1]
+    SourcingProjectType = SourcingProjectType
+}
+
+association relationship proj_Phase {
+    mmsrcgproj[0..N] -> I_SourcingProjectPhase[1]
+    SourcingProjectPhase = SourcingProjectPhase
+}
+
+association relationship proj_PaymentTerms {
+    mmsrcgproj[0..N] -> I_PaymentTerms[1]
+    PaymentTerms = PaymentTerms
+}
+
+association relationship proj_IncotermsClassification {
+    mmsrcgproj[0..N] -> I_IncotermsClassification[1]
+    IncotermsClassification = IncotermsClassification
+}
+
+association relationship proj_IncotermsVersion {
+    mmsrcgproj[0..N] -> I_IncotermsVersion[1]
+    IncotermsVersion = IncotermsVersion
+}
+
+association relationship proj_PubdSuplrListBP {
+    mmsrcgproj[0..N] -> I_SrcgProjPubdSuplrListBP[1]
+    SourcingProjectUUID = SourcingProjectUUID
+}
+
+association relationship proj_PurchasingDocumentType {
+    mmsrcgproj[0..N] -> I_PurchasingDocumentType[1]
+    srcgprojfollowondocumentcat = PurchasingDocumentCategory
+    srcgprojfollowondocumenttype = PurchasingDocumentType
+}
+
+association relationship proj_PurchasingDocumentCategory {
+    mmsrcgproj[0..N] -> I_PurchasingDocumentCategory[1]
+    srcgprojfollowondocumentcat = PurchasingDocumentCategory
+}
+
+association relationship proj_CreatedUser {
+    mmsrcgproj[0..N] -> I_UserContactCard[1]
+    createdbyuser = ContactCardID
+}
+
+association relationship proj_LastChangedUser {
+    mmsrcgproj[0..N] -> I_UserContactCard[1]
+    lastchangedbyuser = ContactCardID
+}
+
+association relationship proj_EmplContactCard {
+    mmsrcgproj[0..N] -> I_EmplContactCard[1]
+    purchaserrespworkagreement = PersonWorkAgreement
+}
+
+association relationship proj_ESourcingProject {
+    mmsrcgproj[1] -> E_SourcingProject[1]
+    SourcingProjectUUID = SourcingProjectUUID
+}

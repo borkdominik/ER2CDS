@@ -1,0 +1,36 @@
+er2cds Z_I_MKPF
+
+entity mkpf {
+    alias mkpf
+    key mblnr : CHAR
+    key mjahr : NUMC
+    vgart : CHAR
+    blart : CHAR
+    blaum : CHAR
+    bldat : DATS
+    budat : DATS
+    cpudt : DATS
+    cputm : TIMS
+    aedat : DATS
+    usnam : CHAR
+    tcode : CHAR
+    xblnr : CHAR
+    bktxt : CHAR
+    wever : CHAR
+    xabln : CHAR
+    awsys : CHAR
+    bla2d : CHAR
+    tcode2 : CHAR
+    bfwms : CHAR
+    exnum : CHAR
+    spe_budat_uhr : TIMS
+    spe_budat_zone : CHAR
+    le_vbeln : CHAR
+    spe_logsys : CHAR
+    spe_mdnum_ewm : CHAR
+    gts_cusref_no : CHAR
+    fls_rsto : CHAR
+    msr_active : CHAR
+    knumv : CHAR
+    xcompl : CHAR
+}

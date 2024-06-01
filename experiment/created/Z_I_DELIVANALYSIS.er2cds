@@ -1,0 +1,79 @@
+er2cds Z_I_DELIVANALYSIS
+
+entity Z_I_MVLUNION {
+    key SalesDocument : CHAR
+    key SalesDocumentItem : NUMC
+    key KeyType : CHAR
+    ProductConfiguration : NUMC
+    land : CHAR
+    bpext : CHAR
+    kunde : CHAR
+    verw_strasse : CHAR
+    geruestbereich : CHAR
+    BALL_DM_KUNDE : CHAR
+    BALL_LAENGE : CHAR
+    vm : CHAR
+    fertig_gew : DEC
+    CalendarDate : DATS
+    CalendarMonth : NUMC
+    CalendarYear : NUMC
+    GoodsMovementStatus : CHAR
+    Confirmed : CHAR
+    ActualDelivery : INT1
+    ZTMM : INT1
+}
+
+entity I_SalesDocumentItem {
+    alias _I_SalesDocumentItem
+    HigherLevelItem : NUMC
+    PurchaseOrderByCustomer : CHAR
+    OrderQuantityUnit : UNIT
+    no-out SalesDocument : CHAR
+    no-out SalesDocumentItem : NUMC
+}
+
+entity I_DeliveryDocumentItem {
+    alias _I_DeliveryDocumentItem
+    no-out ReferenceSDDocument : CHAR
+    no-out ReferenceSDDocumentItem : NUMC
+    no-out DeliveryDocument : CHAR
+}
+
+entity I_DeliveryDocument {
+    alias _I_DeliveryDocument
+    ActualGoodsMovementDate : DATS
+    no-out DeliveryDocument : CHAR
+}
+
+entity I_SalesDocumentScheduleLine {
+    alias _I_SalesDocumentScheduleLine
+    no-out SalesDocument : CHAR
+    no-out SalesDocumentItem : NUMC
+}
+
+relationship MVLUNION_SalesDocumentItem {
+    Z_I_MVLUNION[1] -> I_SalesDocumentItem[1]
+    join order 1
+    SalesDocument = SalesDocument
+    SalesDocumentItem = SalesDocumentItem
+}
+
+relationship MVLUNION_DeliveryDocumentItem {
+    Z_I_MVLUNION[1] -> I_DeliveryDocumentItem[0..N]
+    join order 3
+    SalesDocument = ReferenceSDDocument
+    SalesDocumentItem = ReferenceSDDocumentItem
+}
+
+relationship DeliveryDocumentItem_DeliveryDocument {
+    I_DeliveryDocumentItem[1] -> I_DeliveryDocument[0..N]
+    join order 4
+    DeliveryDocument = DeliveryDocument
+}
+
+relationship MVLUNION_SalesDocumentScheduleLine {
+    Z_I_MVLUNION[1] -> I_SalesDocumentScheduleLine[0..N]
+    join order 5
+    SalesDocument = SalesDocument
+    SalesDocumentItem = SalesDocumentItem
+}

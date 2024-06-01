@@ -1,0 +1,17 @@
+@AbapCatalog.viewEnhancementCategory: [#NONE]
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Interface Entity For Settlement Container And Header Details'
+@VDM.viewType: #COMPOSITE
+@ObjectModel.usageType:{
+  serviceQuality: #X,
+  sizeCategory: #S,
+  dataClass: #MIXED
+}
+define view entity I_ACMSettlmtCtnHdrCostRevCkpt as select from I_ACMSetlDocCtnCostRevCkpt as _SettlmntDocCntr
+  inner join I_ACMSettlmtHdrCostRevCkpt as _SettlmntHdrUnit on _SettlmntHdrUnit.SettlementDocHeaderUUID = _SettlmntDocCntr.SettlementDocHeaderUUID
+{
+  
+  key _SettlmntDocCntr.SettlementDocGroupUUID     as SettlementDocGroupUUID,
+  key _SettlmntDocCntr.SettlementDocHeaderUUID    as SettlementDocHeaderUUID,
+      _SettlmntHdrUnit.TradingContractNumber      as TradingContractNumber
+}

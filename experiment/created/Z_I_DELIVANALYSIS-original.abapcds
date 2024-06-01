@@ -1,0 +1,42 @@
+@AccessControl.authorizationCheck: #CHECK
+@Metadata.ignorePropagatedAnnotations: true
+@EndUserText.label: 'Angepasster Lieferplan für CO'
+define view entity Z_I_DELIVANALYSIS
+  as select from    Z_I_MVLUNION
+
+    inner join      I_SalesDocumentItem         as _I_SalesDocumentItem         on  Z_I_MVLUNION.SalesDocument     = _I_SalesDocumentItem.SalesDocument
+                                                                                and Z_I_MVLUNION.SalesDocumentItem = _I_SalesDocumentItem.SalesDocumentItem
+
+    left outer join I_DeliveryDocumentItem      as _I_DeliveryDocumentItem      on  Z_I_MVLUNION.SalesDocument     = _I_DeliveryDocumentItem.ReferenceSDDocument
+                                                                                and Z_I_MVLUNION.SalesDocumentItem = _I_DeliveryDocumentItem.ReferenceSDDocumentItem
+
+    left outer join I_DeliveryDocument          as _I_DeliveryDocument          on _I_DeliveryDocumentItem.DeliveryDocument = _I_DeliveryDocument.DeliveryDocument
+
+    left outer join I_SalesDocumentScheduleLine as _I_SalesDocumentScheduleLine on  Z_I_MVLUNION.SalesDocument     = _I_SalesDocumentScheduleLine.SalesDocument
+                                                                                and Z_I_MVLUNION.SalesDocumentItem = _I_SalesDocumentScheduleLine.SalesDocumentItem
+{
+  key Z_I_MVLUNION.SalesDocument,
+  key Z_I_MVLUNION.SalesDocumentItem,
+  key Z_I_MVLUNION.KeyType,
+      _I_SalesDocumentItem.HigherLevelItem,
+      _I_SalesDocumentItem.PurchaseOrderByCustomer,
+      Z_I_MVLUNION.ProductConfiguration,
+      Z_I_MVLUNION.land,
+      Z_I_MVLUNION.bpext,
+      Z_I_MVLUNION.kunde,
+      Z_I_MVLUNION.verw_strasse,
+      Z_I_MVLUNION.geruestbereich,
+      Z_I_MVLUNION.BALL_DM_KUNDE,
+      Z_I_MVLUNION.BALL_LAENGE,
+      Z_I_MVLUNION.vm,
+      Z_I_MVLUNION.fertig_gew,
+      Z_I_MVLUNION.CalendarDate,
+      Z_I_MVLUNION.CalendarMonth,
+      Z_I_MVLUNION.CalendarYear,
+      _I_DeliveryDocument.ActualGoodsMovementDate,
+      Z_I_MVLUNION.GoodsMovementStatus,
+      Z_I_MVLUNION.Confirmed,
+      Z_I_MVLUNION.ActualDelivery,
+      Z_I_MVLUNION.ZTMM,
+      _I_SalesDocumentItem.OrderQuantityUnit
+}

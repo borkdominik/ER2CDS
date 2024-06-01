@@ -1,0 +1,165 @@
+@AccessControl.authorizationCheck: #CHECK   
+
+@ObjectModel:{ representativeKey: 'SourcingProjectUUID',
+               semanticKey: ['SourcingProject'],
+               usageType.dataClass: #TRANSACTIONAL,
+               usageType.serviceQuality: #A,
+               usageType.sizeCategory: #M }
+
+@VDM.viewType: #BASIC
+
+@EndUserText.label: 'Sourcing Project'
+
+define view entity I_SourcingProject
+  as select from mmsrcgproj
+
+  association [0..*] to I_SourcingProjectItem        as _SourcingProjectItem        on  $projection.SourcingProjectUUID = _SourcingProjectItem.SourcingProjectUUID
+
+  association [0..*] to I_SourcingProjectQuotation   as _SourcingProjectQuotation   on  $projection.SourcingProjectUUID = _SourcingProjectQuotation.SourcingProjectUUID
+
+  association [0..*] to I_SrcgProjAllowedCurrency    as _SrcgProjAllowedCurrency    on  $projection.SourcingProjectUUID = _SrcgProjAllowedCurrency.SourcingProjectUUID
+
+  association [0..*] to I_SourcingProjectMilestone   as _SourcingProjectMilestone   on  $projection.SourcingProjectUUID = _SourcingProjectMilestone.SourcingProjectUUID
+
+  //foreign key associations
+  association [0..1] to I_Currency                   as _DocumentCurrency           on  $projection.DocumentCurrency = _DocumentCurrency.Currency
+  association [0..1] to I_CompanyCode                as _CompanyCode                on  $projection.CompanyCode = _CompanyCode.CompanyCode
+  association [0..1] to I_PurchasingGroup            as _PurchasingGroup            on  $projection.PurchasingGroup = _PurchasingGroup.PurchasingGroup
+  association [0..1] to I_PurchasingOrganization     as _PurchasingOrganization     on  $projection.PurchasingOrganization = _PurchasingOrganization.PurchasingOrganization
+  association [1..1] to I_MaterialGroup              as _MaterialGroup              on  $projection.MaterialGroup = _MaterialGroup.MaterialGroup
+  association [0..1] to I_SrcgProjLifecycleStatus    as _SrcgProjLifecycleStatus    on  $projection.SrcgProjLifecycleStatus = _SrcgProjLifecycleStatus.SrcgProjLifecycleStatus
+  association [0..1] to I_SrcgProjApprovalStatus     as _SrcgProjApprovalStatus     on  $projection.SrcgProjApprovalStatus = _SrcgProjApprovalStatus.SrcgProjApprovalStatus
+  association [0..1] to I_SourcingProjectType        as _SourcingProjectType        on  $projection.SourcingProjectType = _SourcingProjectType.SourcingProjectType
+  association [0..1] to I_SourcingProjectPhase       as _SourcingProjectPhase       on  $projection.SourcingProjectPhase = _SourcingProjectPhase.SourcingProjectPhase
+
+  association [0..1] to I_PaymentTerms               as _PaymentTerms               on  $projection.PaymentTerms = _PaymentTerms.PaymentTerms
+  association [0..1] to I_IncotermsClassification    as _IncotermsClassification    on  $projection.IncotermsClassification = _IncotermsClassification.IncotermsClassification
+  association [0..1] to I_IncotermsVersion           as _IncotermsVersion           on  $projection.IncotermsVersion = _IncotermsVersion.IncotermsVersion
+  association [0..1] to I_SrcgProjPubdSuplrListBP    as _SrcgProjPubdSuplrListBP    on  $projection.SourcingProjectUUID = _SrcgProjPubdSuplrListBP.SourcingProjectUUID
+  association [0..1] to I_PurchasingDocumentType     as _PurchasingDocumentType     on  $projection.SrcgProjFollowOnDocumentCat  = _PurchasingDocumentType.PurchasingDocumentCategory
+                                                                                    and $projection.SrcgProjFollowOnDocumentType = _PurchasingDocumentType.PurchasingDocumentType
+  association [0..1] to I_PurchasingDocumentCategory as _PurchasingDocumentCategory on  $projection.SrcgProjFollowOnDocumentCat = _PurchasingDocumentCategory.PurchasingDocumentCategory
+  //tbd
+  association [0..1] to I_UserContactCard            as _CreatedByUser              on  $projection.CreatedByUser = _CreatedByUser.ContactCardID
+  association [0..1] to I_UserContactCard            as _ChangedByUser              on  $projection.LastChangedByUser = _ChangedByUser.ContactCardID
+  association [0..1] to I_EmplContactCard            as _PurchaserResponsible       on  $projection.PurchaserRespWorkAgreement = _PurchaserResponsible.PersonWorkAgreement
+
+  //Extension
+  association [1..1] to E_SourcingProject            as _Extension                  on  $projection.SourcingProjectUUID = _Extension.SourcingProjectUUID
+
+
+{
+
+  key sourcingprojectuuid                                        as SourcingProjectUUID,
+      cast( bintohex( sourcingprojectuuid ) as abap.char( 70 ) ) as TechnicalWrkflwObject,
+      sourcingproject                                            as SourcingProject,
+      sourcingprojectversion                                     as SourcingProjectVersion,
+      sourcingprojecttype                                        as SourcingProjectType,
+      sourcingprojectname                                        as SourcingProjectName,
+      srcgprojlifecyclestatus                                    as SrcgProjLifecycleStatus,
+      srcgprojapprovalstatus                                     as SrcgProjApprovalStatus,
+      sourcingprojectphase                                       as SourcingProjectPhase,
+      srcgprojrevisionsts                                        as SrcgProjRevisionSts,
+      srcgprojactvtnsts                                          as SrcgProjActvtnSts,
+      srcgprojpubgsts                                            as SrcgProjPubgSts,
+
+      sourcingsupplierlistuuid                                   as SourcingSupplierListUUID,
+
+      cast(
+           concat_with_space(sourcingprojectname,
+                             concat('V',
+                                    cast(sourcingprojectversion as abap.char(10))
+                                    ),
+                             1
+          ) as vdm_srcgprojversionconcat)                        as SrcgProjVersionConcatenated,
+
+      companycode                                                as CompanyCode,
+      purchasinggroup                                            as PurchasingGroup,
+      purchasingorganization                                     as PurchasingOrganization,
+      mmsrcgproj.materialgroup                                   as MaterialGroup,
+
+//      @Semantics.currencyCode: true
+      documentcurrency                                           as DocumentCurrency,
+
+      @Semantics.amount.currencyCode: 'DocumentCurrency'
+      srcgprojtotaltargetamount                                  as SrcgProjTotalTargetAmount,
+
+      purchaserrespworkagreement                                 as PurchaserRespWorkAgreement,
+
+      qtnlatestsubmissiondatetime                                as QtnLatestSubmissionDateTime,
+
+      @Semantics.user.lastChangedBy: true
+      lastchangedbyuser                                          as LastChangedByUser,
+      @Semantics.user.createdBy: true
+      createdbyuser                                              as CreatedByUser,
+
+      @Semantics.systemDateTime.lastChangedAt: true
+      lastchangedatetime                                         as LastChangeDateTime,
+
+      @Semantics.systemDateTime.createdAt: true
+      creationdatetime                                           as CreationDateTime,
+
+      @ObjectModel.foreignKey.association: '_IncotermsClassification'
+      incotermsclassification                                    as IncotermsClassification,
+      incotermstransferlocation                                  as IncotermsTransferLocation,
+
+      @ObjectModel.foreignKey.association: '_IncotermsVersion'
+      incotermsversion                                           as IncotermsVersion,
+      incotermslocation1                                         as IncotermsLocation1,
+      incotermslocation2                                         as IncotermsLocation2,
+
+      @ObjectModel.foreignKey.association: '_PaymentTerms'
+      paymentterms                                               as PaymentTerms,
+      cashdiscount1days                                          as CashDiscount1Days,
+      cashdiscount2days                                          as CashDiscount2Days,
+      cashdiscount1percent                                       as CashDiscount1Percent,
+      cashdiscount2percent                                       as CashDiscount2Percent,
+      netpaymentdays                                             as NetPaymentDays,
+
+      /* @Semantics.amount.currencyCode: 'DocumentCurrency'
+       @DefaultAggregation:#NONE
+       targetamount                        as TargetAmount,*/
+
+      srcgprojpubgdtetme                                         as SrcgProjPubgDteTme,
+      srcgprojattchsareforbidden                                 as SrcgProjAttchsAreForbidden,
+      srcgprojnotesareforbidden                                  as SrcgProjNotesAreForbidden,
+
+      @ObjectModel: { foreignKey.association: '_PurchasingDocumentCategory' }
+      srcgprojfollowondocumentcat                                as SrcgProjFollowOnDocumentCat,
+      @ObjectModel: { foreignKey.association: '_PurchasingDocumentType' }
+      srcgprojfollowondocumenttype                               as SrcgProjFollowOnDocumentType,
+      purcontrvaliditystartdate                                  as PurContrValidityStartDate,
+      purcontrvalidityenddate                                    as PurContrValidityEndDate,
+
+      exchangeratetype                                           as ExchangeRateType,
+
+      externalsourcingprojectref                                 as ExternalSourcingProjectRef,
+      logicalsystem                                              as LogicalSystem,
+
+      /* Associations */
+      _SourcingProjectItem,
+      _SourcingProjectQuotation,
+      _SrcgProjAllowedCurrency,
+      _SourcingProjectMilestone,
+      //foreign key associations
+      _SrcgProjLifecycleStatus,
+      _SrcgProjApprovalStatus,
+      _CompanyCode,
+      _PurchasingGroup,
+      _PurchasingOrganization,
+      _MaterialGroup,
+      _DocumentCurrency,
+      _SourcingProjectType,
+      _PaymentTerms,
+      _IncotermsClassification,
+      _IncotermsVersion,
+      _SourcingProjectPhase,
+      _SrcgProjPubdSuplrListBP,
+      _PurchasingDocumentCategory,
+      _PurchasingDocumentType,
+      //tbd
+      _CreatedByUser,
+      _ChangedByUser,
+      _PurchaserResponsible
+
+}

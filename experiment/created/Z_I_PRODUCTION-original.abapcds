@@ -1,0 +1,70 @@
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'Interface View für Erzeugung'
+define view entity Z_I_PRODUCTION
+  as select from     nsdm_v_mkpf
+
+
+    join             nsdm_v_mseg        as _NSDM_V_MSEG        on  nsdm_v_mkpf.mblnr = _NSDM_V_MSEG.mblnr
+                                                               and nsdm_v_mkpf.mjahr = _NSDM_V_MSEG.mjahr
+
+    join             Z_I_PRODUCTIONODER as _Z_I_PRODUCTIONODER on _NSDM_V_MSEG.aufnr = _Z_I_PRODUCTIONODER.FertigungsAuftrag
+
+    right outer join I_SalesOrderItem   as _I_SalesOrderItem   on  _Z_I_PRODUCTIONODER.kdauf = _I_SalesOrderItem.SalesOrder
+                                                               and _Z_I_PRODUCTIONODER.kdpos = _I_SalesOrderItem.SalesOrderItem
+
+    join             Z_I_SDSERIALNUMBER as _Z_I_SDSERIALNUMBER on  _I_SalesOrderItem.SalesOrder     = _Z_I_SDSERIALNUMBER.salesorder
+                                                               and _I_SalesOrderItem.SalesOrderItem = _Z_I_SDSERIALNUMBER.salesorderitem
+
+{
+  key _Z_I_SDSERIALNUMBER.SerialNumber                    as Serialnummer,
+
+      //* Aus MKPF Belegkopf Materialbeleg
+
+      nsdm_v_mkpf.mblnr                                   as Materialbeleg,
+      nsdm_v_mkpf.bldat                                   as Belegdatum,
+      nsdm_v_mkpf.budat                                   as Buchungsdatum,
+
+
+      //* Aus MSEG Belegsegment Material
+
+      _NSDM_V_MSEG.mblnr                                  as Belegnummer,
+      _NSDM_V_MSEG.zeile                                  as Belegposition,
+      _NSDM_V_MSEG.bwart                                  as Bewegungsart,
+      _NSDM_V_MSEG.matnr                                  as Material,
+      _NSDM_V_MSEG.werks                                  as Werk,
+      _NSDM_V_MSEG.sakto                                  as Sachkonto,
+      _NSDM_V_MSEG.aufnr                                  as Auftrag,
+      _NSDM_V_MSEG.lgort                                  as Lagerort,
+      _NSDM_V_MSEG.charg                                  as Charge,
+
+      //* Aus AFKO/AFPO Auftragskopf-/positionsdaten PPS-Aufträge
+
+      _Z_I_PRODUCTIONODER.auart                           as Auftragsart,
+
+      //* Aus VBAP Verkaufsbeleg: Positionsdaten
+
+      _I_SalesOrderItem.SalesOrder                        as Verkaufsbeleg,
+      _I_SalesOrderItem.SalesOrderItem                    as Verkaufsbelegposition,
+      _I_SalesOrderItem.Material                          as Material_SD,
+
+      //* Aus Merkmalskonfiguration
+
+      _Z_I_PRODUCTIONODER._Z_I_ZCONF.wm_mantel,
+      _Z_I_PRODUCTIONODER._Z_I_ZCONF.wm_zws,
+      _Z_I_PRODUCTIONODER._Z_I_ZCONF.wm_kern,
+      _Z_I_PRODUCTIONODER._Z_I_ZCONF.vm,
+
+      _Z_I_PRODUCTIONODER._Z_I_ZCONF.ball_dm_kunde        as BALL_DM_KUNDE,
+      _Z_I_PRODUCTIONODER._Z_I_ZCONF.fertiggewicht_netto  as FERTIGGEWICHT_NETTO,
+      _Z_I_PRODUCTIONODER._Z_I_ZCONF.fertiggewicht_brutto as FERTIGGEWICHT_BRUTTO,
+      _Z_I_PRODUCTIONODER._Z_I_ZCONF.geruestbereich,
+      _Z_I_PRODUCTIONODER._Z_I_ZCONF.verw_strasse         as verwstrasse,
+      _Z_I_PRODUCTIONODER._Z_I_ZCONF.walzen_typ,
+      _Z_I_PRODUCTIONODER._Z_I_ZCONF.verw_geruest         as verwgeruest,
+      _Z_I_PRODUCTIONODER._Z_I_ZCONF.verw_einbau          as verweinbau,
+      _Z_I_PRODUCTIONODER._Z_I_ZCONF.fl_eisen_m_gew       as FL_EISEN_M_GEW,
+      _Z_I_PRODUCTIONODER._Z_I_ZCONF.fl_eisen_zs_gew      as FL_EISEN_ZS_GEW,
+      _Z_I_PRODUCTIONODER._Z_I_ZCONF.fl_eisen_k_gew       as FL_EISEN_K_GEW
+
+
+}

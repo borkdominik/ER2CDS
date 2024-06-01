@@ -1,0 +1,26 @@
+er2cds I_MobileUserSession
+
+entity /syclo/mdw01 {
+    key session_guid : CHAR as MobileUserSessionInternal
+    user_guid : CHAR as MobileUserInternal
+    server_guid : CHAR as MobileUserSessionServer
+    effective_ts : DEC as MblUsrSessionEffectiveDateTime
+    flag_active : CHAR as MobileUserSessionIsActive
+    flag_login : CHAR as MobileUserHasLoggedIn
+    close_ts : DEC as MobileUserSessionEndDateTime
+    flag_mdw_call : CHAR as MobileUserIsExternalCall
+    created_by : CHAR as MobileUserSessionCreatedBy
+    created_ts : DEC as MblUsrSessionCreationDateTime
+    changed_by : CHAR as MobileUserSessionChangedBy
+    changed_ts : DEC as MblUsrSessionChangeDateTime
+}
+
+entity I_MobileApplicationUser {
+    alias _MobileUser
+    no-out MobileUserInternal : CHAR
+}
+
+association relationship mdw01_User {
+    /syclo/mdw01[1] -> I_MobileApplicationUser[1]
+    user_guid = MobileUserInternal
+}

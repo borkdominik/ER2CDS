@@ -1,0 +1,36 @@
+er2cds I_FinSubstitutionRuleSubstnTP
+
+entity I_FinSubstitutionRuleSubstn {
+    alias _Substitution
+    key FinSubstitutionValidationRule : CHAR
+    key IsActive : CHAR
+    key FinSubstnValdtnRuleExprSqnc : NUMC
+    FinSubstnRuleSubstnValType : CHAR
+    FinSubstnRuleTargetField : CHAR
+    FinSubstnRuleSubstitutionType : CHAR
+    FinSubstnRuleSubstitutionValue : CHAR
+    FinSubstnValdtnRuleFieldPath2 : CHAR
+    SubstitutionIsSkipped : CHAR
+    FinSubstnCstmBusObjCDSView : CHAR
+    FinSubstnCstmBusObjSrceFld : CHAR
+}
+
+entity I_FinSubstitutionRuleTP {
+    alias _Rule
+    no-out FinSubstitutionValidationRule : CHAR
+    no-out IsActive : CHAR
+}
+
+entity I_FinSubstnTblLookupFldMappgTP {
+    alias _SubstnTableLookupFieldMapping
+}
+
+association-to-parent relationship RuleSubstn_RuleTP {
+    I_FinSubstitutionRuleSubstn[1] -> I_FinSubstitutionRuleTP[1]
+    FinSubstitutionValidationRule = FinSubstitutionValidationRule
+    IsActive = IsActive
+}
+
+composition relationship RuleSubstn_FldMappgTP {
+    I_FinSubstitutionRuleSubstn[0..N] -> I_FinSubstnTblLookupFldMappgTP[0..N]
+}

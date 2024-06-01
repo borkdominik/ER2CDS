@@ -1,0 +1,221 @@
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'General View of QMEL Notifications'
+define view entity Z_I_Notification
+  as select from qmel
+
+  //=== Aggregations
+  association [0..*] to I_NotificationItem       as _NotificationItem             on  $projection.Notification = _NotificationItem.Notification
+  association [0..*] to I_NotificationTask       as _NotificationTask             on  $projection.Notification = _NotificationTask.Notification
+  association [0..*] to I_NotificationActivity   as _NotificationActivity         on  $projection.Notification = _NotificationActivity.Notification
+
+  //=== Associations to views of other applications
+  association [0..1] to I_LogisticsOrder         as _LogisticsOrder               on  $projection.OrderID = _LogisticsOrder.OrderID
+  association [0..1] to I_Plant                  as _Plant                        on  $projection.Plant = _Plant.Plant
+  association [0..1] to I_Product                as _Product                      on  $projection.Material = _Product.Product
+  association [0..1] to I_ProductGroup           as _ProductGroup                 on  $projection.MaterialGroup = _ProductGroup.MaterialGroup
+  association [0..1] to I_PurchasingDocument     as _PurchasingDocument           on  $projection.PurchasingDocument = _PurchasingDocument.PurchasingDocument
+  association [0..1] to I_Supplier               as _Supplier                     on  $projection.Supplier = _Supplier.Supplier
+  association [0..1] to I_PMNotifMaintenanceData as _PMNotifMaintenanceData       on  $projection.Notification = _PMNotifMaintenanceData.MaintenanceNotification
+  association [0..1] to I_WBSElement             as _WBSElement                   on  $projection.WBSElementInternalID = _WBSElement.WBSElementInternalID
+  association [0..1] to I_InspectionLot          as _InspectionLot                on  $projection.InspectionLot = _InspectionLot.InspectionLot
+
+  //=== Associations to Configuration
+  association [1..1] to I_NotificationType       as _NotificationType             on  $projection.NotificationType = _NotificationType.NotificationType
+  association [0..1] to I_NotificationPriority   as _NotificationPriority         on  $projection.NotificationPriorityType = _NotificationPriority.NotificationPriorityType
+                                                                                  and $projection.NotificationPriority     = _NotificationPriority.NotificationPriority
+  association [0..1] to I_NotificationCatalog    as _NotificationCatalog          on  $projection.NotificationCatalog = _NotificationCatalog.NotificationCatalog
+  association [0..1] to I_NotificationCodeGroup  as _NotificationCodeGroup        on  $projection.NotificationCatalog   = _NotificationCodeGroup.NotificationCatalog
+                                                                                  and $projection.NotificationCodeGroup = _NotificationCodeGroup.NotificationCodeGroup
+  association [0..1] to I_NotificationCode       as _NotificationCode             on  $projection.NotificationCatalog   = _NotificationCode.NotificationCatalog
+                                                                                  and $projection.NotificationCodeGroup = _NotificationCode.NotificationCodeGroup
+                                                                                  and $projection.NotificationCodeID    = _NotificationCode.NotificationCodeID
+  association [1..1] to I_NotifProcessingPhase   as _NotifProcessingPhase         on  $projection.NotifProcessingPhase = _NotifProcessingPhase.NotifProcessingPhase
+
+  //=== Assocation to foundation views
+  association [0..1] to I_UnitOfMeasure          as _NotificationQuantityUnit     on  $projection.NotificationQuantityUnit = _NotificationQuantityUnit.UnitOfMeasure
+{
+  key qmel.qmnum      as Notification,
+      @ObjectModel.foreignKey.association: '_NotificationType'
+      qmel.qmart      as NotificationType,
+      qmel.qmtxt      as NotificationText,
+      qmel.artpr      as NotificationPriorityType,
+      @ObjectModel.foreignKey.association: '_NotificationPriority'
+      qmel.priok      as NotificationPriority,
+      qmel.ernam      as CreatedByUser,
+      @Semantics.systemDate.createdAt: true
+      qmel.erdat      as CreationDate,
+      qmel.aenam      as LastChangedByUser,
+      @Semantics.systemDate.lastChangedAt: true
+      qmel.aedat      as LastChangedDate,
+      //       qmel.mzeit,
+      qmel.qmdat      as NotificationReportingDate,
+      //       qmel.qmnam,
+      qmel.strmn      as NotificationRequiredStartDate,
+      qmel.strur      as NotificationRequiredStartTime,
+      qmel.ltrmn      as NotificationRequiredEndDate,
+      qmel.ltrur      as NotificationRequiredEndTime,
+      //       qmel.waers,
+      @ObjectModel.foreignKey.association: '_LogisticsOrder'
+      qmel.aufnr      as OrderID, // LogisticsOrder
+      //       qmel.verid,
+      //       qmel.rm_matnr,
+      //       qmel.rm_werks,
+      //       qmel.sa_aufnr,
+      @ObjectModel.foreignKey.association: '_Product'
+      qmel.matnr      as Material,
+      //       qmel.revlv,
+      @ObjectModel.foreignKey.association: '_ProductGroup'
+      qmel.matkl      as MaterialGroup,
+      //       qmel.prdha,
+      //       qmel.kzkri,
+      //       qmel.kzdkz,
+      qmel.kunum      as Customer,
+      //       qmel.feknz,
+      //       qmel.maknz,
+      qmel.objnr      as NotificationStatusObject,
+      qmel.qmdab      as NotificationCompletionDate,
+      //       qmel.qmzab,
+      //       qmel.rbnr,
+      //       qmel.rbnri,
+      qmel.indtx,
+      //       qmel.kzmla,
+      qmel.herkz      as NotificationOrigin,
+      //       qmel.bezdt,
+      //       qmel.bezur,
+      @ObjectModel.foreignKey.association: '_Supplier'
+      qmel.lifnum     as Supplier,
+      qmel.buname     as Autor,
+      //       qmel.vbeln,
+      qmel.bstnk      as CustOrderNr,
+      //       qmel.bstdk,
+      qmel.spart      as ActiveDivision,
+      qmel.vkorg      as SalesOrganization,
+      qmel.vtweg      as DistributionChannel,
+      //       qmel.adrnr,
+      //       qmel.aezeit,
+      //       qmel.erzeit,
+      @ObjectModel.foreignKey.association: '_Plant'
+      qmel.mawerk     as Plant,
+      @ObjectModel.foreignKey.association: '_NotificationCatalog'
+      qmel.qmkat      as NotificationCatalog,
+      @ObjectModel.foreignKey.association: '_NotificationCodeGroup'
+      qmel.qmgrp      as NotificationCodeGroup,
+      @ObjectModel.foreignKey.association: '_NotificationCode'
+      qmel.qmcod      as NotificationCodeID,
+      //       qmel.auswirk,
+      //       qmel.teilev,
+      @ObjectModel.foreignKey.association: '_InspectionLot'
+      qmel.prueflos   as InspectionLot,
+      //       qmel.charg,
+      //       qmel.lgortcharg,
+      //       qmel.lichn,
+      qmel.hersteller as Hersteller,
+      //       qmel.ematnr,
+      qmel.ekorg      as PurchasingOrganization,
+      qmel.bkgrp      as PurchasingGroup,
+      //       qmel.lgortvorg,
+      qmel.fertaufnr  as Fertigungsauftrag,
+      //       qmel.fertaufpl,
+      @ObjectModel.foreignKey.association: '_PurchasingDocument'
+      qmel.ebeln      as PurchasingDocument,
+      qmel.ebelp      as PurchasingDocumentItem,
+      //       qmel.mjahr,
+      //       qmel.mblnr,
+      //       qmel.mblpo,
+      qmel.ls_kdauf   as CustomerOrder,
+      qmel.ls_kdpos   as PositionSD,
+      //       qmel.ls_vbeln
+      //       qmel.ls_posnr,
+      qmel.crobjty    as WorkCenterTypeCode,
+      qmel.arbpl      as MainWorkCenterInternalID,
+      qmel.arbplwerk  as MainWorkCenterPlant,
+      //       qmel.feart,
+      //       qmel.pnlkn,
+      //       qmel.mgeig,
+      @Semantics.quantity.unitOfMeasure: 'NotificationQuantityUnit'
+      qmel.mgfrd      as NotificationExternalQty,
+      @ObjectModel.foreignKey.association: '_NotificationQuantityUnit'
+      qmel.mgein      as NotificationQuantityUnit,
+      //       qmel.bzmng,
+      //       qmel.rkmng,
+      //       qmel.rgmng,
+      //       qmel.rkdat,
+      //       qmel.coaufnr,
+      //       qmel.qwrnum,
+      //       qmel.refnum,
+      //       qmel.kdmat,
+      //       qmel.idnlf,
+      qmel.serialnr   as Serialnumber,
+      qmel.kzloesch   as IsDeleted,
+      qmel.cvp_xblck  as IsBusinessPurposeCompleted,
+      //       qmel.proddat,
+      //       qmel.deviceid,
+      //       qmel.vkbur,
+      //       qmel.vkgrp,
+      //       qmel.autkz,
+      //       qmel.bedid,
+      //       qmel.bedzl,
+      //       qmel.profil_typ,
+      //       qmel.profil_id,
+      //       qmel.handle,
+      //       qmel.tsegfl,
+      //       qmel.tsegtp,
+      //       qmel.tzonso,
+      //       qmel.tzonid,
+      //       qmel.funktion,
+      //       qmel./sapsmoss/instn,
+      //       qmel./sapsmoss/mnumm,
+      //       qmel./sapsmoss/ossys,
+      //       qmel./sapsmoss/dbsys,
+      //       qmel./sapsmoss/rel,
+      //       qmel./sapsmoss/comp,
+      //       qmel./sapsmoss/front,
+      //       qmel./sapsmoss/systyp,
+      //       qmel./sapsmoss/addid,
+      //       qmel./sapsmoss/addrel,
+      //       qmel./sapsmoss/tstmp,
+      //       qmel./sapsmoss/status,
+      //       qmel./sapsmoss/erdat,
+      //       qmel./sapsmoss/erzeit,
+      //       qmel./sapsmoss/sysid,
+      //       qmel./sapsmoss/mandt,
+      qmel.psp_nr     as WBSElementInternalID,
+      //       qmel.estimated_costs,
+      //       qmel.claimed_costs,
+      //       qmel.result_costs,
+      //       qmel.chance,
+      //       qmel.opponent,
+      //       qmel.kalnr,
+      //       qmel.kalvar,
+      //       qmel.objnr_real,
+      //       qmel.objnr_stat,
+      @ObjectModel.foreignKey.association: '_NotifProcessingPhase'
+      qmel.phase      as NotifProcessingPhase,
+      //       qmel.shn_objty,
+      //       qmel.shn_objid,
+      //       qmel.shn_funct_loc,
+      //       qmel.shn_equipment,
+      //       qmel.shn_origin,
+      //       qmel.uii
+
+      // Associations
+      _NotificationItem,
+      _NotificationTask,
+      _NotificationActivity,
+      _LogisticsOrder,
+      _PurchasingDocument,
+      _Plant,
+      _Product,
+      _ProductGroup,
+      _Supplier,
+      _NotificationQuantityUnit,
+      _PMNotifMaintenanceData,
+      _WBSElement,
+      _InspectionLot,
+      _NotificationType,
+      _NotificationPriority,
+      _NotificationCatalog,
+      _NotificationCodeGroup,
+      _NotificationCode,
+      _NotifProcessingPhase
+}

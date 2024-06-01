@@ -1,0 +1,52 @@
+@AccessControl.authorizationCheck: #CHECK
+@AccessControl.personalData.blocking: #REQUIRED
+@EndUserText.label: 'RAP BO Contact Person Email Address'
+@ObjectModel.usageType.serviceQuality: #C
+@ObjectModel.usageType.sizeCategory: #XXL
+@ObjectModel.usageType.dataClass: #MASTER
+@Search.searchable: true
+@VDM.viewType: #TRANSACTIONAL
+define view entity I_BPRelshpCntctPersnEmlAddrTP
+  as select from I_BpContactToAddress as ContactPerson
+    inner join I_AddressEmailAddress as EmailAddress on  ContactPerson.AddressID    = EmailAddress.AddressID
+                                                     and ContactPerson.PersonNumber = EmailAddress.Person
+
+  association [1] to I_BusPartRelationshipTP as _BusPartRelationship on  $projection.BusinessPartner1     = _BusPartRelationship.BusinessPartner1
+                                                                     and $projection.BusinessPartner2     = _BusPartRelationship.BusinessPartner2
+                                                                     and $projection.ValidityEndDate      = _BusPartRelationship.ValidityEndDate
+                                                                     and $projection.relationshipcategory = _BusPartRelationship.RelationshipCategory
+
+  association [0..1] to I_BPRelshpContactPersonTP as _BPRelshpContactPerson on  $projection.BusinessPartner1     = _BPRelshpContactPerson.BusinessPartner1
+                                                                            and $projection.BusinessPartner2     = _BPRelshpContactPerson.BusinessPartner2
+                                                                            and $projection.ValidityEndDate      = _BPRelshpContactPerson.ValidityEndDate
+                                                                            and $projection.relationshipcategory = _BPRelshpContactPerson.RelationshipCategory
+
+  association to parent I_BPRelshpCntctPersnAddressTP as _BPRelshpCntctPersnAddress on  $projection.BusinessPartner1     = _BPRelshpCntctPersnAddress.BusinessPartner1
+                                                                                    and $projection.BusinessPartner2     = _BPRelshpCntctPersnAddress.BusinessPartner2
+                                                                                    and $projection.ValidityEndDate      = _BPRelshpCntctPersnAddress.ValidityEndDate
+                                                                                    and $projection.relationshipcategory = _BPRelshpCntctPersnAddress.RelationshipCategory
+                                                                                    and $projection.AddressID            = _BPRelshpCntctPersnAddress.AddressID
+{
+      @Search.defaultSearchElement: true
+  key ContactPerson.BusinessPartnerCompany    as BusinessPartner1,
+      @Search.defaultSearchElement: true
+  key ContactPerson.BusinessPartnerPerson     as BusinessPartner2,
+  key ContactPerson.ValidityEndDate,
+  key _BusPartRelationship.RelationshipCategory,
+  key ContactPerson.AddressID,
+  key EmailAddress.OrdinalNumber,
+      ContactPerson.RelationshipNumber,
+      
+      EmailAddress.EmailAddress,
+      EmailAddress.IsDefaultEmailAddress,
+      EmailAddress.CommNumberIsNotUsed,
+      EmailAddress.IsHomeEmailAddress,
+      EmailAddress._AddressCommunicationRemark.AddressCommunicationRemarkText,
+
+      /* Associations */
+      ContactPerson._BusinessPartnerCompany   as _BusinessPartner1,
+      ContactPerson._BusinessPartnerPerson    as _BusinessPartner2,
+      _BPRelshpCntctPersnAddress,
+      _BPRelshpContactPerson,
+      _BusPartRelationship
+}

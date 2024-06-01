@@ -1,0 +1,84 @@
+er2cds Z_I_PRODUCTION
+
+entity nsdm_v_mkpf {
+    mblnr : CHAR as Materialbeleg
+    bldat : DATS as Belegdatum
+    budat : DATS as Buchungsdatum
+    no-out mjahr : CHAR
+}
+
+entity nsdm_v_mseg {
+    alias _NSDM_V_MSEG
+    mblnr : CHAR as Belegnummer
+    zeile : CHAR as Belegposition
+    bwart : CHAR as Bewegungsart
+    matnr : CHAR as Material
+    werks : CHAR as Werk
+    sakto : CHAR as Sachkonto
+    aufnr : CHAR as Auftrag
+    lgort : CHAR as Lagerort
+    charg : CHAR as Charge
+    no-out mjahr : CHAR
+}
+
+entity Z_I_PRODUCTIONODER {
+    alias _Z_I_PRODUCTIONODER
+    auart : CHAR as Auftragsart
+    wm_mantel : CHAR
+    wm_zws : CHAR
+    wm_kern : CHAR
+    vm : CHAR
+    ball_dm_kunde : CHAR as BALL_DM_KUNDE
+    geruestbereich : CHAR
+    verw_strasse : CHAR as verwstrasse
+    walzen_typ : CHAR
+    verw_geruest : CHAR as verwgeruest
+    verw_einbau : CHAR as verweinbau
+    fl_eisen_m_gew : CHAR as FL_EISEN_M_GEW
+    fl_eisen_zs_gew : CHAR as FL_EISEN_ZS_GEW
+    fl_eisen_k_gew : CHAR as FL_EISEN_K_GEW
+    no-out FertigungsAuftrag : CHAR
+    no-out kdauf : CHAR
+    no-out kdpos : CHAR
+}
+
+entity I_SalesOrderItem {
+    alias _I_SalesOrderItem
+    SalesOrder : CHAR as Verkaufsbeleg
+    SalesOrderItem : CHAR as Verkaufsbelegposition
+    Material : CHAR as Material_SD
+}
+
+entity Z_I_SDSERIALNUMBER {
+    alias _Z_I_SDSERIALNUMBER
+    SerialNumber : CHAR as Serialnummer
+    no-out salesorder : CHAR
+    no-out salesorderitem : CHAR
+}
+
+relationship MKPF_MSEG {
+    nsdm_v_mkpf[1] -> nsdm_v_mseg[1]
+    join order 1
+    mblnr = mblnr
+    mjahr = mjahr
+}
+
+relationship MSEG_PRODUCTIONODER {
+    nsdm_v_mseg[1] -> Z_I_PRODUCTIONODER[1]
+    join order 2
+    aufnr = FertigungsAuftrag
+}
+
+relationship PRODUCTIONODER_SalesOrderItem {
+    Z_I_PRODUCTIONODER[0..N] -> I_SalesOrderItem[1]
+    join order 3
+    kdauf = SalesOrder
+    kdpos = SalesOrderItem
+}
+
+relationship SalesOrderItem_SDSERIALNUMBER {
+    I_SalesOrderItem[1] -> Z_I_SDSERIALNUMBER[1]
+    join order 4
+    SalesOrder = salesorder
+    SalesOrderItem = salesorderitem
+}

@@ -1,0 +1,19 @@
+er2cds I_ACMSettlmtCtnHdrCostRevCkpt
+
+entity I_ACMSetlDocCtnCostRevCkpt {
+    alias _SettlmntDocCntr
+    key SettlementDocGroupUUID : RAW as SettlementDocGroupUUID
+    key SettlementDocHeaderUUID : RAW as SettlementDocHeaderUUID
+}
+
+entity I_ACMSettlmtHdrCostRevCkpt {
+    alias _SettlmntHdrUnit
+    no-out SettlementDocHeaderUUID : RAW
+    TradingContractNumber : CHAR as TradingContractNumber
+}
+
+relationship DOCCNTR_HDRUNIT {
+    I_ACMSetlDocCtnCostRevCkpt[1] -> I_ACMSettlmtHdrCostRevCkpt[1]
+    join order 1
+    SettlementDocHeaderUUID = SettlementDocHeaderUUID
+}

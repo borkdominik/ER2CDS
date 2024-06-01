@@ -1,0 +1,31 @@
+er2cds Z_I_SERIALNMBRDELIVERY
+
+entity ser01 {
+    key obknr : INT8 as MaintenanceItemObjectList
+    lief_nr : CHAR as DeliveryDocument
+    posnr : NUMC as DeliveryDocumentItem
+    vbtyp : CHAR as SDDocumentCategory
+    datum : DATS as DeliveryDate
+}
+
+entity I_DeliveryDocument {
+    alias _DeliveryDocument
+    no-out DeliveryDocument : CHAR
+}
+
+entity I_DeliveryDocumentItem {
+    alias _DeliveryDocumentItem
+    no-out DeliveryDocument : CHAR
+    no-out DeliveryDocumentItem : NUMC
+}
+
+association relationship ser01_DeliveryDocument {
+    ser01[1] -> I_DeliveryDocument[1]
+    lief_nr = DeliveryDocument
+}
+
+association relationship ser01_DeliveryDocumentItem {
+    ser01[1] -> I_DeliveryDocumentItem[1]
+    lief_nr = DeliveryDocument
+    posnr = DeliveryDocumentItem
+}

@@ -1,0 +1,53 @@
+er2cds I_BkPOABankAccount
+
+entity fclmpoa_ba {
+    key poa_uuid : RAW as BankPowerOfAttorneyUUID
+    key poa_bank_account_uuid : RAW as BkPOABankAccountUUID
+    acc_id : NUMC as BankAccountInternalID
+    assignment_tstmp_utc : DEC as BkPOABkAcctAssignmentDateTime
+    removal_tstmp_utc : DEC as BkPOABkAcctRemovalDateTime
+    created_by : CHAR as CreatedByUser
+    creation_tstmp_utc : DEC as CreationDateTime
+    last_changed_by : CHAR as LastChangedByUser
+    local_last_changed_tstmp_utc : DEC as LocalLastChangeDateTime
+}
+
+entity I_BankPowerOfAttorney {
+    alias _BankPowerOfAttorney
+    no-out BankPowerOfAttorneyUUID : RAW
+}
+
+entity I_BankAccount {
+    alias _BankAccount
+    no-out BankAccountInternalID : NUMC
+}
+
+entity I_BankAccountBasicData {
+    alias _BankAccountBasicData
+    no-out BankAccountInternalID : NUMC
+}
+
+entity I_BankAccountText {
+    alias _BankAccountText
+    no-out BankAccountInternalID : NUMC
+}
+
+association relationship null {
+    fclmpoa_ba[1] -> I_BankPowerOfAttorney[1]
+    poa_uuid = BankPowerOfAttorneyUUID
+}
+
+association relationship null {
+    fclmpoa_ba[1] -> I_BankAccount[1]
+    acc_id = BankAccountInternalID
+}
+
+association relationship null {
+    fclmpoa_ba[1] -> I_BankAccountBasicData[1]
+    acc_id = BankAccountInternalID
+}
+
+association relationship null {
+    fclmpoa_ba[0..N] -> I_BankAccountText[0..N]
+    acc_id = BankAccountInternalID
+}

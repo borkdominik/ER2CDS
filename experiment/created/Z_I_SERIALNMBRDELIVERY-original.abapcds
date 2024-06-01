@@ -1,0 +1,21 @@
+@AccessControl.authorizationCheck: #CHECK
+@Metadata.ignorePropagatedAnnotations: true
+@EndUserText.label: 'Serial number delivery'
+
+define view entity Z_I_SERIALNMBRDELIVERY
+  as select from ser01
+
+  association [1..1] to I_DeliveryDocument     as _DeliveryDocument     on  $projection.DeliveryDocument = _DeliveryDocument.DeliveryDocument
+  association [1..1] to I_DeliveryDocumentItem as _DeliveryDocumentItem on  $projection.DeliveryDocument     = _DeliveryDocumentItem.DeliveryDocument
+                                                                        and $projection.DeliveryDocumentItem = _DeliveryDocumentItem.DeliveryDocumentItem
+{
+  key obknr   as MaintenanceItemObjectList,
+
+      lief_nr as DeliveryDocument,
+      posnr   as DeliveryDocumentItem,
+      vbtyp   as SDDocumentCategory,
+      datum   as DeliveryDate,
+
+      _DeliveryDocument,
+      _DeliveryDocumentItem
+}

@@ -1,0 +1,79 @@
+er2cds I_BPRelshpCntctPersnEmlAddrTP
+
+entity I_BpContactToAddress {
+    alias ContactPerson
+    key BusinessPartnerCompany : CHAR as BusinessPartner1
+    key BusinessPartnerPerson : CHAR as BusinessPartner2
+    key ValidityEndDate : DATS
+    key AddressID : CHAR
+    RelationshipNumber : CHAR
+    no-out PersonNumber : CHAR
+}
+
+entity I_AddressEmailAddress {
+    alias EmailAddress
+    key OrdinalNumber : NUMC
+    EmailAddress : CHAR
+    IsDefaultEmailAddress : CHAR
+    CommNumberIsNotUsed : CHAR
+    IsHomeEmailAddress : CHAR
+    no-out AddressID : CHAR
+    no-out Person : CHAR
+}
+
+entity I_BusPartRelationshipTP {
+    alias _BusPartRelationship
+    key RelationshipCategory : CHAR
+    no-out BusinessPartner1 : CHAR
+    no-out BusinessPartner2 : CHAR
+    no-out ValidityEndDate : DATS
+}
+
+entity I_BPRelshpContactPersonTP {
+    alias _BPRelshpContactPerson
+    no-out BusinessPartner1 : CHAR
+    no-out BusinessPartner2 : CHAR
+    no-out ValidityEndDate : DATS
+    no-out RelationshipCategory : CHAR
+}
+
+entity I_BPRelshpCntctPersnAddressTP {
+    alias _BPRelshpCntctPersnAddress
+    no-out BusinessPartner1 : CHAR
+    no-out BusinessPartner2 : CHAR
+    no-out ValidityEndDate : DATS
+    no-out RelationshipCategory : CHAR
+    no-out AddressID : CHAR
+}
+
+relationship Address_EmailAdress {
+    I_BpContactToAddress[1] -> I_AddressEmailAddress[1]
+    join order 1
+    AddressID = AddressID
+    PersonNumber = Person
+}
+
+association relationship Address_PartRelationshipTP {
+    I_BpContactToAddress[0..N] -> I_BusPartRelationshipTP[1]
+    BusinessPartnerCompany = BusinessPartner1
+    BusinessPartnerPerson = BusinessPartner2
+    ValidityEndDate = ValidityEndDate
+    RelationshipCategory = RelationshipCategory
+}
+
+association relationship Address_ContactPersonTP {
+    I_BpContactToAddress[0..N] -> I_BPRelshpContactPersonTP[1]
+    BusinessPartnerCompany = BusinessPartner1
+    BusinessPartnerPerson = BusinessPartner2
+    ValidityEndDate = ValidityEndDate
+    RelationshipCategory = RelationshipCategory
+}
+
+association-to-parent relationship Address_CntctPersnAddressTP {
+    I_BpContactToAddress[1] -> I_BPRelshpCntctPersnAddressTP[1]
+    BusinessPartnerCompany = BusinessPartner1
+    BusinessPartnerPerson = BusinessPartner2
+    ValidityEndDate = ValidityEndDate
+    RelationshipCategory = RelationshipCategory
+    AddressID = AddressID
+}

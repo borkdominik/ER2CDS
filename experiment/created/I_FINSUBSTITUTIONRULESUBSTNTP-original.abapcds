@@ -1,0 +1,40 @@
+@EndUserText.label: 'Substitution Rule Definition'
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@VDM.viewType: #TRANSACTIONAL
+@VDM.lifecycle.contract.type:#SAP_INTERNAL_API
+
+@ObjectModel: {
+   usageType: {
+     dataClass:      #CUSTOMIZING,
+     serviceQuality: #C,
+     sizeCategory:   #L
+   }
+}
+
+
+define view entity I_FinSubstitutionRuleSubstnTP 
+as select from I_FinSubstitutionRuleSubstn as _Substitution
+
+association to parent I_FinSubstitutionRuleTP as _Rule
+  on $projection.FinSubstitutionValidationRule = _Rule.FinSubstitutionValidationRule 
+ and $projection.IsActive = _Rule.IsActive
+  
+composition [0..*] of I_FinSubstnTblLookupFldMappgTP        as _SubstnTableLookupFieldMapping
+  
+{
+  key FinSubstitutionValidationRule         ,
+  key IsActive                              ,
+  key FinSubstnValdtnRuleExprSqnc           ,
+  
+      FinSubstnRuleSubstnValType            ,
+      FinSubstnRuleTargetField              ,
+      FinSubstnRuleSubstitutionType         ,
+      FinSubstnRuleSubstitutionValue        ,
+      FinSubstnValdtnRuleFieldPath2         ,
+      SubstitutionIsSkipped                 ,
+      FinSubstnCstmBusObjCDSView            ,
+      FinSubstnCstmBusObjSrceFld            ,
+      
+      _Rule, // Make association public
+      _SubstnTableLookupFieldMapping
+}

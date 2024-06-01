@@ -1,0 +1,88 @@
+@Metadata.ignorePropagatedAnnotations: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Serialnumber for SalesOrderItems'
+
+define view entity Z_I_SDSERIALNUMBER
+  as select from Z_I_ZCONF
+
+    join         vbap as _vbap on  Z_I_ZCONF.kdauf = _vbap.vbeln
+                               and Z_I_ZCONF.kdpos = _vbap.posnr
+
+    join         vbak as _vbak on Z_I_ZCONF.kdauf = _vbak.vbeln
+
+  association        to vbep                   as _vbep                   on  Z_I_ZCONF.kdauf = _vbep.vbeln
+                                                                          and Z_I_ZCONF.kdpos = _vbep.posnr
+
+
+  association [0..1] to Z_I_SALESORDER         as _Z_I_SALESORDER         on  Z_I_ZCONF.kdauf = _Z_I_SALESORDER.SalesOrder
+                                                                          and Z_I_ZCONF.kdpos = _Z_I_SALESORDER.SalesOrderItem
+
+  association [0..1] to Z_I_BR_SALEHISTORY     as _Z_I_BR_SALEHISTORY     on  Z_I_ZCONF.kdauf = _Z_I_BR_SALEHISTORY.PrecedingDocument
+                                                                          and Z_I_ZCONF.kdpos = _Z_I_BR_SALEHISTORY.PrecedingDocumentItem
+
+  association [0..1] to Z_I_SERIALNMBRDELIVERY as _Z_I_SERIALNMBRDELIVERY on  $projection.subsequentdocument     = _Z_I_SERIALNMBRDELIVERY.DeliveryDocument
+                                                                          and $projection.subsequentdocumentitem = _Z_I_SERIALNMBRDELIVERY.DeliveryDocumentItem
+
+  association        to plaf                   as _PLAF_ZTMM              on  _PLAF_ZTMM.kdauf = Z_I_ZCONF.kdauf
+                                                                          and _PLAF_ZTMM.kdpos = Z_I_ZCONF.kdpos
+
+  association        to Z_I_CHARTRANSSD        as _Z_I_CHARTRANSSD        on  Z_I_ZCONF.cuobj = _Z_I_CHARTRANSSD.Instance
+  association        to Z_I_CHARTRANSBASIC     as _Z_I_CHARTRANSBASIC     on  Z_I_ZCONF.cuobj = _Z_I_CHARTRANSBASIC.Instance
+  association        to Z_I_CHARTRANSCC        as _Z_I_CHARTRANSCC        on  Z_I_ZCONF.cuobj = _Z_I_CHARTRANSCC.Instance
+  association        to Z_I_CHARTRANSABNZE     as _Z_I_CHARTRANSABNZE     on  Z_I_ZCONF.cuobj = _Z_I_CHARTRANSABNZE.Instance
+  association        to Z_I_CHARTRANSWBCT      as _Z_I_CHARTRANSWBCT      on  Z_I_ZCONF.cuobj = _Z_I_CHARTRANSWBCT.Instance
+
+{
+  Z_I_ZCONF.sernr_join         as SerialNumber,
+  Z_I_ZCONF.sernr              as Serialnumber_trim,
+  //  case when _Z_I_CHARTRANSBASIC.NACHGUSS is not null
+  //  then ltrim(concat(objk.sernr, _Z_I_CHARTRANSBASIC.NACHGUSS),'0')
+  //  else    ltrim(objk.sernr, '0')
+  //  end                                 as Serialnummer_NG,
+  Z_I_ZCONF.sernr_akt          as Serialnummer_NG,
+  Z_I_ZCONF.cuobj,
+  //    objk.objvw,
+  //    objk.obzae,
+  //    ser05.obknr,
+  Z_I_ZCONF.kdauf              as salesorder,
+  Z_I_ZCONF.kdauf              as sdaufnr,
+  Z_I_ZCONF.kdpos              as posnr,
+  Z_I_ZCONF.kdpos              as salesorderitem,
+  //  _Z_I_ser02[inner].sdaufnr           as SalesOrder,
+  //  _Z_I_ser02[inner].posnr             as SalesOrderItem,
+  //  ltrim(_Z_I_ser02[inner].posnr, '0') as SalesOrderItemTrim,
+
+  //  _Z_I_ser02.Ueberpos,
+  //  _vbap.cuobj,
+  _vbap.matnr,
+  _vbap.abgru,
+  _vbap.uepos,
+  Z_I_ZCONF.fauf_ztgg,
+  Z_I_ZCONF.fauf_ztgw,
+  Z_I_ZCONF.fauf_ztmu,
+  Z_I_ZCONF.fauf_ztmm,
+  Z_I_ZCONF.fauf_ztgg_trim,
+  Z_I_ZCONF.fauf_ztgw_trim,
+  Z_I_ZCONF.fauf_ztmu_trim,
+  Z_I_ZCONF.fauf_ztmm_trim,
+  Z_I_ZCONF.wm_mantel,
+  Z_I_ZCONF.wm_kern,
+  Z_I_ZCONF.vm_hergeleitet,
+  Z_I_ZCONF.planguss           as gussdatum_plan,
+
+  _Z_I_BR_SALEHISTORY.SubsequentDocument,
+  _Z_I_BR_SALEHISTORY.SubsequentDocumentItem,
+  _Z_I_BR_SALEHISTORY.SubsequentDocumentCategory,
+  _vbak.kunnr,
+  _vbak.erdat,
+  //  _Z_I_TMP_CHAR_TRANS,
+  _Z_I_SALESORDER,
+  _Z_I_SERIALNMBRDELIVERY,
+  _vbep,
+  _Z_I_CHARTRANSSD,
+  _Z_I_CHARTRANSBASIC,
+  _Z_I_CHARTRANSCC,
+  _Z_I_CHARTRANSABNZE,
+  _Z_I_CHARTRANSWBCT,
+  _PLAF_ZTMM
+}

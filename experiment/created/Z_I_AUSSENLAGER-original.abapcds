@@ -1,0 +1,47 @@
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Außenlagerbewegungen'
+define view entity Z_I_AUSSENLAGER
+  as select from mseg
+    join         mara               on mseg.matnr = mara.matnr
+  //join marc on nsdm_v_mseg.matnr = marc.matnr
+  //join mard on nsdm_v_mseg.matnr = mard.matnr
+    join         lips               on  mseg.vbeln_im = lips.vbeln
+                                    and mseg.vbelp_im = lips.posnr
+    join         vbap               on  lips.vbelv = vbap.vbeln
+                                    and lips.posnv = vbap.posnr
+    join         vbak               on vbap.vbeln = vbak.vbeln
+  //join vbrp on lips.vbeln = vbrp.vgbel
+  //          and lips.posnr = vbrp.vgpos
+  //join vbrk on vbrp.vbeln = vbrk.vbeln
+  //join likp on lips.vbeln = lips.vbeln
+    join         vbpa               on vbak.vbeln = vbpa.vbeln
+    join         kna1               on vbpa.kunnr = kna1.kunnr
+  //join makt on mara.matnr = makt.matnr
+    join         but000             on vbpa.kunnr = but000.partner
+    join         Z_I_SDSERIALNUMBER on  Z_I_SDSERIALNUMBER.salesorder     = vbap.vbeln
+                                    and Z_I_SDSERIALNUMBER.salesorderitem = vbap.posnr
+
+{
+
+  key mseg.mblnr,
+      mseg.zeile,
+      mseg.lgort,
+      mseg.bwart,
+      mara.matnr,
+      mseg.wempf,
+      mseg.budat_mkpf,
+      kna1.land1,
+      but000.bpext,
+      kna1.name1,
+      vbak.vbeln,
+      vbap.posnr,
+      kna1.kunnr,
+      Z_I_SDSERIALNUMBER.SerialNumber as Serialnummer,
+      vbap.ntgew,
+      vbap.gewei,
+      vbap.wavwr,
+      vbap.waerk,
+      vbpa.parvw
+      //makt.maktx
+
+}

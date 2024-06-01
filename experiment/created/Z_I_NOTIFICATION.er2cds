@@ -1,0 +1,253 @@
+er2cds Z_I_Notification
+
+entity qmel {
+    key qmnum : CHAR as Notification
+    qmart : CHAR as NotificationType
+    qmtxt : CHAR as NotificationText
+    artpr : CHAR as NotificationPriorityType
+    priok : CHAR as NotificationPriority
+    ernam : CHAR as CreatedByUser
+    erdat : DATS as CreationDate
+    aenam : CHAR as LastChangedByUser
+    aedat : DATS as LastChangedDate
+    qmdat : DATS as NotificationReportingDate
+    strmn : DATS as NotificationRequiredStartDate
+    strur : TIMS as NotificationRequiredStartTime
+    ltrmn : DATS as NotificationRequiredEndDate
+    ltrur : TIMS as NotificationRequiredEndTime
+    aufnr : CHAR as OrderID
+    matnr : CHAR as Material
+    matkl : CHAR as MaterialGroup
+    kunum : CHAR as Customer
+    objnr : CHAR as NotificationStatusObject
+    qmdab : DATS as NotificationCompletionDate
+    indtx : CHAR
+    herkz : CHAR as NotificationOrigin
+    lifnum : CHAR as Supplier
+    buname : CHAR as Autor
+    bstnk : CHAR as CustOrderNr
+    spart : CHAR as ActiveDivision
+    vkorg : CHAR as SalesOrganization
+    vtweg : CHAR as DistributionChannel
+    mawerk : CHAR as Plant
+    qmkat : CHAR as NotificationCatalog
+    qmgrp : CHAR as NotificationCodeGroup
+    qmcod : CHAR as NotificationCodeID
+    prueflos : NUMC as InspectionLot
+    hersteller : CHAR as Hersteller
+    ekorg : CHAR as PurchasingOrganization
+    bkgrp : CHAR as PurchasingGroup
+    fertaufnr : CHAR as Fertigungsauftrag
+    ebeln : CHAR as PurchasingDocument
+    ebelp : NUMC as PurchasingDocumentItem
+    ls_kdauf : CHAR as CustomerOrder
+    ls_kdpos : NUMC as PositionSD
+    crobjty : CHAR as WorkCenterTypeCode
+    arbpl : NUMC as MainWorkCenterInternalID
+    arbplwerk : CHAR as MainWorkCenterPlant
+    mgfrd : QUAN as NotificationExternalQty
+    mgein : UNIT as NotificationQuantityUnit
+    serialnr : CHAR as Serialnumber
+    kzloesch : CHAR as IsDeleted
+    cvp_xblck : CHAR as IsBusinessPurposeCompleted
+    psp_nr : NUMC as WBSElementInternalID
+    phase : CHAR as NotifProcessingPhase
+}
+
+entity I_NotificationItem {
+    alias _NotificationItem
+    no-out Notification : CHAR
+}
+
+entity I_NotificationTask {
+    alias _NotificationTask
+    no-out Notification : CHAR
+}
+
+entity I_NotificationActivity {
+    alias _NotificationActivity
+    no-out Notification : CHAR
+}
+
+entity I_LogisticsOrder {
+    alias _LogisticsOrder
+    no-out OrderID : CHAR
+}
+
+entity I_Plant {
+    alias _Plant
+    no-out Plant : CHAR
+}
+
+entity I_Product {
+    alias _Product
+    no-out Product : CHAR
+}
+
+entity I_ProductGroup {
+    alias _ProductGroup
+    no-out MaterialGroup : CHAR
+}
+
+entity I_PurchasingDocument {
+    alias _PurchasingDocument
+    no-out PurchasingDocument : CHAR
+}
+
+entity I_Supplier {
+    alias _Supplier
+    no-out Supplier : CHAR
+}
+
+entity I_PMNotifMaintenanceData {
+    alias _PMNotifMaintenanceData
+    no-out MaintenanceNotification : CHAR
+}
+
+entity I_WBSElement {
+    alias _WBSElement
+    no-out WBSElementInternalID : NUMC
+}
+
+entity I_InspectionLot {
+    alias _InspectionLot
+    no-out InspectionLot : NUMC
+}
+
+entity I_NotificationType {
+    alias _NotificationType
+    no-out NotificationType : CHAR
+}
+
+entity I_NotificationPriority {
+    alias _NotificationPriority
+    no-out NotificationPriorityType : CHAR
+    no-out NotificationPriority : CHAR
+}
+
+entity I_NotificationCatalog {
+    alias _NotificationCatalog
+    no-out NotificationCatalog : CHAR
+}
+
+entity I_NotificationCodeGroup {
+    alias _NotificationCodeGroup
+    no-out NotificationCatalog : CHAR
+    no-out NotificationCodeGroup : CHAR
+}
+
+entity I_NotificationCode {
+    alias _NotificationCode
+    no-out NotificationCatalog : CHAR
+    no-out NotificationCodeGroup : CHAR
+    no-out NotificationCodeID : CHAR
+}
+
+entity I_NotifProcessingPhase {
+    alias _NotifProcessingPhase
+    no-out NotifProcessingPhase : CHAR
+}
+
+entity I_UnitOfMeasure {
+    alias _NotificationQuantityUnit
+    no-out UnitOfMeasure : UNIT
+}
+
+association relationship qmel_NotificationItem {
+    qmel[0..N] -> I_NotificationItem[0..N]
+    qmnum = Notification
+}
+
+association relationship qmel_NotificationTask {
+    qmel[0..N] -> I_NotificationTask[0..N]
+    qmnum = Notification
+}
+
+association relationship qmel_NotificationActivity {
+    qmel[0..N] -> I_NotificationActivity[0..N]
+    qmnum = Notification
+}
+
+association relationship qmel_LogisticsOrder {
+    qmel[0..N] -> I_LogisticsOrder[1]
+    aufnr = OrderID
+}
+
+association relationship qmel_Plant {
+    qmel[0..N] -> I_Plant[1]
+    mawerk = Plant
+}
+
+association relationship qmel_Product {
+    qmel[0..N] -> I_Product[1]
+    matnr = Product
+}
+
+association relationship qmel_ProductGroup {
+    qmel[0..N] -> I_ProductGroup[1]
+    matkl = MaterialGroup
+}
+
+association relationship qmel_PurchasingDocument {
+    qmel[0..N] -> I_PurchasingDocument[1]
+    ebeln = PurchasingDocument
+}
+
+association relationship qmel_Supplier {
+    qmel[0..N] -> I_Supplier[1]
+    lifnum = Supplier
+}
+
+association relationship qmel_PMNotifMaintenanceData {
+    qmel[0..N] -> I_PMNotifMaintenanceData[1]
+    qmnum = MaintenanceNotification
+}
+
+association relationship qmel_WBSElement {
+    qmel[0..N] -> I_WBSElement[1]
+    psp_nr = WBSElementInternalID
+}
+
+association relationship qmel_InspectionLot {
+    qmel[0..N] -> I_InspectionLot[1]
+    prueflos = InspectionLot
+}
+
+association relationship qmel_NotificationType {
+    qmel[1] -> I_NotificationType[1]
+    qmart = NotificationType
+}
+
+association relationship qmel_NotificationPriority {
+    qmel[0..N] -> I_NotificationPriority[1]
+    artpr = NotificationPriorityType
+    priok = NotificationPriority
+}
+
+association relationship qmel_NotificationCatalog {
+    qmel[0..N] -> I_NotificationCatalog[1]
+    qmkat = NotificationCatalog
+}
+
+association relationship qmel_NotificationCodeGroup {
+    qmel[0..N] -> I_NotificationCodeGroup[1]
+    qmkat = NotificationCatalog
+    qmgrp = NotificationCodeGroup
+}
+
+association relationship qmel_NotificationCode {
+    qmel[0..N] -> I_NotificationCode[1]
+    qmkat = NotificationCatalog
+    qmgrp = NotificationCodeGroup
+    qmcod = NotificationCodeID
+}
+
+association relationship qmel_NotifProcessingPhase {
+    qmel[1] -> I_NotifProcessingPhase[1]
+    phase = NotifProcessingPhase
+}
+
+association relationship qmel_UnitOfMeasure {
+    qmel[0..N] -> I_UnitOfMeasure[1]
+    mgein = UnitOfMeasure
+}

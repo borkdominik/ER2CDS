@@ -1,0 +1,165 @@
+er2cds Z_I_SDSERIALNUMBER
+
+entity Z_I_ZCONF {
+    sernr_join : CHAR as SerialNumber
+    sernr : CHAR as Serialnumber_trim
+    sernr_akt : CHAR as Serialnummer_NG
+    cuobj : NUMC
+    kdauf : CHAR as salesorder
+    kdauf : CHAR as sdaufnr
+    kdpos : NUMC as posnr
+    kdpos : NUMC as salesorderitem
+    fauf_ztgg : CHAR
+    fauf_ztgw : CHAR
+    fauf_ztmu : CHAR
+    fauf_ztmm : CHAR
+    fauf_ztgg_trim : CHAR
+    fauf_ztgw_trim : CHAR
+    fauf_ztmu_trim : CHAR
+    fauf_ztmm_trim : CHAR
+    wm_mantel : CHAR
+    wm_kern : CHAR
+    vm_hergeleitet : CHAR
+    planguss : CHAR as gussdatum_plan
+}
+
+entity vbap {
+    alias _vbap
+    matnr : CHAR
+    abgru : CHAR
+    uepos : NUMC
+    no-out vbeln : CHAR
+    no-out posnr : NUMC
+}
+
+entity vbak {
+    alias _vbak
+    kunnr : CHAR
+    erdat : DATS
+    no-out vbeln : CHAR
+}
+
+entity vbep {
+    alias _vbep
+    no-out vbeln : CHAR
+    no-out posnr : NUMC
+}
+
+entity Z_I_SALESORDER {
+    alias _Z_I_SALESORDER
+    no-out SalesOrder : CHAR
+    no-out SalesOrderItem : NUMC
+}
+
+entity Z_I_BR_SALEHISTORY {
+    alias _Z_I_BR_SALEHISTORY
+    no-out PrecedingDocument : CHAR
+    no-out PrecedingDocumentItem : NUMC
+    SubsequentDocument : CHAR
+    SubsequentDocumentItem : NUMC
+}
+
+entity Z_I_SERIALNMBRDELIVERY {
+    alias _Z_I_SERIALNMBRDELIVERY
+    no-out DeliveryDocument : CHAR
+    no-out DeliveryDocumentItem : NUMC
+}
+
+entity plaf {
+    alias _PLAF_ZTMM
+    no-out kdauf : CHAR
+    no-out kdpos : NUMC
+}
+
+entity Z_I_CHARTRANSSD {
+    alias _Z_I_CHARTRANSSD
+    no-out Instance : NUMC
+}
+
+entity Z_I_CHARTRANSBASIC {
+    alias _Z_I_CHARTRANSBASIC
+    no-out Instance : NUMC
+}
+
+entity Z_I_CHARTRANSCC {
+    alias _Z_I_CHARTRANSCC
+    no-out Instance : NUMC
+}
+
+entity Z_I_CHARTRANSABNZE {
+    alias _Z_I_CHARTRANSABNZE
+    no-out Instance : NUMC
+}
+
+entity Z_I_CHARTRANSWBCT {
+    alias _Z_I_CHARTRANSWBCT
+    no-out Instance : NUMC
+}
+
+relationship ZCONF_vbap {
+    Z_I_ZCONF[1] -> vbap[1]
+    join order 1
+    kdauf = vbeln
+    kdpos = posnr
+}
+
+relationship ZCONF_vbak {
+    Z_I_ZCONF[1] -> vbak[1]
+    join order 2
+    kdauf = vbeln
+}
+
+association relationship ZCONF_vbep {
+    Z_I_ZCONF[0..N] -> vbep[1]
+    kdauf = vbeln
+    kdpos = posnr
+}
+
+association relationship ZCONF_SALESORDER {
+    Z_I_ZCONF[0..N] -> Z_I_SALESORDER[1]
+    kdauf = SalesOrder
+    kdpos = SalesOrderItem
+}
+
+association relationship ZCONF_SALEHISTORY {
+    Z_I_ZCONF[0..N] -> Z_I_BR_SALEHISTORY[1]
+    kdauf = PrecedingDocument
+    kdpos = PrecedingDocumentItem
+}
+
+association relationship ZCONF_SERIALNMBRDELIVERY {
+    Z_I_ZCONF[0..N] -> Z_I_SERIALNMBRDELIVERY[1]
+    SubsequentDocument = DeliveryDocument
+    SubsequentDocumentItem = DeliveryDocumentItem
+}
+
+association relationship ZCONF_plaf {
+    Z_I_ZCONF[0..N] -> plaf[1]
+    kdauf = kdauf
+    kdpos = kdpos
+}
+
+association relationship ZCONF_CHARTRANSSD {
+    Z_I_ZCONF[0..N] -> Z_I_CHARTRANSSD[1]
+    cuobj = Instance
+}
+
+association relationship ZCONF_CHARTRANSBASIC {
+    Z_I_ZCONF[0..N] -> Z_I_CHARTRANSBASIC[1]
+    cuobj = Instance
+}
+
+association relationship ZCONF_CHARTRANSCC {
+    Z_I_ZCONF[0..N] -> Z_I_CHARTRANSCC[1]
+    cuobj = Instance
+}
+
+association relationship ZCONF_CHARTRANSABNZE {
+    Z_I_ZCONF[0..N] -> Z_I_CHARTRANSABNZE[1]
+    cuobj = Instance
+}
+
+association relationship ZCONF_CHARTRANSWBCT {
+    Z_I_ZCONF[0..N] -> Z_I_CHARTRANSWBCT[1]
+    cuobj = Instance
+}

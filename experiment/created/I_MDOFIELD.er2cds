@@ -1,0 +1,32 @@
+er2cds I_MDOFIELD
+
+entity mdo_field {
+    key id : RAW as Id
+    valuepath : CHAR as Valuepath
+    canonicalpath : CHAR as Canonicalpath
+    parentid : RAW as ParentId
+}
+
+entity I_MDOFIELDGROUP {
+    alias _Parent
+    no-out Id : RAW
+    LastChangedAt : DEC as LastChangedAt
+    ParentId : RAW as OdmObjectTypeId
+}
+
+entity I_MDOODMOBJECTTYPE {
+    alias _OdmObjectType
+    no-out Id : RAW
+}
+
+association relationship GROUP_OBJECTTYPE {
+    I_MDOFIELDGROUP[1] -> I_MDOODMOBJECTTYPE[1]
+    join order 2
+    ParentId = Id
+}
+
+association-to-parent relationship field_GROUP {
+    mdo_field[1] -> I_MDOFIELDGROUP[1]
+    join order 1
+    parentid = Id
+}

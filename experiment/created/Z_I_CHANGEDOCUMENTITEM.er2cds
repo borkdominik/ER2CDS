@@ -1,0 +1,52 @@
+er2cds Z_I_CHANGEDOCUMENTITEM
+
+entity cdpos {
+    key objectid : CHAR as ChangeDocObject
+    key objectclas : CHAR as ChangeDocObjectClass
+    key changenr : CHAR as ChangeDocument
+    key tabname : CHAR as DatabaseTable
+    key tabkey : CHAR as ChangeDocTableKey
+    key fname : CHAR as ChangeDocDatabaseTableField
+    key chngind : CHAR as ChangeDocItemChangeType
+    unit_old : UNIT as ChangeDocPreviousUnit
+    unit_new : UNIT as ChangeDocNewUnit
+    cuky_old : CUKY as ChangeDocPreviousCurrency
+    cuky_new : CUKY as ChangeDocNewCurrency
+    value_new : CHAR as ChangeDocNewFieldValue
+    value_old : CHAR as ChangeDocPreviousFieldValue
+}
+
+entity I_ChangeDocument {
+    alias _ChangeDocument
+    no-out ChangeDocObjectClass : CHAR
+    no-out ChangeDocObject : CHAR
+    no-out ChangeDocument : CHAR
+}
+
+entity I_ChangeDocLongTableKey {
+    alias _ChangeDocLongTableKey
+    no-out ChangeDocKeyGuid : CHAR
+}
+
+entity I_ChangeDocumentItemExtension {
+    alias _ChangeDocumentItemExtension
+    no-out ChangeDocKeyGuid : CHAR
+}
+
+association relationship null {
+    cdpos[0..N] -> I_ChangeDocument[1]
+    objectclas = ChangeDocObjectClass
+    objectid = ChangeDocObject
+    changenr = ChangeDocument
+}
+
+
+association relationship null {
+    cdpos[0..N] -> I_ChangeDocLongTableKey[1]
+    tabkey = ChangeDocKeyGuid
+}
+
+association relationship null {
+    cdpos[0..N] -> I_ChangeDocumentItemExtension[1]
+    tabkey = ChangeDocKeyGuid
+}

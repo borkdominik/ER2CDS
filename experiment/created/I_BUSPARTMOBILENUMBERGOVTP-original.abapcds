@@ -1,0 +1,51 @@
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'BP Governance Telephone Number TP'
+@AccessControl.personalData.blocking: #REQUIRED
+@ObjectModel.usageType.serviceQuality: #C
+@ObjectModel.usageType.sizeCategory: #XXL
+@ObjectModel.usageType.dataClass: #TRANSACTIONAL
+@Search.searchable: true
+@VDM.viewType: #TRANSACTIONAL
+@VDM.lifecycle.contract.type: #SAP_INTERNAL_API
+define view entity I_BusPartMobileNumberGovTP
+  as select from I_BusPartMobileNumberGov
+  association        to parent I_BusinessPartnerAddressGovTP as _BusinessPartnerAddress on  $projection.MasterDataChangeProcess = _BusinessPartnerAddress.MasterDataChangeProcess
+                                                                                        and $projection.MDChgProcessSrceSystem  = _BusinessPartnerAddress.MDChgProcessSrceSystem
+                                                                                        and $projection.MDChgProcessSrceObject  = _BusinessPartnerAddress.MDChgProcessSrceObject
+                                                                                        and $projection.AddressNumber           = _BusinessPartnerAddress.AddressNumber
+  association [1..1] to I_BusinessPartnerGovTP               as _BusinessPartner        on  $projection.MasterDataChangeProcess = _BusinessPartner.MasterDataChangeProcess
+                                                                                        and $projection.MDChgProcessSrceSystem  = _BusinessPartner.MDChgProcessSrceSystem
+                                                                                        and $projection.MDChgProcessSrceObject  = _BusinessPartner.MDChgProcessSrceObject
+
+  association [0..1] to I_Country                            as _Country                on  $projection.MobilePhoneCountry = _Country.Country
+  association [0..1] to I_BusPartTelCountryPrefix            as _PhoneCountryCode       on  $projection.MobilePhoneCountry = _PhoneCountryCode.Country
+{
+      //I_BusPartMobileNumberGov
+  key MasterDataChangeProcess,
+  key MDChgProcessSrceSystem,
+  key MDChgProcessSrceObject,
+  key AddressNumber,
+  key OrdinalNumber,
+      MDChgProcessStep,
+      MobilePhoneCountry,
+      _PhoneCountryCode.TelephoneCountryPrefix as TelephoneCountryPrefix,
+      @EndUserText.label: 'Standard'
+      IsDefaultPhoneNumber,
+      @Search.defaultSearchElement: true
+      @Search.fuzzinessThreshold: 0.8
+      @Search.ranking: #HIGH
+      MobilePhoneNumber,
+      PhoneNumberType,
+      ValidityStartDateTime,
+      ValidityEndDateTime,
+      /* Associations */
+      //I_BusPartMobileNumberGov
+      _BusinessPartnerAddress,
+      _Country,
+
+      _BusinessPartner,
+      _BPProtectedAddress,
+      _PhoneCountryCode
+}
+where
+  MasterDataIsCurrent = 'X'

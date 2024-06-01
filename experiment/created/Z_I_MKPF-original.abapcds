@@ -1,0 +1,39 @@
+@AccessControl.authorizationCheck: #CHECK
+@Metadata.ignorePropagatedAnnotations: true
+@EndUserText.label: 'Header Material Document'
+define view entity Z_I_MKPF
+  as select from mkpf as mkpf
+{
+
+  key mkpf.mblnr,
+  key mkpf.mjahr,
+      mkpf.vgart,
+      mkpf.blart,
+      mkpf.blaum,
+      mkpf.bldat,
+      mkpf.budat,
+      mkpf.cpudt,
+      mkpf.cputm,
+      mkpf.aedat,
+      mkpf.usnam,
+      mkpf.tcode,
+      mkpf.xblnr,
+      mkpf.bktxt,
+      mkpf.wever,
+      mkpf.xabln,
+      mkpf.awsys,
+      mkpf.bla2d,
+      mkpf.tcode2,
+      mkpf.bfwms,
+      mkpf.exnum,
+      mkpf.spe_budat_uhr,
+      mkpf.spe_budat_zone,
+      mkpf.le_vbeln,
+      mkpf.spe_logsys,
+      mkpf.spe_mdnum_ewm,
+      mkpf.gts_cusref_no,
+      mkpf.fls_rsto,
+      mkpf.msr_active,
+      mkpf.knumv,
+      mkpf.xcompl
+}

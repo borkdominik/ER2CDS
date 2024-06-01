@@ -1,0 +1,51 @@
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Field Logistics Supplier'
+@VDM.viewType: #COMPOSITE
+define view entity I_FieldLogisticsSupplier 
+  as select from I_Supplier as Supplier
+  association [0..1] to I_SupplierCompany             as _Vendor                      on  $projection.Supplier    = _Vendor.Supplier
+                                                                                      and $projection.companycode = _Vendor.CompanyCode
+  association [0..*] to I_BusinessPartnerSuplrCo      as _BusinessPartnerSuplrCo      on  $projection.Supplier = _BusinessPartnerSuplrCo.Supplier
+  association [1..1] to I_Supplier_to_BusinessPartner as _Supplier_to_BusinessPartner on  $projection.Supplier = _Supplier_to_BusinessPartner.Supplier
+
+{
+
+  key    Supplier.Supplier,
+
+  key    _BusinessPartnerSuplrCo.CompanyCode,
+
+         Supplier.SupplierName,
+
+         Supplier.Country,
+
+         _Supplier_to_BusinessPartner._BusinessPartner.FirstName,
+
+         _Supplier_to_BusinessPartner._BusinessPartner.LastName,
+
+         OrganizationBPName1,
+
+         OrganizationBPName2,
+
+         _Supplier_to_BusinessPartner._BusinessPartner.OrganizationBPName3,
+
+         _Supplier_to_BusinessPartner._BusinessPartner.OrganizationBPName4,
+
+         Supplier.PurchasingIsBlocked,
+         @Semantics.booleanIndicator
+         Supplier.AccountIsBlockedForPosting,
+         @UI.hidden: true
+         Supplier.DeletionIndicator,
+         @Semantics.booleanIndicator
+         @UI.hidden: true
+         Supplier.IsBusinessPurposeCompleted,
+         Supplier.PostingIsBlocked,
+         _Vendor,
+
+         //for DCL
+         AuthorizationGroup,
+         SupplierAccountGroup
+
+}
+where
+  DeletionIndicator != 'X' or
+  IsBusinessPurposeCompleted != 'X'

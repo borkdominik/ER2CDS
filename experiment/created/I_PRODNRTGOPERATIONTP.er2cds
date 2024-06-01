@@ -1,0 +1,299 @@
+er2cds I_ProdnRtgOperationTP
+
+entity I_ProductionRoutingOperation {
+    key BillOfOperationsGroup : CHAR as ProductionRoutingGroup
+    key BillOfOperationsVariant : CHAR as ProductionRouting
+    key BillOfOperationsSequence : CHAR as ProductionRoutingSequence
+    key BOOOperationInternalID : NUMC as ProductionRoutingOpIntID
+    key BOOOpInternalVersionCounter : NUMC as ProductionRoutingOpIntVersion
+    Operation : CHAR as Operation
+    CreationDate : DATS
+    CreatedByUser : CHAR
+    LastChangeDate : DATS
+    LastChangedByUser : CHAR
+    ChangeNumber : CHAR
+    ValidityStartDate : DATS
+    ValidityEndDate : DATS
+    IsDeleted : CHAR
+    IsImplicitlyDeleted : CHAR
+    OperationText : CHAR
+    LongTextLanguageCode : LANG
+    Plant : CHAR
+    OperationControlProfile : CHAR
+    OperationStandardTextCode : CHAR
+    WorkCenterTypeCode : CHAR
+    WorkCenterInternalID : NUMC
+    CapacityCategoryCode : CHAR
+    CostElement : CHAR
+    OperationCostingRelevancyType : CHAR
+    NumberOfTimeTickets : DEC
+    NumberOfConfirmationSlips : NUMC
+    EmployeeWageGroup : CHAR
+    EmployeeWageType : CHAR
+    EmployeeSuitability : CHAR
+    NumberOfEmployees : DEC
+    BillOfOperationsRefType : CHAR
+    BillOfOperationsRefGroup : CHAR
+    BillOfOperationsRefVariant : CHAR
+    LineSegmentTakt : NUMC
+    OperationStdWorkQtyGrpgCat : CHAR
+    OrderHasNoSubOperations : CHAR
+    OperationSetupType : CHAR
+    OperationSetupGroupCategory : CHAR
+    OperationSetupGroup : CHAR
+    BOOOperationIsPhase : CHAR
+    BOOPhaseSuperiorOpInternalID : NUMC
+    ControlRecipeDestination : CHAR
+    OpIsExtlyProcdWithSubcontrg : CHAR as OpIsExtlyProcdWithSubcontrg
+    PurchasingInfoRecord : CHAR
+    PurchasingOrganization : CHAR
+    PurchaseContract : CHAR
+    PurchaseContractItem : NUMC
+    PurchasingInfoRecdAddlGrpgName : CHAR
+    MaterialGroup : CHAR
+    PurchasingGroup : CHAR
+    Supplier : CHAR
+    PlannedDeliveryDuration : DEC
+    NumberOfOperationPriceUnits : DEC
+    OpExternalProcessingCurrency : CUKY
+    OpExternalProcessingPrice : CURR
+    InspectionLotType : CHAR
+    InspResultRecordingView : CHAR
+    InspSbstCompletionConfirmation : CHAR
+    InspSbstHasNoTimeOrQuantity : CHAR
+    OperationReferenceQuantity : QUAN
+    OperationUnit : UNIT
+    OperationScrapPercent : DEC
+    OpQtyToBaseQtyNmrtr : DEC
+    OpQtyToBaseQtyDnmntr : DEC
+    StandardWorkQuantity1 : QUAN
+    StandardWorkQuantityUnit1 : UNIT
+    CostCtrActivityType1 : CHAR
+    PerfEfficiencyRatioCode1 : CHAR
+    StandardWorkQuantity2 : QUAN
+    StandardWorkQuantityUnit2 : UNIT
+    CostCtrActivityType2 : CHAR
+    PerfEfficiencyRatioCode2 : CHAR
+    StandardWorkQuantity3 : QUAN
+    StandardWorkQuantityUnit3 : UNIT
+    CostCtrActivityType3 : CHAR
+    PerfEfficiencyRatioCode3 : CHAR
+    StandardWorkQuantity4 : QUAN
+    StandardWorkQuantityUnit4 : UNIT
+    CostCtrActivityType4 : CHAR
+    PerfEfficiencyRatioCode4 : CHAR
+    StandardWorkQuantity5 : QUAN
+    StandardWorkQuantityUnit5 : UNIT
+    CostCtrActivityType5 : CHAR
+    PerfEfficiencyRatioCode5 : CHAR
+    StandardWorkQuantity6 : QUAN
+    StandardWorkQuantityUnit6 : UNIT
+    CostCtrActivityType6 : CHAR
+    PerfEfficiencyRatioCode6 : CHAR
+    BusinessProcess : CHAR
+    LeadTimeReductionStrategy : CHAR
+    TeardownAndWaitIsParallel : CHAR
+    BillOfOperationsBreakDuration : QUAN
+    BreakDurationUnit : UNIT
+    MaximumWaitDuration : QUAN
+    MaximumWaitDurationUnit : UNIT
+    MinimumWaitDuration : QUAN
+    MinimumWaitDurationUnit : UNIT
+    StandardQueueDuration : QUAN
+    StandardQueueDurationUnit : UNIT
+    MinimumQueueDuration : QUAN
+    MinimumQueueDurationUnit : UNIT
+    StandardMoveDuration : QUAN
+    StandardMoveDurationUnit : UNIT
+    MinimumMoveDuration : QUAN
+    MinimumMoveDurationUnit : UNIT
+    OperationSplitIsRequired : CHAR
+    MaximumNumberOfSplits : DEC
+    MinProcessingDurationPerSplit : QUAN
+    MinProcessingDurnPerSplitUnit : UNIT
+    OperationOverlappingIsRequired : CHAR
+    OperationOverlappingIsPossible : CHAR
+    OperationsIsAlwaysOverlapping : CHAR
+    OverlapMinimumDuration : QUAN
+    OverlapMinimumDurationUnit : UNIT
+    OverlapMinimumTransferQty : QUAN
+    OverlapMinimumTransferQtyUnit : UNIT
+    FactoryCalendar : CHAR
+}
+
+entity I_ProductionRoutingSubOpTP {
+    alias _SubOp
+    no-out ProductionRoutingGroup : CHAR
+    no-out ProductionRouting : CHAR
+    no-out SuperiorOperationInternalID : NUMC
+    no-out ProductionRoutingSequence : CHAR
+    no-out ValidityStartDate : DATS
+    no-out ValidityEndDate : DATS
+}
+
+entity I_ProdnRoutingOpCompAllocTP {
+    alias _OpCompAlloc
+    no-out ProductionRoutingGroup : CHAR
+    no-out ProductionRouting : CHAR
+    no-out ProductionRoutingOpIntID : NUMC
+    no-out ProductionRoutingSequence : CHAR
+    no-out ValidityStartDate : DATS
+    no-out ValidityEndDate : DATS
+}
+
+entity I_ProductionRoutingHeaderTP {
+    alias _Header
+    no-out ProductionRoutingGroup : CHAR
+    no-out ProductionRouting : CHAR
+    no-out ValidityStartDate : DATS
+    no-out ValidityEndDate : DATS
+}
+
+entity I_TaskListOperationLongText {
+    alias _LongText
+    no-out TaskListGroup : CHAR
+    no-out BOOOperationInternalID : NUMC
+    no-out BOOInternalVersionCounter : NUMC
+    no-out TaskListType : CHAR
+}
+
+entity R_ProdnRtgOpMiscPRTAssgmtTP {
+    alias _OpMiscPRTAssgmt
+    no-out ProductionRoutingGroup : CHAR
+    no-out ProductionRouting : CHAR
+    no-out ProductionRoutingOpIntID : NUMC
+    no-out ProductionRoutingSequence : CHAR
+    no-out ValidityStartDate : DATS
+    no-out ValidityEndDate : DATS
+}
+
+entity R_ProdnRtgOpDocPRTAssgmtTP {
+    alias _OpDocPRTAssgmt
+    no-out ProductionRoutingGroup : CHAR
+    no-out ProductionRouting : CHAR
+    no-out ProductionRoutingOpIntID : NUMC
+    no-out ProductionRoutingSequence : CHAR
+    no-out ValidityStartDate : DATS
+    no-out ValidityEndDate : DATS
+}
+
+entity R_ProdnRtgOpMatlPRTAssgmtTP {
+    alias _OpMatlPRTAssgmt
+    no-out ProductionRoutingGroup : CHAR
+    no-out ProductionRouting : CHAR
+    no-out ProductionRoutingOpIntID : NUMC
+    no-out ProductionRoutingSequence : CHAR
+    no-out ValidityStartDate : DATS
+    no-out ValidityEndDate : DATS
+}
+
+entity R_ProdnRtgOpEquipPRTAssgmtTP {
+    alias _OpEquipPRTAssgmt
+    no-out ProductionRoutingGroup : CHAR
+    no-out ProductionRouting : CHAR
+    no-out ProductionRoutingOpIntID : NUMC
+    no-out ProductionRoutingSequence : CHAR
+    no-out ValidityStartDate : DATS
+    no-out ValidityEndDate : DATS
+}
+
+entity I_ProdnRtgNonHistoricHdrTP {
+    alias _ProdnRtgTP
+    no-out ProductionRoutingGroup : CHAR
+    no-out ProductionRouting : CHAR
+}
+
+entity I_ProdnRtgNonHistoricSqncTP {
+    alias _NonSqncTP
+    no-out ProductionRoutingGroup : CHAR
+    no-out ProductionRouting : CHAR
+    no-out ProductionRoutingSequence : CHAR
+}
+
+association relationship ProductionRoutingOperation_ProductionRoutingSubOpTP {
+    I_ProductionRoutingOperation[0..N] -> I_ProductionRoutingSubOpTP[0..N]
+    BillOfOperationsGroup = ProductionRoutingGroup
+    BillOfOperationsVariant = ProductionRouting
+    BOOOperationInternalID = SuperiorOperationInternalID
+    BillOfOperationsSequence = ProductionRoutingSequence
+    ValidityEndDate = ValidityStartDate
+    ValidityStartDate = ValidityEndDate
+}
+
+association relationship ProductionRoutingOperation_ProdnRoutingOpCompAllocTP {
+    I_ProductionRoutingOperation[0..N] -> I_ProdnRoutingOpCompAllocTP[0..N]
+    BillOfOperationsGroup = ProductionRoutingGroup
+    BillOfOperationsVariant = ProductionRouting
+    BOOOperationInternalID = ProductionRoutingOpIntID
+    BillOfOperationsSequence = ProductionRoutingSequence
+    ValidityEndDate = ValidityStartDate
+    ValidityStartDate = ValidityEndDate
+}
+
+association relationship ProductionRoutingOperation_ProductionRoutingHeaderTP {
+    I_ProductionRoutingOperation[1] -> I_ProductionRoutingHeaderTP[0..N]
+    BillOfOperationsGroup = ProductionRoutingGroup
+    BillOfOperationsVariant = ProductionRouting
+    ValidityEndDate = ValidityStartDate
+    ValidityStartDate = ValidityEndDate
+}
+
+association relationship ProductionRoutingOperation_TaskListOperationLongText {
+    I_ProductionRoutingOperation[0..N] -> I_TaskListOperationLongText[1]
+    BillOfOperationsGroup = TaskListGroup
+    BOOOperationInternalID = BOOOperationInternalID
+    BOOOpInternalVersionCounter = BOOInternalVersionCounter
+}
+
+association relationship ProductionRoutingOperation_ProdnRtgOpMiscPRTAssgmtTP {
+    I_ProductionRoutingOperation[0..N] -> R_ProdnRtgOpMiscPRTAssgmtTP[0..N]
+    BillOfOperationsGroup = ProductionRoutingGroup
+    BillOfOperationsVariant = ProductionRouting
+    BOOOperationInternalID = ProductionRoutingOpIntID
+    BillOfOperationsSequence = ProductionRoutingSequence
+    ValidityEndDate = ValidityStartDate
+    ValidityStartDate = ValidityEndDate
+}
+
+association relationship ProductionRoutingOperation_ProdnRtgOpDocPRTAssgmtTP {
+    I_ProductionRoutingOperation[0..N] -> R_ProdnRtgOpDocPRTAssgmtTP[0..N]
+    BillOfOperationsGroup = ProductionRoutingGroup
+    BillOfOperationsVariant = ProductionRouting
+    BOOOperationInternalID = ProductionRoutingOpIntID
+    BillOfOperationsSequence = ProductionRoutingSequence
+    ValidityEndDate = ValidityStartDate
+    ValidityStartDate = ValidityEndDate
+}
+
+association relationship ProductionRoutingOperation_ProdnRtgOpMatlPRTAssgmtTP {
+    I_ProductionRoutingOperation[0..N] -> R_ProdnRtgOpMatlPRTAssgmtTP[0..N]
+    BillOfOperationsGroup = ProductionRoutingGroup
+    BillOfOperationsVariant = ProductionRouting
+    BOOOperationInternalID = ProductionRoutingOpIntID
+    BillOfOperationsSequence = ProductionRoutingSequence
+    ValidityEndDate = ValidityStartDate
+    ValidityStartDate = ValidityEndDate
+}
+
+association relationship ProductionRoutingOperation_ProdnRtgOpEquipPRTAssgmtTP {
+    I_ProductionRoutingOperation[0..N] -> R_ProdnRtgOpEquipPRTAssgmtTP[0..N]
+    BillOfOperationsGroup = ProductionRoutingGroup
+    BillOfOperationsVariant = ProductionRouting
+    BOOOperationInternalID = ProductionRoutingOpIntID
+    BillOfOperationsSequence = ProductionRoutingSequence
+    ValidityEndDate = ValidityStartDate
+    ValidityStartDate = ValidityEndDate
+}
+
+association relationship ProductionRoutingOperation_ProdnRtgNonHistoricHdrTP {
+    I_ProductionRoutingOperation[0..N] -> I_ProdnRtgNonHistoricHdrTP[1]
+    BillOfOperationsGroup = ProductionRoutingGroup
+    BillOfOperationsVariant = ProductionRouting
+}
+
+association-to-parent relationship ProductionRoutingOperation_ProdnRtgNonHistoricSqncTP {
+    I_ProductionRoutingOperation[1] -> I_ProdnRtgNonHistoricSqncTP[1]
+    BillOfOperationsGroup = ProductionRoutingGroup
+    BillOfOperationsVariant = ProductionRouting
+    BillOfOperationsSequence = ProductionRoutingSequence
+}

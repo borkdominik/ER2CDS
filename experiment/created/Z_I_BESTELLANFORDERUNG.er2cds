@@ -1,0 +1,87 @@
+er2cds Z_I_BESTELLANFORDERUNG
+
+entity eban {
+    key banfn : CHAR
+    key bnfpo : NUMC
+    bsart : CHAR
+    bstyp : CHAR
+    bsakz : CHAR
+    loekz : CHAR
+    statu : CHAR
+    estkz : CHAR
+    frgkz : CHAR
+    frgzu : CHAR
+    frgst : CHAR
+    ekgrp : CHAR
+    ernam : CHAR
+    erdat : DATS
+    afnam : CHAR
+    txz01 : CHAR
+    matnr : CHAR
+    ematn : CHAR
+    werks : CHAR
+    lgort : CHAR
+    bednr : CHAR
+    matkl : CHAR
+    reswk : CHAR
+    badat : DATS
+    lpein : CHAR
+    lfdat : DATS
+    frgdt : DATS
+    webaz : DEC
+    pstyp : CHAR
+    knttp : CHAR
+    lifnr : CHAR
+    flief : CHAR
+    ekorg : CHAR
+    vrtyp : CHAR
+    konnr : CHAR
+    ktpnr : NUMC
+    infnr : CHAR
+    zugba : CHAR
+    qunum : CHAR
+    qupos : NUMC
+    dispo : CHAR
+    sernr : CHAR
+    ebeln : CHAR
+    ebelp : NUMC
+    bedat : DATS
+    ebakz : CHAR
+    fixkz : CHAR
+    frggr : CHAR
+    frgrl : CHAR
+    kunnr : CHAR
+    emlif : CHAR
+    waers : CUKY
+    idnlf : CHAR
+    gsfrg : CHAR
+    fordn : CHAR
+    fordp : NUMC
+    plifz : DEC
+    berid : CHAR
+    blckd : CHAR
+    anzsn : INT4
+}
+
+entity ebkn {
+    alias _EBKN
+    zebkn : NUMC
+    vproz : DEC
+    sakto : CHAR
+    kostl : CHAR
+    vbeln : CHAR
+    vbelp : NUMC
+    aufnr : CHAR
+    wempf : CHAR
+    ablad : CHAR
+    ps_psp_pnr : NUMC
+    no-out banfn : CHAR
+    no-out bnfpo : NUMC
+}
+
+relationship eban_ebkn {
+    eban[1] -> ebkn[1]
+    join order 1
+    banfn = banfn
+    bnfpo = bnfpo
+}
