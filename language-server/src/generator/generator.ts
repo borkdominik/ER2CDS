@@ -82,7 +82,7 @@ function generateSourceCode(model: ER2CDS): string | undefined {
             ${generateCompositions(model)}
         {
             ${generateKeyAttributes(model)}${model.entities.find(e => e.attributes.find(a => a.type === 'key')) && model.entities.find(e => e.attributes.find(a => a.type !== 'key')) ? ',' : ''}
-            ${generateAttributes(model)}${model.entities.find(e => e.attributes.find(a => a.type !== 'key')) && model.relationships.find(r => r.type === 'association') ? ',' : ''}
+            ${generateAttributes(model)}${model.entities.find(e => e.attributes.find(a => a.type !== 'key')) && model.relationships.find(r => r.type === 'association' || r.type === 'association-to-parent' || r.type === 'composition') ? ',' : ''}
             ${generateAssociationAttributes(model)}
         }
     `;
@@ -259,7 +259,7 @@ function generateAssociationClause(relationship: Relationship, joinClauses: Rela
 
     associationClause = joinClauses.map(jc => {
         return expandToString`
-            $projection.${jc.secondAttribute.ref?.alias ? jc.secondAttribute.ref?.alias : jc.secondAttribute.ref?.name} = ${relationship.target?.target.ref?.alias ? relationship.target?.target.ref?.alias : relationship.target?.target.ref?.name}.${jc.secondAttribute.ref?.name}
+            $projection.${jc.firstAttribute.ref?.alias ? jc.firstAttribute.ref?.alias : jc.firstAttribute.ref?.name} = ${relationship.target?.target.ref?.alias ? relationship.target?.target.ref?.alias : relationship.target?.target.ref?.name}.${jc.secondAttribute.ref?.name}
         `
     }).filter(Boolean).join(' and ');
 

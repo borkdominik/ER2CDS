@@ -30,16 +30,19 @@ export class ER2CDSScopeProvider extends DefaultScopeProvider {
                     scope = this.createScope(attributeStreams);
                 }
             } else {
-                const entity = relationship.source?.target.ref!;
-                scope = this.createScope(stream(entity.attributes.map(attr => this.services.workspace.AstNodeDescriptionProvider.createDescription(attr, attr.name))));
+                const entity = relationship.source?.target.ref;
+                if (entity)
+                    scope = this.createScope(stream(entity.attributes.map(attr => this.services.workspace.AstNodeDescriptionProvider.createDescription(attr, attr.name))));
             }
 
             return scope;
         }
 
         if (context.property === 'secondAttribute') {
-            const entity = (context.container.$container as Relationship).target?.target.ref!;
-            return this.createScope(stream(entity.attributes.map(attr => this.services.workspace.AstNodeDescriptionProvider.createDescription(attr, attr.name))));
+            const entity = (context.container.$container as Relationship).target?.target.ref;
+
+            if (entity)
+                return this.createScope(stream(entity.attributes.map(attr => this.services.workspace.AstNodeDescriptionProvider.createDescription(attr, attr.name))));
         }
 
         return super.getScope(context);
