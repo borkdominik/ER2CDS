@@ -1,0 +1,36 @@
+er2cds ZER2CDS_FLIGHT
+
+entity /DMO/FLIGHT {
+    alias Flight
+    key CARRIER_ID : CHAR as AirlineId
+    key CONNECTION_ID : NUMC as ConnectionId
+    key FLIGHT_DATE : DATS as FlightDate
+    SEATS_OCCUPIED : INT4 as SeatsOccupied
+}
+
+entity /DMO/I_CARRIER {
+    alias Airline
+    no-out AIRLINEID : CHAR
+    NAME : CHAR as AirlineName
+}
+
+entity /DMO/I_CONNECTION {
+    alias Connection
+    no-out AIRLINEID : CHAR
+    no-out CONNECTIONID : NUMC
+    DEPARTUREAIRPORT : CHAR as DepatureAirport
+    DESTINATIONAIRPORT : CHAR as DestinationAirport
+}
+
+relationship FLIGHT_CARRIER {
+    /DMO/FLIGHT[1] -> /DMO/I_CARRIER[0..N]
+    join order 1
+    CARRIER_ID = AIRLINEID
+}
+
+relationship FLIGHT_CONNECTION {
+    /DMO/FLIGHT[1] -> /DMO/I_CONNECTION[0..N]
+    join order 2
+    CARRIER_ID = AIRLINEID
+    CONNECTION_ID = CONNECTIONID
+}

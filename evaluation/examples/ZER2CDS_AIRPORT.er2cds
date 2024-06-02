@@ -1,0 +1,10 @@
+er2cds ZER2CDS_AIRPORT
+
+entity /DMO/I_AIRPORT {
+    alias Airport
+    key AIRPORTID : CHAR as AirportID
+    CITY : CHAR as City
+    COUNTRYCODE : CHAR as CountryCode
+    NAME : CHAR as Name
+}
+
