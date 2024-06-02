@@ -13,7 +13,7 @@ import { Action, SelectAction, Bounds } from 'sprotty-protocol';
 import { EditorPanelChild } from '../editor-panel/editor-panel';
 import { AutoCompleteValue, CreateAttributeAction, CreateJoinClauseAction, DeleteElementAction, RequestAutoCompleteAction, RequestPopupConfirmModelAction, UpdateElementPropertyAction } from '../actions';
 import { DiagramEditorService } from '../services/diagram-editor-service';
-import { ATTRIBUTE_TYPES, CARDINALITIES, COMP_ATTRIBUTE, DATATYPES, Edge, EntityNode, LABEL_ATTRIBUTE_KEY, LABEL_ATTRIBUTE_NO_OUT, LABEL_RELATIONSHIP_ASSOCIATION, LABEL_RELATIONSHIP_ASSOCIATION_TO_PARENT, LABEL_RELATIONSHIP_COMPOSITION, NODE_ENTITY, RELATIONSHIP_TYPES, RelationshipNode } from '../model';
+import { ATTRIBUTE_TYPES, CARDINALITIES, COMP_ATTRIBUTE, DATATYPES, ER2CDSRoot, Edge, EntityNode, LABEL_ATTRIBUTE_KEY, LABEL_ATTRIBUTE_NO_OUT, LABEL_RELATIONSHIP_ASSOCIATION, LABEL_RELATIONSHIP_ASSOCIATION_TO_PARENT, LABEL_RELATIONSHIP_COMPOSITION, NODE_ENTITY, RELATIONSHIP_TYPES, RelationshipNode } from '../model';
 import { AutoCompleteWidget } from './auto-complete/auto-complete-widget';
 import { ElementAutoCompletePropertyItem } from './auto-complete/auto-complete.model';
 import { createAutoCompleteProperty } from './auto-complete/auto-complete.creator';
@@ -76,8 +76,14 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
     }
 
     handle(action: Action): ICommand | Action | void {
-        if (action.kind === SelectAction.KIND && (action as SelectAction).selectedElementsIDs && (action as SelectAction).selectedElementsIDs.length > 0) {
-            this.refresh((action as SelectAction).selectedElementsIDs[0]);
+        if (action.kind === SelectAction.KIND) {
+            if ((action as SelectAction).selectedElementsIDs && (action as SelectAction).selectedElementsIDs.length > 0) {
+                this.refresh((action as SelectAction).selectedElementsIDs[0]);
+            } else {
+                this.activeElementId = undefined;
+                this.refresh();
+            }
+
             this.content.scrollTop = 0;
         }
     }
@@ -138,21 +144,22 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         // Entity
         if (element instanceof EntityNode) {
             this.initializeEntityPropertyPaletteItems(element, propertyPaletteItems);
-        }
 
-        // Attributes
-        if (element instanceof SCompartmentImpl && element.parent && (element.parent as SCompartmentImpl).parent && (element.parent as SCompartmentImpl).parent instanceof EntityNode) {
+            // Attributes
+        } else if (element instanceof SCompartmentImpl && element.parent && (element.parent as SCompartmentImpl).parent && (element.parent as SCompartmentImpl).parent instanceof EntityNode) {
             this.initializeAttributesPropertyPaletteItems(element, propertyPaletteItems);
-        }
 
-        // Relationship
-        if (element instanceof RelationshipNode) {
+            // Relationship
+        } else if (element instanceof RelationshipNode) {
             this.initializeRelationshipPropertyPaletteItems(element, propertyPaletteItems);
-        }
 
-        // Join Clauses
-        if (element instanceof SCompartmentImpl && element.parent && (element.parent as SCompartmentImpl).parent && (element.parent as SCompartmentImpl).parent instanceof RelationshipNode) {
+            // Join Clauses
+        } else if (element instanceof SCompartmentImpl && element.parent && (element.parent as SCompartmentImpl).parent && (element.parent as SCompartmentImpl).parent instanceof RelationshipNode) {
             this.initializeJoinClausesPropertyPaletteItems(element, propertyPaletteItems);
+
+            // ER2CDS
+        } else {
+            this.initializeER2CDSPropertyPaletteItems(propertyPaletteItems);
         }
 
         this.palette = <PropertyPaletteModel>{
@@ -241,7 +248,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
                         onBlur: (item, input) => {
                             this.update(item.elementId, item.propertyId, input.value);
 
-                            if (item.propertyId === 'entity-name' || item.propertyId === 'relationship-name') {
+                            if (item.propertyId === 'name' || item.propertyId === 'entity-name' || item.propertyId === 'relationship-name') {
                                 this.activeElementId = input.value;
                                 this.lastPalettes = [];
                             } else {
@@ -251,7 +258,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
                         onEnter: (item, input) => {
                             this.update(item.elementId, item.propertyId, input.value);
 
-                            if (item.propertyId === 'entity-name' || item.propertyId === 'relationship-name') {
+                            if (item.propertyId === 'name' || item.propertyId === 'entity-name' || item.propertyId === 'relationship-name') {
                                 this.activeElementId = input.value;
                                 this.lastPalettes = [];
                             } else {
@@ -334,6 +341,19 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
 
     protected enable(): void {
         this.uiElements.forEach(element => element.enable());
+    }
+
+    protected initializeER2CDSPropertyPaletteItems(propertyPaletteItems: ElementPropertyItem[]) {
+        const er2cds = this.diagramEditorService.getModelRoot() as ER2CDSRoot;
+
+        const namePaletteItem = <ElementTextPropertyItem>{
+            type: ElementTextPropertyItem.TYPE,
+            elementId: er2cds.id,
+            propertyId: 'name',
+            label: 'Name',
+            text: er2cds.name
+        };
+        propertyPaletteItems.push(namePaletteItem);
     }
 
     protected initializeEntityPropertyPaletteItems(element: SModelElementImpl, propertyPaletteItems: ElementPropertyItem[]) {

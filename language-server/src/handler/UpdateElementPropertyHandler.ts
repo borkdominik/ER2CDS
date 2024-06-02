@@ -29,6 +29,10 @@ export class UpdateElementPropertyHandler {
         modelIndex.add(server.state.currentRoot);
 
         switch (action.propertyId) {
+            case 'name':
+                await this.handleNameEdit(action, model);
+                break;
+
             case 'entity-name':
                 await this.handleEntityNameEdit(action, model);
                 break;
@@ -91,6 +95,10 @@ export class UpdateElementPropertyHandler {
         }
 
         return synchronizeModelToText(model, sourceUri, server, services);
+    }
+
+    protected async handleNameEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
+        model.name = action.value;
     }
 
     protected async handleEntityNameEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {

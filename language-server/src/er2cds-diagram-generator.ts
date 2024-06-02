@@ -35,7 +35,7 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
 
         const graph: ER2CDSRoot = {
             type: GRAPH,
-            id: sm.name ?? 'root',
+            id: sm.name ? args.idCache.uniqueId(sm.name) : args.idCache.uniqueId('root'),
             name: sm.name,
             children: []
         };

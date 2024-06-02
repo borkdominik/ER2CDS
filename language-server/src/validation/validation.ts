@@ -114,10 +114,6 @@ export class ER2CDSValidator {
         ).catch(
             () => Promise.resolve()
         );
-
-        if (!entity.attributes || entity.attributes.length <= 0) {
-            accept('warning', `Entity ${entity.name} has no attributes`, { node: entity, property: 'attributes' });
-        }
     }
 
     async checkAttribute(attribute: Attribute, accept: ValidationAcceptor): Promise<void> {
@@ -195,8 +191,16 @@ export class ER2CDSValidator {
             accept('error', `Entity ${relationshipEntity.target.$refText} does not exists`, { node: relationshipEntity, property: 'target' });
         }
 
-        if (!relationshipEntity.cardinality) {
-            accept('warning', `Cardinality for ${relationshipEntity.target.$refText} missing`, { node: relationshipEntity, property: 'target' });
+        if (relationshipEntity.$container.type !== 'association-to-parent') {
+            if (!relationshipEntity.cardinality) {
+                accept('warning', `Cardinality for ${relationshipEntity.target.$refText} missing`, { node: relationshipEntity, property: 'target' });
+            }
+        }
+
+        if (relationshipEntity.$container.type !== 'composition') {
+            if (relationshipEntity.target.ref && (!relationshipEntity.target.ref.attributes || relationshipEntity.target.ref.attributes.length <= 0)) {
+                accept('warning', `Entity ${relationshipEntity.target.ref.name} has no attributes`, { node: relationshipEntity.target.ref, property: 'attributes' });
+            }
         }
     }
 
