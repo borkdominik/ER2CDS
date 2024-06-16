@@ -33,7 +33,7 @@ export class CreateAttributeActionHandler {
         const newDatatype: DataType = {
             $type: 'DataType',
             $container: newAttribute,
-            type: 'STRING'
+            type: 'CHAR'
         }
 
         newAttribute.datatype = newDatatype;
