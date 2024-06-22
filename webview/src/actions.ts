@@ -81,18 +81,16 @@ export interface UpdateElementPropertyAction extends Action {
     elementId: string;
     propertyId: string;
     value: string;
-    datatype?: string;
 }
 export namespace UpdateElementPropertyAction {
     export const KIND = 'updateElementProperty';
 
-    export function create(elementId: string, propertyId: string, value: string, datatype?: string): UpdateElementPropertyAction {
+    export function create(elementId: string, propertyId: string, value: string): UpdateElementPropertyAction {
         return {
             kind: KIND,
             elementId: elementId,
             propertyId: propertyId,
-            value: value,
-            datatype: datatype
+            value: value
         };
     }
 }
