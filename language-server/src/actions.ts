@@ -189,10 +189,9 @@ export namespace MarkerKind {
     export const ERROR = 'error';
 }
 export interface Marker {
-    readonly label: string;
-    readonly description: string;
     readonly elementId: string;
     readonly kind: string;
+    readonly description: string;
 }
 export interface SetMarkersAction extends ResponseAction {
     kind: typeof SetMarkersAction.KIND;
