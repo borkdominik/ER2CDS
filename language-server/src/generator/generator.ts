@@ -227,7 +227,7 @@ function generateOneOneAssociation(model: ER2CDS, relationship: Relationship): s
 function generateOneManyAssociation(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-            association[0..*] to ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined} on ${generateAssociationClause(relationship, relationship.joinClauses)}
+            association[1..*] to ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined} on ${generateAssociationClause(relationship, relationship.joinClauses)}
         `;
     }
 
