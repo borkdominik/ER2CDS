@@ -13,4 +13,5 @@ export const { shared } = createER2CDSServices({ connection, ...ER2CDSFileSystem
 // Start the language server with the shared services
 startLanguageServer(shared);
 
+// Add a diagram handler
 addDiagramHandler(connection, shared);

@@ -8,7 +8,7 @@ import { serialize } from '../serializer/serializer.js';
 import { URI } from 'langium';
 import { ER2CDSFileSystem } from '../er2cds-file-system-provider.js';
 
-export async function importCds(entityName: string, fileName: string): Promise<void> {
+export async function importCDS(entityName: string, fileName: string): Promise<void> {
     const agent = new Agent({ rejectUnauthorized: false });
 
     entityName = entityName.toUpperCase();
