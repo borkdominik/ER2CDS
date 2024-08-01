@@ -14,7 +14,7 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.window.showInformationMessage('ER2CDS Extension is active.', ...[openHelp])
         .then((selection) => {
             if (selection === openHelp) {
-                vscode.env.openExternal(vscode.Uri.parse('https://github.com/big-thesis/Huber.ER2CDS'));
+                vscode.env.openExternal(vscode.Uri.parse('https://github.com/borkdominik/ER2CDS/'));
             }
         });
 
