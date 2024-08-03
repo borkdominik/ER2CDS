@@ -1,6 +1,11 @@
 {
   "name": "er2cds",
   "version": "0.0.1",
+  "publisher": "GallusHuber",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/borkdominik/ER2CDS"
+  },
   "engines": {
     "vscode": "^1.86.0"
   },
@@ -178,6 +183,7 @@
   "devDependencies": {
     "@types/node": "^20.11.17",
     "@types/vscode": "^1.86.0",
+    "@vscode/vsce": "^2.31.1",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
     "webpack": "^5.90.1",
@@ -186,6 +192,8 @@
   "scripts": {
     "clean": "rm -rf out",
     "build": "webpack --mode=development",
-    "watch": "webpack watch --mode=development"
+    "build:production": "webpack --mode=production",
+    "watch": "webpack watch --mode=development",
+    "package": "vsce package"
   }
 }

@@ -45,7 +45,8 @@ const config = {
                     }
                 ]
             }
-        ]
+        ],
+        unknownContextCritical: false
     }
 };
 module.exports = config;

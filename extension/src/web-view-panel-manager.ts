@@ -37,8 +37,8 @@ export class ER2CDSWebViewPanelManager extends LspWebviewPanelManager {
     protected override createWebview(identifier: SprottyDiagramIdentifier): vscode.WebviewPanel {
         const extensionPath = this.options.extensionUri.fsPath;
         return this.createWebviewPanel(identifier, {
-            localResourceRoots: [createFileUri(extensionPath, '..', 'webview', 'out')],
-            scriptUri: createFileUri(extensionPath, '..', 'webview', 'out', 'webview.js')
+            localResourceRoots: [createFileUri(extensionPath, '.')],
+            scriptUri: createFileUri(extensionPath, '.', 'out', 'webview.js')
         });
     }
 

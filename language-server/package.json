@@ -7,7 +7,6 @@
         "src"
     ],
     "dependencies": {
-        "@types/vscode": "^1.87.0",
         "elkjs": "^0.9.1",
         "https": "^1.0.0",
         "langium": "~2.1.0",
@@ -19,6 +18,7 @@
         "sprotty-vscode": "^1.0.0"
     },
     "devDependencies": {
+        "@types/vscode": "^1.87.0",
         "@types/node": "~16.18.41",
         "esbuild": "^0.20.0",
         "langium-cli": "~2.1.0",
@@ -27,6 +27,7 @@
     "scripts": {
         "clean": "rm -rf out",
         "build": "node esbuild.mjs",
+        "build:production": "node esbuild.mjs --minify",
         "watch": "node --watch esbuild.mjs",
         "langium:generate": "langium generate"
     }

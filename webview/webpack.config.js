@@ -10,7 +10,7 @@ const config = {
 
     entry: './src/webview.ts',
     output: {
-        path: path.resolve(__dirname, 'out'),
+        path: path.resolve(__dirname, '../extension/out'),
         filename: 'webview.js',
     },
     devtool: 'source-map',
@@ -38,6 +38,11 @@ const config = {
                 type: 'asset/resource'
             },
         ]
+    },
+    performance: {
+        hints: false,
+        maxEntrypointSize: 2048,
+        maxAssetSize: 2048
     },
     ignoreWarnings: [/Failed to parse source map/]
 };

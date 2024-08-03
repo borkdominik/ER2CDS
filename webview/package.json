@@ -26,6 +26,7 @@
     "scripts": {
         "clean": "rm -rf out",
         "build": "webpack --mode=development",
+        "build:production": "webpack --mode=production",
         "watch": "webpack watch --mode=development"
     }
 }

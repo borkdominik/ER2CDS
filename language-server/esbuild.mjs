@@ -1,11 +1,13 @@
 //@ts-check
 import * as esbuild from 'esbuild';
+import path from 'path';
 
+const __dirname = import.meta.dirname;
 const watch = process.argv.includes('--watch');
 
 const ctx = await esbuild.context({
     entryPoints: ['src/server.ts'],
-    outdir: 'out',
+    outdir: path.resolve(__dirname, '../extension/out'),
     bundle: true,
     target: "ES2022",
     loader: { '.ts': 'ts' },
