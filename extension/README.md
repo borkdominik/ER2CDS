@@ -16,10 +16,10 @@
   <b>Open-source SAP CDS modeling tool for VS Code supporting hybrid, textual- and graphical editing!</b></br>
 </p>
 
-<!-- TODO DEMO -->
-<!-- <p align="center">
-  <img src="" alt="Demo" width="800" />
-</p> -->
+<!-- DEMO -->
+<p align="center">
+  <img src="../extension/media/er2cds.gif" alt="Demo" width="800" />
+</p>
 
 **Main features:**
 - **📝 Textual Language** for the specification of ER2CDS models in the textual editor. Assistive *validation* and *rich-text editing* support, enabled with the [Language Server Protocol](https://microsoft.github.io/language-server-protocol/), allows to quickly get familiar with the available language constructs.
