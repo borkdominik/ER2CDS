@@ -1,6 +1,6 @@
 <!-- LOGO -->
 <p align="center">
-  <img src="../extension/media/er2cds_logo.png" alt="Logo" width="150" height="150" />
+  <img src="./media/er2cds_logo.png" alt="Logo" width="150" height="150" />
 </p>
 
 <!-- TITLE -->
@@ -18,7 +18,7 @@
 
 <!-- DEMO -->
 <p align="center">
-  <img src="../extension/media/er2cds.gif" alt="Demo" width="800" />
+  <img src="./media/er2cds.gif" alt="Demo" width="800" />
 </p>
 
 **Main features:**
@@ -85,6 +85,12 @@ relationship manages {
 
 **Open the Diagram**
 The corresponding *ER2CDS Diagram* can be opened by using the button in the editor toolbar, the context menu when right-clicking the file, or by pressing <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>O</kbd>.
+
+**(Optional) Connect SAP S/4HANA**
+1. Create the [CDS view entities](../odata-service/)
+2. Create the [Service Definition](../odata-service/ZER2CDS.sdef)
+3. Create a Service Binding (ZER2CDS) for the Service Definition
+4. Publish the service under /sap/opu/odata/sap/ZER2CDS
 
 **Learn More**
 For more information on how to use the tool, see the [ER2CDS Wiki](https://github.com/borkdominik/ER2CDS/wiki/).

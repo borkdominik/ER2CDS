@@ -1,0 +1,9 @@
+@EndUserText.label: 'ER2CDS Service'
+define service ZER2CDS {
+  expose ZER2CDS_ENTITIES as Entities;
+  expose ZER2CDS_ATTRIBUTES as Attributes;
+  expose ZER2CDS_IMPORT_SELECTLIST as ImportSelectList;
+  expose ZER2CDS_IMPORT_CONDITION as ImportCondition;
+  expose ZER2CDS_IMPORT_ASSOC_DEF as ImportAssocDef;
+  expose ZER2CDS_IMPORT_FROMCLAUSE as ImportFromClause;
+}
