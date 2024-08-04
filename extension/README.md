@@ -90,7 +90,7 @@ The corresponding *ER2CDS Diagram* can be opened by using the button in the edit
 1. Create the [CDS view entities](../odata-service/)
 2. Create the [Service Definition](../odata-service/ZER2CDS.sdef)
 3. Create a Service Binding (ZER2CDS) for the Service Definition
-4. Publish the service under /sap/opu/odata/sap/ZER2CDS
+4. Publish the service under `/sap/opu/odata/sap/ZER2CDS`
 
 **Learn More**
 For more information on how to use the tool, see the [ER2CDS Wiki](https://github.com/borkdominik/ER2CDS/wiki/).
