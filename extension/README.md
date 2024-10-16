@@ -1,8 +1,8 @@
 <!-- BADGES -->
 <p align="center">
-  <img alt="Visual Studio Marketplace Installs" src="https://img.shields.io/visual-studio-marketplace/i/BIGModelingTools.er2cds?color=9cf" height="20"/>
-  <img alt="Visual Studio Marketplace Version" src="https://img.shields.io/visual-studio-marketplace/v/BIGModelingTools.er2cds" height="20"/>
-  <img alt="Visual Studio Marketplace Last Updated" src="https://img.shields.io/visual-studio-marketplace/last-updated/BIGModelingTools.er2cds?color=blue" height="20"/>
+  <img alt="Visual Studio Marketplace Installs" src="https://img.shields.io/visual-studio-marketplace/i/BIGModelingTools.er2cds?color=blue" height="20"/>
+  <img alt="Visual Studio Marketplace Version" src="https://img.shields.io/visual-studio-marketplace/v/BIGModelingTools.er2cds?color=orange" height="20"/>
+  <img alt="Visual Studio Marketplace Last Updated" src="https://img.shields.io/visual-studio-marketplace/last-updated/BIGModelingTools.er2cds?color=green" height="20"/>
   <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/borkdominik/ER2CDS?color=lightgrey" height="20"/>
 </p>
 
