@@ -54,11 +54,8 @@ The language server is realized with [Langium](https://langium.org/), while the 
 
 
 ## Usage
-Download and install the extension using the [.vsix](./er2cds-1.0.0.vsix) file provided in this repository.
 
-```bash
-code --install-extension er2cds-1.0.0.vsix
-```
+Download and install the extension from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=BIGModelingTools.er2cds), see the [Installation](https://github.com/borkdominik/ER2CDS/wiki/Installation) page in the Wiki for instructions.
 
 **New ER2CDS Model**
 After installation, ER2CDS models can be created in `.er2cds` files. Use the example below to get started with a basic model.
