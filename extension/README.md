@@ -1,8 +1,3 @@
-<!-- LOGO -->
-<p align="center">
-  <img src="./media/er2cds_logo.png" alt="Logo" width="150" height="150" />
-</p>
-
 <!-- TITLE -->
 <h1 align="center">ER2CDS</h1>
 
@@ -18,7 +13,7 @@
 
 <!-- DEMO -->
 <p align="center">
-  <img src="./media/er2cds.gif" alt="Demo" width="800" />
+  <img src="https://github.com/user-attachments/assets/b10a1a8e-2ccb-40cc-9262-84a3a96fb491" alt="Demo" width="800" />
 </p>
 
 **Main features:**
