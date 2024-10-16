@@ -1,7 +1,8 @@
 {
   "name": "er2cds",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "scripts": {
-    "package": "npm run build:production --prefix ./extension && npm run build:production --prefix ./language-server && npm run build:production --prefix ./webview &&  npm run package --prefix ./extension"
+    "package": "npm run build:production --prefix ./extension && npm run build:production --prefix ./language-server && npm run build:production --prefix ./webview &&  npm run package --prefix ./extension",
+    "publish": "npm run publish --prefix ./extension"
   }
 }

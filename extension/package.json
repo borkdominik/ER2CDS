@@ -1,7 +1,9 @@
 {
   "name": "er2cds",
-  "version": "0.0.1",
-  "publisher": "GallusHuber",
+  "displayName": "bigER2CDS",
+  "version": "1.0.0",
+  "publisher": "BIGModelingTools",
+  "icon": "media/er2cds_logo.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/borkdominik/ER2CDS"
@@ -46,24 +48,6 @@
         "priority": "option"
       }
     ],
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "er2cds-container",
-          "title": "ER2CDS",
-          "icon": "$(symbol-structure)"
-        }
-      ]
-    },
-    "views": {
-      "er2cds-container": [
-        {
-          "id": "er2cds",
-          "type": "webview",
-          "name": "ER2CDS"
-        }
-      ]
-    },
     "commands": [
       {
         "command": "er2cds.diagram.open",
@@ -183,7 +167,6 @@
   "devDependencies": {
     "@types/node": "^20.11.17",
     "@types/vscode": "^1.86.0",
-    "@vscode/vsce": "^2.31.1",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
     "webpack": "^5.90.1",
@@ -194,6 +177,7 @@
     "build": "webpack --mode=development",
     "build:production": "webpack --mode=production",
     "watch": "webpack watch --mode=development",
-    "package": "vsce package"
+    "package": "vsce package",
+    "publish": "vsce publish"
   }
 }
