@@ -1,7 +1,7 @@
 {
   "name": "er2cds",
-  "displayName": "bigER2CDS",
-  "version": "1.0.1",
+  "displayName": "bigER2CDS - Entity Relationship Modeling for SAP Core Data Services",
+  "version": "1.0.2",
   "publisher": "BIGModelingTools",
   "icon": "media/er2cds_logo.png",
   "repository": {
@@ -13,6 +13,17 @@
   },
   "categories": [
     "Programming Languages"
+  ],
+  "keywords": [
+    "Modeling Tool",
+    "Model-driven engineering",
+    "Entity Relationship",
+    "ER Diagram",
+    "SAP Core Data Services",
+    "CDS",
+    "DSL",
+    "Language Server",
+    "LSP"
   ],
   "main": "./out/extension",
   "contributes": {
