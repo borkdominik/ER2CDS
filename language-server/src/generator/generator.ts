@@ -326,7 +326,7 @@ function generateOneOneComposition(model: ER2CDS, relationship: Relationship): s
 function generateOneManyComposition(model: ER2CDS, relationship: Relationship): string | undefined {
     if (model.entities && model.entities.length > 0) {
         return expandToString`
-            composition[0..*] of ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined}
+            composition[1..*] of ${relationship.target?.target.ref?.name}${relationship.target?.target.ref?.alias ? ` as ${relationship.target?.target.ref?.alias}` : undefined}
         `;
     }
 
