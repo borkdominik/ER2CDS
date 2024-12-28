@@ -85,6 +85,7 @@ function generateSourceCode(model: ER2CDS): string | undefined {
             ${generateAttributes(model)}${model.entities.find(e => e.attributes.find(a => a.type !== 'key')) && model.relationships.find(r => r.type === 'association' || r.type === 'association-to-parent' || r.type === 'composition') ? ',' : ''}
             ${generateAssociationAttributes(model)}
         }
+        ${generateWhereClause(model)}
     `;
 }
 
@@ -417,6 +418,22 @@ function generateAssociationAttributes(model: ER2CDS): string | undefined {
         });
 
         return associationAttributes.filter(Boolean).join(',\n');
+    }
+
+    return undefined;
+}
+
+function generateWhereClause(model: ER2CDS): string | undefined {
+    if (model.entities.some(e => e.whereClauses && e.whereClauses.length > 0)) {
+        let whereClauses: string[] = [];
+
+        model.entities.filter(e => e.whereClauses && e.whereClauses.length > 0).forEach(e => {
+            e.whereClauses.forEach(w => {
+                whereClauses.push(expandToString`${e.alias ? e?.alias : e.name}.${w.attribute.ref?.name} ${w.comparison} ${w.fixValue}`)
+            });
+        });
+
+        return expandToString`where\n${whereClauses.filter(Boolean).join(' and\n')}`;
     }
 
     return undefined;

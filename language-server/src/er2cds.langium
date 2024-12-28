@@ -8,7 +8,11 @@ Entity:
 	'entity' name=ID '{'
 		('alias' alias=ID)?
 		(attributes+=Attribute)*
+		('where' (whereClauses+=EntityWhereClause)*)?
 	'}';
+
+EntityWhereClause:
+	(attribute=[Attribute:ID] comparison=ComparisonType fixValue=FixValueType);
 
 Attribute:
 	(type=AttributeType)? name=ID (':' datatype=DataType)? ('as' alias=ID)?;
@@ -60,8 +64,14 @@ ONE returns string:
 ZERO_MANY returns string:
 	'0..N';
 
+type JoinOrderType = number;
 JoinOrderType returns number:
 	INT | ONE
+;
+
+type FixValueType = string | number;
+FixValueType returns FixValueType:
+	CHAR | INT | ONE
 ;
 
 type ComparisonType = '=' | '<>' | '<' | '>' | '<=' | '>=';
@@ -83,6 +93,7 @@ GREATER_EQUAL returns string:
 
 terminal ID: /[_/a-zA-Z][\w_/]*/;
 terminal INT returns number: /[0-9]+/;
+terminal CHAR: /\'[\s\S]*?\'/;
 
 hidden terminal WS: /\s+/;
 hidden terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;

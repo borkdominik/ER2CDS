@@ -65,6 +65,18 @@ export class UpdateElementPropertyHandler {
                 await this.handleAttributeAliasEdit(action, model);
                 break;
 
+            case 'where-clause-attribute-name':
+                await this.handleWhereClauseAttributeNameEdit(action, model);
+                break;
+
+            case 'where-clause-value':
+                await this.handleWhereClauseValueEdit(action, model);
+                break;
+
+            case 'where-clause-comparison':
+                await this.handleWhereClauseComparisonEdit(action, model);
+                break;
+
             case 'source-join-table':
                 await this.handleSourceJoinTableEdit(action, model);
                 break;
@@ -239,6 +251,57 @@ export class UpdateElementPropertyHandler {
         attribute.alias = action.value;
     }
 
+    protected async handleWhereClauseAttributeNameEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
+        const split = action.elementId.split('.');
+        const entityId = split[0];
+        const attributeId = split[1];
+
+        const entity = model.entities.find(e => e.name === entityId);
+        const whereClause = entity?.whereClauses.find(wc => wc.attribute.$refText === attributeId);
+
+        if (!entity || !whereClause)
+            return Promise.resolve();
+
+        const newAttribute: Attribute = {
+            $type: 'Attribute',
+            $container: null!,
+            name: action.value
+        }
+
+        whereClause.attribute = {
+            ref: newAttribute,
+            $refText: action.value
+        }
+    }
+
+    protected async handleWhereClauseValueEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
+        const split = action.elementId.split('.');
+        const entityId = split[0];
+        const attributeId = split[1];
+
+        const entity = model.entities.find(e => e.name === entityId);
+        const whereClause = entity?.whereClauses.find(wc => wc.attribute.$refText === attributeId);
+
+        if (!entity || !whereClause)
+            return Promise.resolve();
+
+        whereClause.fixValue = action.value;
+    }
+
+    protected async handleWhereClauseComparisonEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
+        const split = action.elementId.split('.');
+        const entityId = split[0];
+        const attributeId = split[1];
+
+        const entity = model.entities.find(e => e.name === entityId);
+        const whereClause = entity?.whereClauses.find(wc => wc.attribute.$refText === attributeId);
+
+        if (!entity || !whereClause)
+            return Promise.resolve();
+
+        whereClause.comparison = action.value as ComparisonType;
+    }
+
     protected async handleSourceJoinTableEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
         const relationship = model.relationships.find(r => r.name === action.elementId);
         const source = model.entities.find(e => e.name === action.value);
@@ -354,7 +417,6 @@ export class UpdateElementPropertyHandler {
         if (!relationship || !joinClause)
             return Promise.resolve();
 
-        console.log(action.value as ComparisonType);
         joinClause.comparison = action.value as ComparisonType;
     }
 }

@@ -61,6 +61,21 @@ export namespace CreateAttributeAction {
     }
 }
 
+export interface CreateWhereClauseAction extends Action {
+    kind: typeof CreateWhereClauseAction.KIND;
+    elementId: string;
+}
+export namespace CreateWhereClauseAction {
+    export const KIND = 'createWhereClause';
+
+    export function create(elementId: string): CreateWhereClauseAction {
+        return {
+            kind: KIND,
+            elementId
+        };
+    }
+}
+
 export interface CreateJoinClauseAction extends Action {
     kind: typeof CreateJoinClauseAction.KIND;
     elementId: string;

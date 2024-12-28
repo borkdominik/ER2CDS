@@ -10,6 +10,7 @@ import { AbstractAstReflection } from 'langium';
 export const ER2CDSTerminals = {
     ID: /[_/a-zA-Z][\w_/]*/,
     INT: /[0-9]+/,
+    CHAR: /\'[\s\S]*?\'/,
     WS: /\s+/,
     ML_COMMENT: /\/\*[\s\S]*?\*\//,
     SL_COMMENT: /\/\/[^\n\r]*/,
@@ -45,6 +46,8 @@ export function isEQUAL(item: unknown): item is EQUAL {
     return item === '=';
 }
 
+export type FixValueType = number | string;
+
 export type GREATER_EQUAL = '>=';
 
 export function isGREATER_EQUAL(item: unknown): item is GREATER_EQUAL {
@@ -58,10 +61,6 @@ export function isGREATER_THAN(item: unknown): item is GREATER_THAN {
 }
 
 export type JoinOrderType = number;
-
-export function isJoinOrderType(item: unknown): item is JoinOrderType {
-    return typeof item === 'number';
-}
 
 export type KEY = 'key';
 
@@ -140,12 +139,27 @@ export interface Entity extends AstNode {
     alias?: string
     attributes: Array<Attribute>
     name: string
+    whereClauses: Array<EntityWhereClause>
 }
 
 export const Entity = 'Entity';
 
 export function isEntity(item: unknown): item is Entity {
     return reflection.isInstance(item, Entity);
+}
+
+export interface EntityWhereClause extends AstNode {
+    readonly $container: Entity;
+    readonly $type: 'EntityWhereClause';
+    attribute: Reference<Attribute>
+    comparison: ComparisonType
+    fixValue: FixValueType
+}
+
+export const EntityWhereClause = 'EntityWhereClause';
+
+export function isEntityWhereClause(item: unknown): item is EntityWhereClause {
+    return reflection.isInstance(item, EntityWhereClause);
 }
 
 export interface ER2CDS extends AstNode {
@@ -210,6 +224,7 @@ export type ER2CDSAstType = {
     DataType: DataType
     ER2CDS: ER2CDS
     Entity: Entity
+    EntityWhereClause: EntityWhereClause
     Relationship: Relationship
     RelationshipEntity: RelationshipEntity
     RelationshipJoinClause: RelationshipJoinClause
@@ -218,7 +233,7 @@ export type ER2CDSAstType = {
 export class ER2CDSAstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return ['Attribute', 'DataType', 'ER2CDS', 'Entity', 'Relationship', 'RelationshipEntity', 'RelationshipJoinClause'];
+        return ['Attribute', 'DataType', 'ER2CDS', 'Entity', 'EntityWhereClause', 'Relationship', 'RelationshipEntity', 'RelationshipJoinClause'];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
@@ -232,12 +247,13 @@ export class ER2CDSAstReflection extends AbstractAstReflection {
     getReferenceType(refInfo: ReferenceInfo): string {
         const referenceId = `${refInfo.container.$type}:${refInfo.property}`;
         switch (referenceId) {
-            case 'RelationshipEntity:target': {
-                return Entity;
-            }
+            case 'EntityWhereClause:attribute':
             case 'RelationshipJoinClause:firstAttribute':
             case 'RelationshipJoinClause:secondAttribute': {
                 return Attribute;
+            }
+            case 'RelationshipEntity:target': {
+                return Entity;
             }
             default: {
                 throw new Error(`${referenceId} is not a valid reference id.`);
@@ -251,7 +267,8 @@ export class ER2CDSAstReflection extends AbstractAstReflection {
                 return {
                     name: 'Entity',
                     mandatory: [
-                        { name: 'attributes', type: 'array' }
+                        { name: 'attributes', type: 'array' },
+                        { name: 'whereClauses', type: 'array' }
                     ]
                 };
             }

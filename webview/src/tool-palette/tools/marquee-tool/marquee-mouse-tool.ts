@@ -68,7 +68,6 @@ export class MarqueeMouseListener extends MouseListener {
 
         this.marqueeUtil.updateStartPoint(getAbsolutePosition(target, event));
 
-        console.log(event);
         if (event.ctrlKey)
             this.previouslySelected = Array.from(target.root.index.all().map(e => e as SModelElementImpl & InternalBoundsAware).filter(e => isSelected(e)).map(e => e.id));
 

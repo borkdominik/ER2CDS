@@ -1,7 +1,7 @@
 
 import { GeneratorContext, IdCache, LangiumDiagramGenerator } from 'langium-sprotty';
 import { SCompartment, SLabel } from 'sprotty-protocol';
-import { Attribute, ER2CDS, Entity, Relationship, RelationshipJoinClause, RelationshipEntity } from './generated/ast.js';
+import { Attribute, ER2CDS, Entity, Relationship, RelationshipJoinClause, RelationshipEntity, EntityWhereClause } from './generated/ast.js';
 import { ER2CDSServices } from './er2cds-module.js';
 import { AstNode } from 'langium';
 import { LayoutOptions } from 'elkjs';
@@ -21,7 +21,10 @@ import {
     LABEL_RELATIONSHIP_ASSOCIATION_TO_PARENT,
     LABEL_RELATIONSHIP_COMPOSITION,
     LABEL_ENTITY_ALIAS,
-    LABEL_JOIN_CLAUSE_COMPARISON
+    LABEL_JOIN_CLAUSE_COMPARISON,
+    LABEL_VALUE,
+    COMP_WHERE_CLAUSES,
+    COMP_WHERE_CLAUSE
 } from './model.js';
 
 export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
@@ -96,6 +99,18 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
             children: entity.attributes.map(a => this.generateAttributeLabels(a, entityId, idCache))
         };
         node.children?.push(attributesCompartment);
+
+        const whereClausesCompartment = <SCompartment>{
+            type: COMP_WHERE_CLAUSES,
+            id: idCache.uniqueId(entityId + '.where-clauses'),
+            layout: 'vbox',
+            layoutOptions: <LayoutOptions>{
+                HAlign: 'left',
+                VGap: '1.0'
+            },
+            children: entity.whereClauses.map(w => this.generateWhereClauseLabels(w, entityId, idCache))
+        };
+        node.children?.push(whereClausesCompartment);
 
         return node;
     }
@@ -266,6 +281,32 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
         }
 
         return ' ';
+    }
+
+    protected generateWhereClauseLabels(entityWhereClause: EntityWhereClause, entityId: string, idCache: IdCache<AstNode>): SCompartment {
+        const attributeId = idCache.uniqueId(entityId + '.' + entityWhereClause.attribute.$refText + '.' + entityWhereClause.fixValue, entityWhereClause);
+
+        return <SCompartment>{
+            type: COMP_WHERE_CLAUSE,
+            id: attributeId,
+            children: [
+                <SLabel>{
+                    id: attributeId + '.where-clause-attribute-label',
+                    text: entityWhereClause.attribute?.$refText,
+                    type: LABEL_ATTRIBUTE
+                },
+                <SLabel>{
+                    id: attributeId + '.where-clause-value-label',
+                    text: entityWhereClause.fixValue,
+                    type: LABEL_VALUE
+                },
+                <SLabel>{
+                    id: attributeId + '.where-clause-comparison-label',
+                    text: entityWhereClause.comparison,
+                    type: LABEL_JOIN_CLAUSE_COMPARISON
+                }
+            ]
+        };
     }
 
     protected generateJoinClauseLabels(relationshipJoinClause: RelationshipJoinClause, relationshipId: string, idCache: IdCache<AstNode>): SCompartment {
