@@ -20,7 +20,8 @@ import {
     LABEL_RELATIONSHIP_ASSOCIATION,
     LABEL_RELATIONSHIP_ASSOCIATION_TO_PARENT,
     LABEL_RELATIONSHIP_COMPOSITION,
-    LABEL_ENTITY_ALIAS
+    LABEL_ENTITY_ALIAS,
+    LABEL_JOIN_CLAUSE_COMPARISON
 } from './model.js';
 
 export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
@@ -283,6 +284,11 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
                     id: attributeId + '.join-clause-second-label',
                     text: relationshipJoinClause.secondAttribute?.$refText,
                     type: LABEL_ATTRIBUTE
+                },
+                <SLabel>{
+                    id: attributeId + '.join-clause-comparison-label',
+                    text: relationshipJoinClause.comparison,
+                    type: LABEL_JOIN_CLAUSE_COMPARISON
                 }
             ]
         };

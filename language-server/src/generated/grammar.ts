@@ -30,7 +30,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@18"
+                "$ref": "#/rules@25"
               },
               "arguments": []
             }
@@ -90,7 +90,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@18"
+                "$ref": "#/rules@25"
               },
               "arguments": []
             }
@@ -113,7 +113,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@18"
+                    "$ref": "#/rules@25"
                   },
                   "arguments": []
                 }
@@ -173,7 +173,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@18"
+                "$ref": "#/rules@25"
               },
               "arguments": []
             }
@@ -214,7 +214,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@18"
+                    "$ref": "#/rules@25"
                   },
                   "arguments": []
                 }
@@ -241,7 +241,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
         "terminal": {
           "$type": "RuleCall",
           "rule": {
-            "$ref": "#/rules@18"
+            "$ref": "#/rules@25"
           },
           "arguments": []
         }
@@ -283,7 +283,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@18"
+                "$ref": "#/rules@25"
               },
               "arguments": []
             }
@@ -456,7 +456,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
               "terminal": {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@18"
+                  "$ref": "#/rules@25"
                 },
                 "arguments": []
               },
@@ -464,8 +464,16 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
             }
           },
           {
-            "$type": "Keyword",
-            "value": "="
+            "$type": "Assignment",
+            "feature": "comparison",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@18"
+              },
+              "arguments": []
+            }
           },
           {
             "$type": "Assignment",
@@ -479,7 +487,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
               "terminal": {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@18"
+                  "$ref": "#/rules@25"
                 },
                 "arguments": []
               },
@@ -713,7 +721,7 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@19"
+              "$ref": "#/rules@26"
             },
             "arguments": []
           },
@@ -725,6 +733,156 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
             "arguments": []
           }
         ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ComparisonType",
+      "returnType": {
+        "$ref": "#/types@3"
+      },
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@19"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@20"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@21"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@22"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@23"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@24"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "EQUAL",
+      "dataType": "string",
+      "definition": {
+        "$type": "Keyword",
+        "value": "="
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "NOT_EQUAL",
+      "dataType": "string",
+      "definition": {
+        "$type": "Keyword",
+        "value": "<>"
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "LOWER_THAN",
+      "dataType": "string",
+      "definition": {
+        "$type": "Keyword",
+        "value": "<"
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "GREATER_THAN",
+      "dataType": "string",
+      "definition": {
+        "$type": "Keyword",
+        "value": ">"
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "LOWER_EQUAL",
+      "dataType": "string",
+      "definition": {
+        "$type": "Keyword",
+        "value": "<="
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "GREATER_EQUAL",
+      "dataType": "string",
+      "definition": {
+        "$type": "Keyword",
+        "value": ">="
       },
       "definesHiddenTokens": false,
       "entry": false,
@@ -840,6 +998,39 @@ export const ER2CDSGrammar = (): Grammar => loadedER2CDSGrammar ?? (loadedER2CDS
           {
             "$type": "SimpleType",
             "stringType": "0..N"
+          }
+        ]
+      }
+    },
+    {
+      "$type": "Type",
+      "name": "ComparisonType",
+      "type": {
+        "$type": "UnionType",
+        "types": [
+          {
+            "$type": "SimpleType",
+            "stringType": "="
+          },
+          {
+            "$type": "SimpleType",
+            "stringType": "<>"
+          },
+          {
+            "$type": "SimpleType",
+            "stringType": "<"
+          },
+          {
+            "$type": "SimpleType",
+            "stringType": ">"
+          },
+          {
+            "$type": "SimpleType",
+            "stringType": "<="
+          },
+          {
+            "$type": "SimpleType",
+            "stringType": ">="
           }
         ]
       }

@@ -4,7 +4,7 @@ import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
 import { ER2CDSGlobal, ER2CDSServices } from '../er2cds-module.js';
 import { UpdateElementPropertyAction } from '../actions.js';
 import { URI } from 'langium';
-import { Attribute, AttributeType, CardinalityType, ER2CDS, RelationshipType } from '../generated/ast.js';
+import { Attribute, AttributeType, CardinalityType, ComparisonType, ER2CDS, RelationshipType } from '../generated/ast.js';
 import { Agent } from 'https';
 import { SapAttribute } from '../model-external.js';
 import { synchronizeModelToText } from '../serializer/serializer.js';
@@ -92,6 +92,11 @@ export class UpdateElementPropertyHandler {
             case 'second-join-clause-attribute-name':
                 await this.handleSecondJoinClauseAttributeEdit(action, model);
                 break;
+
+            case 'join-clause-comparison':
+                await this.handleJoinClauseComparisonEdit(action, model);
+                break;
+
         }
 
         return synchronizeModelToText(model, sourceUri, server, services);
@@ -297,9 +302,9 @@ export class UpdateElementPropertyHandler {
         const firstJoinClauseAttributeId = split[1];
 
         const relationship = model.relationships.find(r => r.name === relationshipId);
-        const attribute = relationship?.joinClauses.find(jc => jc.firstAttribute.$refText === firstJoinClauseAttributeId);
+        const joinClause = relationship?.joinClauses.find(jc => jc.firstAttribute.$refText === firstJoinClauseAttributeId);
 
-        if (!relationship || !attribute)
+        if (!relationship || !joinClause)
             return Promise.resolve();
 
         const newAttribute: Attribute = {
@@ -308,7 +313,7 @@ export class UpdateElementPropertyHandler {
             name: action.value
         }
 
-        attribute.firstAttribute = {
+        joinClause.firstAttribute = {
             ref: newAttribute,
             $refText: action.value
         }
@@ -320,9 +325,9 @@ export class UpdateElementPropertyHandler {
         const secondJoinClauseAttributeId = split[2];
 
         const relationship = model.relationships.find(r => r.name === relationshipId);
-        const attribute = relationship?.joinClauses.find(jc => jc.secondAttribute.$refText === secondJoinClauseAttributeId);
+        const joinClause = relationship?.joinClauses.find(jc => jc.secondAttribute.$refText === secondJoinClauseAttributeId);
 
-        if (!relationship || !attribute)
+        if (!relationship || !joinClause)
             return Promise.resolve();
 
         const newAttribute: Attribute = {
@@ -331,9 +336,25 @@ export class UpdateElementPropertyHandler {
             name: action.value
         }
 
-        attribute.secondAttribute = {
+        joinClause.secondAttribute = {
             ref: newAttribute,
             $refText: action.value
         }
+    }
+
+    protected async handleJoinClauseComparisonEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
+        const split = action.elementId.split('.');
+        const relationshipId = split[0];
+        const firstJoinClauseAttributeId = split[1];
+        const secondJoinClauseAttributeId = split[2];
+
+        const relationship = model.relationships.find(r => r.name === relationshipId);
+        const joinClause = relationship?.joinClauses.find(jc => jc.firstAttribute.$refText === firstJoinClauseAttributeId && jc.secondAttribute.$refText === secondJoinClauseAttributeId);
+
+        if (!relationship || !joinClause)
+            return Promise.resolve();
+
+        console.log(action.value as ComparisonType);
+        joinClause.comparison = action.value as ComparisonType;
     }
 }

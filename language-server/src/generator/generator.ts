@@ -178,7 +178,7 @@ function generateJoinClause(relationship: Relationship, joinClauses: Relationshi
 
     joinClause = joinClauses.map(jc => {
         return expandToString`
-            ${relationship.source?.target.ref?.alias ? relationship.source?.target.ref?.alias : relationship.source?.target.ref?.name}.${jc.firstAttribute.ref?.name} = ${relationship.target?.target.ref?.alias ? relationship.target?.target.ref?.alias : relationship.target?.target.ref?.name}.${jc.secondAttribute.ref?.name}
+            ${relationship.source?.target.ref?.alias ? relationship.source?.target.ref?.alias : relationship.source?.target.ref?.name}.${jc.firstAttribute.ref?.name} ${jc.comparison} ${relationship.target?.target.ref?.alias ? relationship.target?.target.ref?.alias : relationship.target?.target.ref?.name}.${jc.secondAttribute.ref?.name}
         `
     }).filter(Boolean).join(' and ');
 
@@ -259,7 +259,7 @@ function generateAssociationClause(relationship: Relationship, joinClauses: Rela
 
     associationClause = joinClauses.map(jc => {
         return expandToString`
-            $projection.${jc.firstAttribute.ref?.alias ? jc.firstAttribute.ref?.alias : jc.firstAttribute.ref?.name} = ${relationship.target?.target.ref?.alias ? relationship.target?.target.ref?.alias : relationship.target?.target.ref?.name}.${jc.secondAttribute.ref?.name}
+            $projection.${jc.firstAttribute.ref?.alias ? jc.firstAttribute.ref?.alias : jc.firstAttribute.ref?.name} ${jc.comparison} ${relationship.target?.target.ref?.alias ? relationship.target?.target.ref?.alias : relationship.target?.target.ref?.name}.${jc.secondAttribute.ref?.name}
         `
     }).filter(Boolean).join(' and ');
 

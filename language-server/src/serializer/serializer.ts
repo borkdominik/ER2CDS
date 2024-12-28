@@ -127,6 +127,6 @@ export function serializeJoinClauses(relationship: Relationship): string | undef
 
 export function serializeJoinClause(relationshipJoinClause: RelationshipJoinClause): string {
     return expandToString`
-        ${relationshipJoinClause.firstAttribute.$refText} = ${relationshipJoinClause.secondAttribute.$refText}
+        ${relationshipJoinClause.firstAttribute.$refText} ${relationshipJoinClause.comparison} ${relationshipJoinClause.secondAttribute.$refText}
     `;
 }

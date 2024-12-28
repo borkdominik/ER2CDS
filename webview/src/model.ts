@@ -32,6 +32,7 @@ export const LABEL_CARDINALITY = 'label:cardinality';
 export const LABEL_JOIN_TABLE = 'label:join-table';
 export const LABEL_JOIN_ORDER = 'label:join-order';
 export const LABEL_JOIN_CLAUSE = 'label:join-clause';
+export const LABEL_JOIN_CLAUSE_COMPARISON = 'label:join-clause-comparison';
 
 export const CARDINALITIES = [
     {
@@ -196,6 +197,33 @@ export const RELATIONSHIP_TYPES = [
     {
         label: 'Composition',
         value: 'composition'
+    }
+];
+
+export const COMPARISON_TYPES = [
+    {
+        label: '=',
+        value: '='
+    },
+    {
+        label: '<>',
+        value: '<>'
+    },
+    {
+        label: '<',
+        value: '<'
+    },
+    {
+        label: '>',
+        value: '>'
+    },
+    {
+        label: '<=',
+        value: '<='
+    },
+    {
+        label: '>=',
+        value: '>='
     }
 ];
 

@@ -29,7 +29,7 @@ RelationshipEntity:
 	']')?;
 
 RelationshipJoinClause:
-	(firstAttribute=[Attribute:ID] '=' secondAttribute=[Attribute:ID]);
+	(firstAttribute=[Attribute:ID] comparison=ComparisonType secondAttribute=[Attribute:ID]);
 
 type AttributeType = 'key' | 'no-out';
 AttributeType returns AttributeType:
@@ -63,6 +63,23 @@ ZERO_MANY returns string:
 JoinOrderType returns number:
 	INT | ONE
 ;
+
+type ComparisonType = '=' | '<>' | '<' | '>' | '<=' | '>=';
+ComparisonType returns ComparisonType:
+	EQUAL | NOT_EQUAL | LOWER_THAN | GREATER_THAN | LOWER_EQUAL | GREATER_EQUAL
+;
+EQUAL returns string:
+	'=';
+NOT_EQUAL returns string:
+	'<>';
+LOWER_THAN returns string:
+	'<';
+GREATER_THAN returns string:
+	'>';
+LOWER_EQUAL returns string:
+	'<=';
+GREATER_EQUAL returns string:
+	'>=';
 
 terminal ID: /[_/a-zA-Z][\w_/]*/;
 terminal INT returns number: /[0-9]+/;

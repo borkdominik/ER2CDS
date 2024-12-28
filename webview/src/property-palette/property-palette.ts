@@ -13,7 +13,7 @@ import { Action, SelectAction, Bounds } from 'sprotty-protocol';
 import { EditorPanelChild } from '../editor-panel/editor-panel';
 import { AutoCompleteValue, CreateAttributeAction, CreateJoinClauseAction, DeleteElementAction, RequestAutoCompleteAction, RequestPopupConfirmModelAction, UpdateElementPropertyAction } from '../actions';
 import { DiagramEditorService } from '../services/diagram-editor-service';
-import { ATTRIBUTE_TYPES, CARDINALITIES, COMP_ATTRIBUTE, DATATYPES, ER2CDSRoot, Edge, EntityNode, LABEL_ATTRIBUTE_KEY, LABEL_ATTRIBUTE_NO_OUT, LABEL_RELATIONSHIP_ASSOCIATION, LABEL_RELATIONSHIP_ASSOCIATION_TO_PARENT, LABEL_RELATIONSHIP_COMPOSITION, NODE_ENTITY, RELATIONSHIP_TYPES, RelationshipNode } from '../model';
+import { ATTRIBUTE_TYPES, CARDINALITIES, COMPARISON_TYPES, COMP_ATTRIBUTE, DATATYPES, ER2CDSRoot, Edge, EntityNode, LABEL_ATTRIBUTE_KEY, LABEL_ATTRIBUTE_NO_OUT, LABEL_RELATIONSHIP_ASSOCIATION, LABEL_RELATIONSHIP_ASSOCIATION_TO_PARENT, LABEL_RELATIONSHIP_COMPOSITION, NODE_ENTITY, RELATIONSHIP_TYPES, RelationshipNode } from '../model';
 import { AutoCompleteWidget } from './auto-complete/auto-complete-widget';
 import { ElementAutoCompletePropertyItem } from './auto-complete/auto-complete.model';
 import { createAutoCompleteProperty } from './auto-complete/auto-complete.creator';
@@ -505,7 +505,9 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             elementId: relationship.id,
             isOrderable: false,
             label: 'Join Clauses',
-            references: relationship.children[2].children.map(c => ({ elementId: c.id, label: (c.children[0] as SLabelImpl).text + ' = ' + (c.children[1] as SLabelImpl).text, isReadonly: false }) as ElementReferencePropertyItem.Reference),
+            references: relationship.children[2].children.map(c => (
+                { elementId: c.id, label: `${(c.children[0] as SLabelImpl).text} ${(c.children[2] as SLabelImpl).text} ${(c.children[1] as SLabelImpl).text}`, isReadonly: false }
+            ) as ElementReferencePropertyItem.Reference),
             creates: [({ label: 'Create Join Clause', action: CreateJoinClauseAction.create(relationship.id) }) as ElementReferencePropertyItem.CreateReference]
         }
         propertyPaletteItems.push(relationshipJoinClausesPaletteItems);
@@ -590,6 +592,16 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
                 text: (element.children[1] as SLabelImpl).text
             };
             propertyPaletteItems.push(relationshipSecondJoinClauseAttributeNamePaletteItem);
+
+            const relationshipJoinClauseComparisonPaletteItem = <ElementChoicePropertyItem>{
+                type: ElementChoicePropertyItem.TYPE,
+                elementId: element.children[2].id,
+                propertyId: 'join-clause-comparison',
+                label: 'Type',
+                choice: (element.children[2] as SLabelImpl).text,
+                choices: COMPARISON_TYPES
+            }
+            propertyPaletteItems.push(relationshipJoinClauseComparisonPaletteItem);
         }
     }
 

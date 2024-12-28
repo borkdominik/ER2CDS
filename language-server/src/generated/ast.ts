@@ -31,10 +31,30 @@ export type AttributeType = 'key' | 'no-out';
 
 export type CardinalityType = '0..N' | '1';
 
+export type ComparisonType = '<' | '<=' | '<>' | '=' | '>' | '>=';
+
 export type COMPOSITION = 'composition';
 
 export function isCOMPOSITION(item: unknown): item is COMPOSITION {
     return item === 'composition';
+}
+
+export type EQUAL = '=';
+
+export function isEQUAL(item: unknown): item is EQUAL {
+    return item === '=';
+}
+
+export type GREATER_EQUAL = '>=';
+
+export function isGREATER_EQUAL(item: unknown): item is GREATER_EQUAL {
+    return item === '>=';
+}
+
+export type GREATER_THAN = '>';
+
+export function isGREATER_THAN(item: unknown): item is GREATER_THAN {
+    return item === '>';
 }
 
 export type JoinOrderType = number;
@@ -49,10 +69,28 @@ export function isKEY(item: unknown): item is KEY {
     return item === 'key';
 }
 
+export type LOWER_EQUAL = '<=';
+
+export function isLOWER_EQUAL(item: unknown): item is LOWER_EQUAL {
+    return item === '<=';
+}
+
+export type LOWER_THAN = '<';
+
+export function isLOWER_THAN(item: unknown): item is LOWER_THAN {
+    return item === '<';
+}
+
 export type NO_OUT = 'no-out';
 
 export function isNO_OUT(item: unknown): item is NO_OUT {
     return item === 'no-out';
+}
+
+export type NOT_EQUAL = '<>';
+
+export function isNOT_EQUAL(item: unknown): item is NOT_EQUAL {
+    return item === '<>';
 }
 
 export type ONE = '1';
@@ -156,6 +194,7 @@ export function isRelationshipEntity(item: unknown): item is RelationshipEntity 
 export interface RelationshipJoinClause extends AstNode {
     readonly $container: Relationship;
     readonly $type: 'RelationshipJoinClause';
+    comparison: ComparisonType
     firstAttribute: Reference<Attribute>
     secondAttribute: Reference<Attribute>
 }

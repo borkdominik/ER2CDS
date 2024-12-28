@@ -18,7 +18,8 @@ import {
     LABEL_ATTRIBUTE_NO_OUT,
     LABEL_RELATIONSHIP_ASSOCIATION,
     LABEL_RELATIONSHIP_ASSOCIATION_TO_PARENT,
-    LABEL_RELATIONSHIP_COMPOSITION
+    LABEL_RELATIONSHIP_COMPOSITION,
+    LABEL_JOIN_CLAUSE_COMPARISON
 } from './model';
 import { ER2CDSRootView, EdgeView, EntityNodeView, RelationshipNodeView } from './views';
 
@@ -54,7 +55,7 @@ import ValidationModule from './validation/di.config';
 export default (containerId: string) => {
     const DiagramModule = new ContainerModule((bind, unbind, isBound, rebind) => {
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
-        rebind(TYPES.LogLevel).toConstantValue(LogLevel.info);
+        rebind(TYPES.LogLevel).toConstantValue(LogLevel.log);
 
         const context = { bind, unbind, isBound, rebind };
 
@@ -93,6 +94,7 @@ export default (containerId: string) => {
         configureModelElement(context, LABEL_JOIN_TABLE, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_JOIN_ORDER, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_JOIN_CLAUSE, SLabelImpl, SLabelView);
+        configureModelElement(context, LABEL_JOIN_CLAUSE_COMPARISON, SLabelImpl, SLabelView);
 
         // Sprotty
         configureModelElement(context, 'html', HtmlRootImpl, HtmlRootView);
