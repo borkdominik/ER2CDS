@@ -5,16 +5,21 @@ entry ER2CDS:
 	(entities+=Entity | relationships+=Relationship)*;
 
 Entity:
-	'entity' name=ID '{'
+	(type=EntityType)? 'entity' name=ID '{'
 		('alias' alias=ID)?
 		(attributes+=Attribute)*
+		('expose' (associations+=Association)*)?
+		('where' (whereClauses+=EntityWhereClause)*)?
 	'}';
 
 Attribute:
 	(type=AttributeType)? name=ID (':' datatype=DataType)? ('as' alias=ID)?;
 
-DataType:
-	type=ID;
+Association:
+	name=ID ('as' alias=ID)?;
+
+EntityWhereClause:
+	(attribute=[Attribute:ID] comparison=ComparisonType fixValue=FixValueType);
 
 Relationship:
 	(type=RelationshipType)? 'relationship' name=ID '{'
@@ -24,12 +29,22 @@ Relationship:
 	'}';
 
 RelationshipEntity:
-	target=[Entity] ('[' 
+	target=[Entity:ID] ('[' 
 		cardinality=CardinalityType
 	']')?;
 
 RelationshipJoinClause:
-	(firstAttribute=[Attribute:ID] '=' secondAttribute=[Attribute:ID]);
+	(firstAttribute=[Attribute:ID] comparison=ComparisonType secondAttribute=[Attribute:ID]);
+
+DataType:
+	type=ID;
+
+type EntityType = 'no-expose';
+EntityType returns EntityType:
+	NO_EXPOSE
+;
+NO_EXPOSE returns string:
+	'no-expose';
 
 type AttributeType = 'key' | 'no-out';
 AttributeType returns AttributeType:
@@ -60,12 +75,36 @@ ONE returns string:
 ZERO_MANY returns string:
 	'0..N';
 
+type JoinOrderType = number;
 JoinOrderType returns number:
 	INT | ONE
 ;
 
+type FixValueType = string | number;
+FixValueType returns FixValueType:
+	CHAR | INT | ONE
+;
+
+type ComparisonType = '=' | '<>' | '<' | '>' | '<=' | '>=';
+ComparisonType returns ComparisonType:
+	EQUAL | NOT_EQUAL | LOWER_THAN | GREATER_THAN | LOWER_EQUAL | GREATER_EQUAL
+;
+EQUAL returns string:
+	'=';
+NOT_EQUAL returns string:
+	'<>';
+LOWER_THAN returns string:
+	'<';
+GREATER_THAN returns string:
+	'>';
+LOWER_EQUAL returns string:
+	'<=';
+GREATER_EQUAL returns string:
+	'>=';
+
 terminal ID: /[_/a-zA-Z][\w_/]*/;
 terminal INT returns number: /[0-9]+/;
+terminal CHAR: /\'[\s\S]*?\'/;
 
 hidden terminal WS: /\s+/;
 hidden terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;

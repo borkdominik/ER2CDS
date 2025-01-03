@@ -4,7 +4,7 @@ import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
 import { ER2CDSGlobal, ER2CDSServices } from '../er2cds-module.js';
 import { UpdateElementPropertyAction } from '../actions.js';
 import { URI } from 'langium';
-import { Attribute, AttributeType, CardinalityType, ER2CDS, RelationshipType } from '../generated/ast.js';
+import { Attribute, AttributeType, CardinalityType, ComparisonType, ER2CDS, RelationshipType } from '../generated/ast.js';
 import { Agent } from 'https';
 import { SapAttribute } from '../model-external.js';
 import { synchronizeModelToText } from '../serializer/serializer.js';
@@ -41,6 +41,10 @@ export class UpdateElementPropertyHandler {
                 await this.handleEntityAliasEdit(action, model);
                 break;
 
+            case 'entity-type':
+                await this.handleEntityNoExposeEdit(action, model);
+                break;
+
             case 'relationship-name':
                 await this.handleRelationshipNameEdit(action, model);
                 break;
@@ -63,6 +67,26 @@ export class UpdateElementPropertyHandler {
 
             case 'attribute-alias':
                 await this.handleAttributeAliasEdit(action, model);
+                break;
+
+            case 'association-name':
+                await this.handleAssociationNameEdit(action, model);
+                break;
+
+            case 'association-alias':
+                await this.handleAssociationAliasEdit(action, model);
+                break;
+
+            case 'where-clause-attribute-name':
+                await this.handleWhereClauseAttributeNameEdit(action, model);
+                break;
+
+            case 'where-clause-value':
+                await this.handleWhereClauseValueEdit(action, model);
+                break;
+
+            case 'where-clause-comparison':
+                await this.handleWhereClauseComparisonEdit(action, model);
                 break;
 
             case 'source-join-table':
@@ -92,6 +116,11 @@ export class UpdateElementPropertyHandler {
             case 'second-join-clause-attribute-name':
                 await this.handleSecondJoinClauseAttributeEdit(action, model);
                 break;
+
+            case 'join-clause-comparison':
+                await this.handleJoinClauseComparisonEdit(action, model);
+                break;
+
         }
 
         return synchronizeModelToText(model, sourceUri, server, services);
@@ -117,6 +146,19 @@ export class UpdateElementPropertyHandler {
             return Promise.resolve();
 
         entity.alias = action.value;
+    }
+
+    protected async handleEntityNoExposeEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
+        const entity = model.entities.find(e => e.name === action.elementId);
+
+        if (!entity)
+            return Promise.resolve();
+
+        if (entity.type === 'no-expose') {
+            entity.type = undefined;
+        } else {
+            entity.type = 'no-expose';
+        }
     }
 
     protected async handleRelationshipNameEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
@@ -234,6 +276,85 @@ export class UpdateElementPropertyHandler {
         attribute.alias = action.value;
     }
 
+    protected async handleAssociationNameEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
+        const split = action.elementId.split('.');
+        const entityId = split[0];
+        const associationId = split[1];
+
+        const entity = model.entities.find(e => e.name === entityId);
+        const association = entity?.associations.find(a => a.name === associationId);
+
+        if (!association)
+            return Promise.resolve();
+
+        association.name = action.value;
+    }
+
+    protected async handleAssociationAliasEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
+        const split = action.elementId.split('.');
+        const entityId = split[0];
+        const associationId = split[1];
+
+        const entity = model.entities.find(e => e.name === entityId);
+        const association = entity?.associations.find(a => a.name === associationId);
+
+        if (!association)
+            return Promise.resolve();
+
+        association.alias = action.value;
+    }
+
+    protected async handleWhereClauseAttributeNameEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
+        const split = action.elementId.split('.');
+        const entityId = split[0];
+        const attributeId = split[1];
+
+        const entity = model.entities.find(e => e.name === entityId);
+        const whereClause = entity?.whereClauses.find(wc => wc.attribute.$refText === attributeId);
+
+        if (!entity || !whereClause)
+            return Promise.resolve();
+
+        const newAttribute: Attribute = {
+            $type: 'Attribute',
+            $container: null!,
+            name: action.value
+        }
+
+        whereClause.attribute = {
+            ref: newAttribute,
+            $refText: action.value
+        }
+    }
+
+    protected async handleWhereClauseValueEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
+        const split = action.elementId.split('.');
+        const entityId = split[0];
+        const attributeId = split[1];
+
+        const entity = model.entities.find(e => e.name === entityId);
+        const whereClause = entity?.whereClauses.find(wc => wc.attribute.$refText === attributeId);
+
+        if (!entity || !whereClause)
+            return Promise.resolve();
+
+        whereClause.fixValue = action.value;
+    }
+
+    protected async handleWhereClauseComparisonEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
+        const split = action.elementId.split('.');
+        const entityId = split[0];
+        const attributeId = split[1];
+
+        const entity = model.entities.find(e => e.name === entityId);
+        const whereClause = entity?.whereClauses.find(wc => wc.attribute.$refText === attributeId);
+
+        if (!entity || !whereClause)
+            return Promise.resolve();
+
+        whereClause.comparison = action.value as ComparisonType;
+    }
+
     protected async handleSourceJoinTableEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
         const relationship = model.relationships.find(r => r.name === action.elementId);
         const source = model.entities.find(e => e.name === action.value);
@@ -297,9 +418,9 @@ export class UpdateElementPropertyHandler {
         const firstJoinClauseAttributeId = split[1];
 
         const relationship = model.relationships.find(r => r.name === relationshipId);
-        const attribute = relationship?.joinClauses.find(jc => jc.firstAttribute.$refText === firstJoinClauseAttributeId);
+        const joinClause = relationship?.joinClauses.find(jc => jc.firstAttribute.$refText === firstJoinClauseAttributeId);
 
-        if (!relationship || !attribute)
+        if (!relationship || !joinClause)
             return Promise.resolve();
 
         const newAttribute: Attribute = {
@@ -308,7 +429,7 @@ export class UpdateElementPropertyHandler {
             name: action.value
         }
 
-        attribute.firstAttribute = {
+        joinClause.firstAttribute = {
             ref: newAttribute,
             $refText: action.value
         }
@@ -320,9 +441,9 @@ export class UpdateElementPropertyHandler {
         const secondJoinClauseAttributeId = split[2];
 
         const relationship = model.relationships.find(r => r.name === relationshipId);
-        const attribute = relationship?.joinClauses.find(jc => jc.secondAttribute.$refText === secondJoinClauseAttributeId);
+        const joinClause = relationship?.joinClauses.find(jc => jc.secondAttribute.$refText === secondJoinClauseAttributeId);
 
-        if (!relationship || !attribute)
+        if (!relationship || !joinClause)
             return Promise.resolve();
 
         const newAttribute: Attribute = {
@@ -331,9 +452,24 @@ export class UpdateElementPropertyHandler {
             name: action.value
         }
 
-        attribute.secondAttribute = {
+        joinClause.secondAttribute = {
             ref: newAttribute,
             $refText: action.value
         }
+    }
+
+    protected async handleJoinClauseComparisonEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
+        const split = action.elementId.split('.');
+        const relationshipId = split[0];
+        const firstJoinClauseAttributeId = split[1];
+        const secondJoinClauseAttributeId = split[2];
+
+        const relationship = model.relationships.find(r => r.name === relationshipId);
+        const joinClause = relationship?.joinClauses.find(jc => jc.firstAttribute.$refText === firstJoinClauseAttributeId && jc.secondAttribute.$refText === secondJoinClauseAttributeId);
+
+        if (!relationship || !joinClause)
+            return Promise.resolve();
+
+        joinClause.comparison = action.value as ComparisonType;
     }
 }

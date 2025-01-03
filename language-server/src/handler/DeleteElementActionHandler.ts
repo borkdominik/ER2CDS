@@ -4,7 +4,7 @@ import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
 import { ER2CDSServices } from '../er2cds-module.js';
 import { SModelIndex } from 'sprotty-protocol';
 import { ER2CDS } from '../generated/ast.js';
-import { COMP_ATTRIBUTE, COMP_JOIN_CLAUSE, EDGE, Edge, NODE_ENTITY, NODE_RELATIONSHIP } from '../model.js';
+import { COMP_ASSOCIATION, COMP_ATTRIBUTE, COMP_JOIN_CLAUSE, COMP_WHERE_CLAUSE, EDGE, Edge, NODE_ENTITY, NODE_RELATIONSHIP } from '../model.js';
 import { synchronizeModelToText } from '../serializer/serializer.js';
 
 
@@ -58,6 +58,26 @@ export class DeleteElementActionHandler {
 
                     model.entities.filter(e => e.name === entityId).map(e => {
                         e.attributes = e.attributes.filter(a => a.name !== attributeId)
+                    });
+                }
+
+                if (element?.type === COMP_ASSOCIATION) {
+                    const split = element.id.split('.');
+                    const entityId = split[0];
+                    const associationId = split[1];
+
+                    model.entities.filter(e => e.name === entityId).map(e => {
+                        e.associations = e.associations.filter(a => a.name !== associationId)
+                    });
+                }
+
+                if (element?.type === COMP_WHERE_CLAUSE) {
+                    const split = element.id.split('.');
+                    const entityId = split[0];
+                    const attributeId = split[1];
+
+                    model.entities.filter(e => e.name === entityId).map(e => {
+                        e.whereClauses = e.whereClauses.filter(wc => wc.attribute.$refText !== attributeId)
                     });
                 }
 

@@ -11,9 +11,9 @@ import { createTextProperty } from './text/text.creator';
 import { ElementTextPropertyItem } from './text/text.model';
 import { Action, SelectAction, Bounds } from 'sprotty-protocol';
 import { EditorPanelChild } from '../editor-panel/editor-panel';
-import { AutoCompleteValue, CreateAttributeAction, CreateJoinClauseAction, DeleteElementAction, RequestAutoCompleteAction, RequestPopupConfirmModelAction, UpdateElementPropertyAction } from '../actions';
+import { AutoCompleteValue, CreateAssociationAction, CreateAttributeAction, CreateJoinClauseAction, CreateWhereClauseAction, DeleteElementAction, RequestAutoCompleteAction, RequestPopupConfirmModelAction, UpdateElementPropertyAction } from '../actions';
 import { DiagramEditorService } from '../services/diagram-editor-service';
-import { ATTRIBUTE_TYPES, CARDINALITIES, COMP_ATTRIBUTE, DATATYPES, ER2CDSRoot, Edge, EntityNode, LABEL_ATTRIBUTE_KEY, LABEL_ATTRIBUTE_NO_OUT, LABEL_RELATIONSHIP_ASSOCIATION, LABEL_RELATIONSHIP_ASSOCIATION_TO_PARENT, LABEL_RELATIONSHIP_COMPOSITION, NODE_ENTITY, RELATIONSHIP_TYPES, RelationshipNode } from '../model';
+import { ATTRIBUTE_TYPES, CARDINALITIES, COMPARISON_TYPES, COMP_ATTRIBUTE, DATATYPES, ER2CDSRoot, Edge, EntityNode, LABEL_ATTRIBUTE_KEY, LABEL_ATTRIBUTE_NO_OUT, LABEL_ENTITY_NO_EXPOSE, LABEL_RELATIONSHIP_ASSOCIATION, LABEL_RELATIONSHIP_ASSOCIATION_TO_PARENT, LABEL_RELATIONSHIP_COMPOSITION, NODE_ENTITY, RELATIONSHIP_TYPES, RelationshipNode } from '../model';
 import { AutoCompleteWidget } from './auto-complete/auto-complete-widget';
 import { ElementAutoCompletePropertyItem } from './auto-complete/auto-complete.model';
 import { createAutoCompleteProperty } from './auto-complete/auto-complete.creator';
@@ -146,15 +146,48 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             this.initializeEntityPropertyPaletteItems(element, propertyPaletteItems);
 
             // Attributes
-        } else if (element instanceof SCompartmentImpl && element.parent && (element.parent as SCompartmentImpl).parent && (element.parent as SCompartmentImpl).parent instanceof EntityNode) {
+        } else if (
+            element instanceof SCompartmentImpl &&
+            element.parent &&
+            (element.parent as SCompartmentImpl).parent &&
+            (element.parent as SCompartmentImpl).parent instanceof EntityNode &&
+            element.children.length === 4
+        ) {
             this.initializeAttributesPropertyPaletteItems(element, propertyPaletteItems);
+
+            // Associations
+        } else if (
+            element instanceof SCompartmentImpl &&
+            element.parent &&
+            (element.parent as SCompartmentImpl).parent &&
+            (element.parent as SCompartmentImpl).parent instanceof EntityNode &&
+            element.children.length === 2
+        ) {
+            this.initializeAssociationsPropertyPaletteItems(element, propertyPaletteItems);
+
+
+            // Where Clauses
+        } else if (
+            element instanceof SCompartmentImpl &&
+            element.parent &&
+            (element.parent as SCompartmentImpl).parent &&
+            (element.parent as SCompartmentImpl).parent instanceof EntityNode &&
+            element.children.length === 3
+        ) {
+            this.initializeWhereClausesPropertyPaletteItems(element, propertyPaletteItems);
 
             // Relationship
         } else if (element instanceof RelationshipNode) {
             this.initializeRelationshipPropertyPaletteItems(element, propertyPaletteItems);
 
             // Join Clauses
-        } else if (element instanceof SCompartmentImpl && element.parent && (element.parent as SCompartmentImpl).parent && (element.parent as SCompartmentImpl).parent instanceof RelationshipNode) {
+        } else if (
+            element instanceof SCompartmentImpl &&
+            element.parent &&
+            (element.parent as SCompartmentImpl).parent &&
+            (element.parent as SCompartmentImpl).parent instanceof RelationshipNode &&
+            element.children.length === 3
+        ) {
             this.initializeJoinClausesPropertyPaletteItems(element, propertyPaletteItems);
 
             // ER2CDS
@@ -384,6 +417,15 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         };
         propertyPaletteItems.push(entityAliasPaletteItem);
 
+        const entityNoExposePaletteItem = <ElementBoolPropertyItem>{
+            type: ElementBoolPropertyItem.TYPE,
+            elementId: entity.id,
+            propertyId: 'entity-type',
+            label: 'No Expose',
+            value: entity.children[0].children[0].type === LABEL_ENTITY_NO_EXPOSE
+        };
+        propertyPaletteItems.push(entityNoExposePaletteItem);
+
         const entityAttributesPaletteItems = <ElementReferencePropertyItem>{
             type: ElementReferencePropertyItem.TYPE,
             elementId: entity.id,
@@ -393,6 +435,28 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             creates: [({ label: 'Create Attribute', action: CreateAttributeAction.create(entity.id) }) as ElementReferencePropertyItem.CreateReference]
         }
         propertyPaletteItems.push(entityAttributesPaletteItems);
+
+        const entityAssociationsPaletteItems = <ElementReferencePropertyItem>{
+            type: ElementReferencePropertyItem.TYPE,
+            elementId: entity.id,
+            isOrderable: false,
+            label: 'Associations',
+            references: entity.children[2].children.map(c => ({ elementId: c.id, label: c.id, isReadonly: false }) as ElementReferencePropertyItem.Reference),
+            creates: [({ label: 'Create Association', action: CreateAssociationAction.create(entity.id) }) as ElementReferencePropertyItem.CreateReference]
+        }
+        propertyPaletteItems.push(entityAssociationsPaletteItems);
+
+        const entityWhereClausesPaletteItems = <ElementReferencePropertyItem>{
+            type: ElementReferencePropertyItem.TYPE,
+            elementId: entity.id,
+            isOrderable: false,
+            label: 'Where Clause',
+            references: entity.children[3].children.map(c => (
+                { elementId: c.id, label: `${(c.children[0] as SLabelImpl).text} ${(c.children[2] as SLabelImpl).text} ${(c.children[1] as SLabelImpl).text}`, isReadonly: false }
+            ) as ElementReferencePropertyItem.Reference),
+            creates: [({ label: 'Create Where Clause', action: CreateWhereClauseAction.create(entity.id) }) as ElementReferencePropertyItem.CreateReference]
+        }
+        propertyPaletteItems.push(entityWhereClausesPaletteItems);
     }
 
     protected initializeRelationshipPropertyPaletteItems(element: SModelElementImpl, propertyPaletteItems: ElementPropertyItem[]) {
@@ -505,7 +569,9 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             elementId: relationship.id,
             isOrderable: false,
             label: 'Join Clauses',
-            references: relationship.children[2].children.map(c => ({ elementId: c.id, label: (c.children[0] as SLabelImpl).text + ' = ' + (c.children[1] as SLabelImpl).text, isReadonly: false }) as ElementReferencePropertyItem.Reference),
+            references: relationship.children[2].children.map(c => (
+                { elementId: c.id, label: `${(c.children[0] as SLabelImpl).text} ${(c.children[2] as SLabelImpl).text} ${(c.children[1] as SLabelImpl).text}`, isReadonly: false }
+            ) as ElementReferencePropertyItem.Reference),
             creates: [({ label: 'Create Join Clause', action: CreateJoinClauseAction.create(relationship.id) }) as ElementReferencePropertyItem.CreateReference]
         }
         propertyPaletteItems.push(relationshipJoinClausesPaletteItems);
@@ -569,6 +635,65 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         }
     }
 
+    protected initializeAssociationsPropertyPaletteItems(element: SCompartmentImpl, propertyPaletteItems: ElementPropertyItem[]) {
+        const entity = (element.parent as SCompartmentImpl).parent as EntityNode;
+
+        if (element.children.length > 1) {
+            const entityAssociationNamePaletteItem = <ElementTextPropertyItem>{
+                type: ElementTextPropertyItem.TYPE,
+                elementId: element.children[0].id,
+                propertyId: 'association-name',
+                label: 'Name',
+                text: (element.children[0] as SLabelImpl).text
+            }
+            propertyPaletteItems.push(entityAssociationNamePaletteItem);
+
+            const entityAssociationAliasPaletteItem = <ElementTextPropertyItem>{
+                type: ElementTextPropertyItem.TYPE,
+                elementId: element.children[1].id,
+                propertyId: 'association-alias',
+                label: 'Alias',
+                text: (element.children[1] as SLabelImpl).text
+            }
+            propertyPaletteItems.push(entityAssociationAliasPaletteItem);
+        }
+    }
+
+
+    protected initializeWhereClausesPropertyPaletteItems(element: SCompartmentImpl, propertyPaletteItems: ElementPropertyItem[]) {
+        const entity = (element.parent as SCompartmentImpl).parent as EntityNode;
+
+        if (element.children.length > 1) {
+            const whereClauseAttributeNamePaletteItem = <ElementTextPropertyItem>{
+                type: ElementTextPropertyItem.TYPE,
+                elementId: element.children[0].id,
+                propertyId: 'where-clause-attribute-name',
+                label: 'Attribute',
+                text: (element.children[0] as SLabelImpl).text
+            };
+            propertyPaletteItems.push(whereClauseAttributeNamePaletteItem);
+
+            const whereClauseValuePaletteItem = <ElementTextPropertyItem>{
+                type: ElementTextPropertyItem.TYPE,
+                elementId: element.children[1].id,
+                propertyId: 'where-clause-value',
+                label: 'Value',
+                text: (element.children[1] as SLabelImpl).text
+            };
+            propertyPaletteItems.push(whereClauseValuePaletteItem);
+
+            const whereClauseComparisonPaletteItem = <ElementChoicePropertyItem>{
+                type: ElementChoicePropertyItem.TYPE,
+                elementId: element.children[2].id,
+                propertyId: 'where-clause-comparison',
+                label: 'Type',
+                choice: (element.children[2] as SLabelImpl).text,
+                choices: COMPARISON_TYPES
+            }
+            propertyPaletteItems.push(whereClauseComparisonPaletteItem);
+        }
+    }
+
     protected initializeJoinClausesPropertyPaletteItems(element: SCompartmentImpl, propertyPaletteItems: ElementPropertyItem[]) {
         const relationship = (element.parent as SCompartmentImpl).parent as RelationshipNode;
 
@@ -590,6 +715,16 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
                 text: (element.children[1] as SLabelImpl).text
             };
             propertyPaletteItems.push(relationshipSecondJoinClauseAttributeNamePaletteItem);
+
+            const relationshipJoinClauseComparisonPaletteItem = <ElementChoicePropertyItem>{
+                type: ElementChoicePropertyItem.TYPE,
+                elementId: element.children[2].id,
+                propertyId: 'join-clause-comparison',
+                label: 'Type',
+                choice: (element.children[2] as SLabelImpl).text,
+                choices: COMPARISON_TYPES
+            }
+            propertyPaletteItems.push(relationshipJoinClauseComparisonPaletteItem);
         }
     }
 
@@ -645,7 +780,7 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             return elementId;
 
         if (split.length >= 4) {
-            if (split[1] === oldAttributeElementId) {
+            if (!oldAttributeElementId || split[1] === oldAttributeElementId) {
                 return split[0] + '.' + newAttributeElementId + '.' + split[2];
             } else {
                 return split[0] + '.' + split[1] + '.' + newAttributeElementId;

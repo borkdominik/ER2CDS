@@ -2,6 +2,11 @@
     fill: var(--vscode-button-foreground);
 }
 
+.entity-no-expose {
+    fill: var(--vscode-button-foreground);
+    text-decoration: line-through
+}
+
 .entity-alias {
     fill: var(--vscode-button-foreground);
     font-style: italic;

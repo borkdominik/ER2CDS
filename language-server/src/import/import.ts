@@ -191,7 +191,9 @@ export function convertFromToER2CDSEntity(er2cds: ER2CDS, selectionList: IImport
             $container: er2cds,
             name: entityName,
             alias: entityAlias,
-            attributes: []
+            attributes: [],
+            associations: [],
+            whereClauses: []
         };
 
         let attributes = selectionList.filter(s => s.BaseObjName === c.BaseobjName && s.ExprType === 'ATOMIC').map(s => {
@@ -226,7 +228,8 @@ export function convertFromToER2CDSRelationship(er2cds: ER2CDS, fromClause: IImp
         $type: 'RelationshipJoinClause',
         $container: null!,
         firstAttribute: null!,
-        secondAttribute: null!
+        secondAttribute: null!,
+        comparison: '='
     };
 
     condition.filter(c => c.ConditionType === 'FROM').forEach(c => {
@@ -347,7 +350,8 @@ export function convertFromToER2CDSRelationship(er2cds: ER2CDS, fromClause: IImp
                 $type: 'RelationshipJoinClause',
                 $container: null!,
                 firstAttribute: undefined!,
-                secondAttribute: undefined!
+                secondAttribute: undefined!,
+                comparison: '='
             };
         }
 
@@ -413,7 +417,9 @@ export function convertAssociationToER2CDSEntity(er2cds: ER2CDS, assocDef: IImpo
                 $container: er2cds,
                 name: c.BaseobjName,
                 alias: association?.AssocNameRaw ? association.AssocNameRaw : c.BaseobjAlias,
-                attributes: []
+                attributes: [],
+                associations: [],
+                whereClauses: []
             });
         }
     });
@@ -431,7 +437,8 @@ export function convertAssociationToER2CDSRelationship(er2cds: ER2CDS, selection
         $type: 'RelationshipJoinClause',
         $container: null!,
         firstAttribute: null!,
-        secondAttribute: null!
+        secondAttribute: null!,
+        comparison: '='
     };
 
     condition.filter(c => c.ConditionType === 'ASSOC_DEFINITION').forEach(c => {
@@ -657,7 +664,8 @@ export function convertAssociationToER2CDSRelationship(er2cds: ER2CDS, selection
                 $type: 'RelationshipJoinClause',
                 $container: null!,
                 firstAttribute: null!,
-                secondAttribute: null!
+                secondAttribute: null!,
+                comparison: '='
             };
         }
 

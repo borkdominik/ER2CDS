@@ -48,6 +48,7 @@ export class CreateJoinClauseActionHandler {
                 ref: newSecondAttribute,
                 $refText: 'TARGET_ATTRIBUTE'
             },
+            comparison: '='
         }
 
         relationship.joinClauses.push(newRelationshipJoinClause);

@@ -10,6 +10,7 @@ import { AbstractAstReflection } from 'langium';
 export const ER2CDSTerminals = {
     ID: /[_/a-zA-Z][\w_/]*/,
     INT: /[0-9]+/,
+    CHAR: /\'[\s\S]*?\'/,
     WS: /\s+/,
     ML_COMMENT: /\/\*[\s\S]*?\*\//,
     SL_COMMENT: /\/\/[^\n\r]*/,
@@ -31,17 +32,37 @@ export type AttributeType = 'key' | 'no-out';
 
 export type CardinalityType = '0..N' | '1';
 
+export type ComparisonType = '<' | '<=' | '<>' | '=' | '>' | '>=';
+
 export type COMPOSITION = 'composition';
 
 export function isCOMPOSITION(item: unknown): item is COMPOSITION {
     return item === 'composition';
 }
 
-export type JoinOrderType = number;
+export type EntityType = 'no-expose';
 
-export function isJoinOrderType(item: unknown): item is JoinOrderType {
-    return typeof item === 'number';
+export type EQUAL = '=';
+
+export function isEQUAL(item: unknown): item is EQUAL {
+    return item === '=';
 }
+
+export type FixValueType = number | string;
+
+export type GREATER_EQUAL = '>=';
+
+export function isGREATER_EQUAL(item: unknown): item is GREATER_EQUAL {
+    return item === '>=';
+}
+
+export type GREATER_THAN = '>';
+
+export function isGREATER_THAN(item: unknown): item is GREATER_THAN {
+    return item === '>';
+}
+
+export type JoinOrderType = number;
 
 export type KEY = 'key';
 
@@ -49,10 +70,34 @@ export function isKEY(item: unknown): item is KEY {
     return item === 'key';
 }
 
+export type LOWER_EQUAL = '<=';
+
+export function isLOWER_EQUAL(item: unknown): item is LOWER_EQUAL {
+    return item === '<=';
+}
+
+export type LOWER_THAN = '<';
+
+export function isLOWER_THAN(item: unknown): item is LOWER_THAN {
+    return item === '<';
+}
+
+export type NO_EXPOSE = 'no-expose';
+
+export function isNO_EXPOSE(item: unknown): item is NO_EXPOSE {
+    return item === 'no-expose';
+}
+
 export type NO_OUT = 'no-out';
 
 export function isNO_OUT(item: unknown): item is NO_OUT {
     return item === 'no-out';
+}
+
+export type NOT_EQUAL = '<>';
+
+export function isNOT_EQUAL(item: unknown): item is NOT_EQUAL {
+    return item === '<>';
 }
 
 export type ONE = '1';
@@ -67,6 +112,19 @@ export type ZERO_MANY = '0..N';
 
 export function isZERO_MANY(item: unknown): item is ZERO_MANY {
     return item === '0..N';
+}
+
+export interface Association extends AstNode {
+    readonly $container: Entity;
+    readonly $type: 'Association';
+    alias?: string
+    name: string
+}
+
+export const Association = 'Association';
+
+export function isAssociation(item: unknown): item is Association {
+    return reflection.isInstance(item, Association);
 }
 
 export interface Attribute extends AstNode {
@@ -100,14 +158,31 @@ export interface Entity extends AstNode {
     readonly $container: ER2CDS;
     readonly $type: 'Entity';
     alias?: string
+    associations: Array<Association>
     attributes: Array<Attribute>
     name: string
+    type?: EntityType
+    whereClauses: Array<EntityWhereClause>
 }
 
 export const Entity = 'Entity';
 
 export function isEntity(item: unknown): item is Entity {
     return reflection.isInstance(item, Entity);
+}
+
+export interface EntityWhereClause extends AstNode {
+    readonly $container: Entity;
+    readonly $type: 'EntityWhereClause';
+    attribute: Reference<Attribute>
+    comparison: ComparisonType
+    fixValue: FixValueType
+}
+
+export const EntityWhereClause = 'EntityWhereClause';
+
+export function isEntityWhereClause(item: unknown): item is EntityWhereClause {
+    return reflection.isInstance(item, EntityWhereClause);
 }
 
 export interface ER2CDS extends AstNode {
@@ -156,6 +231,7 @@ export function isRelationshipEntity(item: unknown): item is RelationshipEntity 
 export interface RelationshipJoinClause extends AstNode {
     readonly $container: Relationship;
     readonly $type: 'RelationshipJoinClause';
+    comparison: ComparisonType
     firstAttribute: Reference<Attribute>
     secondAttribute: Reference<Attribute>
 }
@@ -167,10 +243,12 @@ export function isRelationshipJoinClause(item: unknown): item is RelationshipJoi
 }
 
 export type ER2CDSAstType = {
+    Association: Association
     Attribute: Attribute
     DataType: DataType
     ER2CDS: ER2CDS
     Entity: Entity
+    EntityWhereClause: EntityWhereClause
     Relationship: Relationship
     RelationshipEntity: RelationshipEntity
     RelationshipJoinClause: RelationshipJoinClause
@@ -179,7 +257,7 @@ export type ER2CDSAstType = {
 export class ER2CDSAstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return ['Attribute', 'DataType', 'ER2CDS', 'Entity', 'Relationship', 'RelationshipEntity', 'RelationshipJoinClause'];
+        return ['Association', 'Attribute', 'DataType', 'ER2CDS', 'Entity', 'EntityWhereClause', 'Relationship', 'RelationshipEntity', 'RelationshipJoinClause'];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
@@ -193,12 +271,13 @@ export class ER2CDSAstReflection extends AbstractAstReflection {
     getReferenceType(refInfo: ReferenceInfo): string {
         const referenceId = `${refInfo.container.$type}:${refInfo.property}`;
         switch (referenceId) {
-            case 'RelationshipEntity:target': {
-                return Entity;
-            }
+            case 'EntityWhereClause:attribute':
             case 'RelationshipJoinClause:firstAttribute':
             case 'RelationshipJoinClause:secondAttribute': {
                 return Attribute;
+            }
+            case 'RelationshipEntity:target': {
+                return Entity;
             }
             default: {
                 throw new Error(`${referenceId} is not a valid reference id.`);
@@ -212,7 +291,9 @@ export class ER2CDSAstReflection extends AbstractAstReflection {
                 return {
                     name: 'Entity',
                     mandatory: [
-                        { name: 'attributes', type: 'array' }
+                        { name: 'associations', type: 'array' },
+                        { name: 'attributes', type: 'array' },
+                        { name: 'whereClauses', type: 'array' }
                     ]
                 };
             }

@@ -7,7 +7,7 @@ import {
     ER2CDSRoot, EntityNode, RelationshipNode, Edge, CardinalityLabel,
     GRAPH, NODE_ENTITY, NODE_RELATIONSHIP,
     COMP_ATTRIBUTES, COMP_ATTRIBUTE, COMP_ENTITY_HEADER, EDGE,
-    LABEL_ENTITY, LABEL_ENTITY_ALIAS, LABEL_ATTRIBUTE, LABEL_CARDINALITY, LABEL_SEPARATOR, LABEL_RELATIONSHIP,
+    LABEL_ENTITY, LABEL_ENTITY_ALIAS, LABEL_ATTRIBUTE, LABEL_CARDINALITY, LABEL_SEPARATOR, LABEL_RELATIONSHIP, LABEL_VALUE,
     LABEL_ATTRIBUTE_KEY,
     COMP_JOIN_CLAUSES,
     COMP_JOIN_CLAUSE,
@@ -15,10 +15,17 @@ import {
     LABEL_JOIN_TABLE,
     LABEL_JOIN_ORDER,
     LABEL_JOIN_CLAUSE,
+    LABEL_JOIN_CLAUSE_COMPARISON,
     LABEL_ATTRIBUTE_NO_OUT,
     LABEL_RELATIONSHIP_ASSOCIATION,
     LABEL_RELATIONSHIP_ASSOCIATION_TO_PARENT,
-    LABEL_RELATIONSHIP_COMPOSITION
+    LABEL_RELATIONSHIP_COMPOSITION,
+    COMP_WHERE_CLAUSES,
+    COMP_WHERE_CLAUSE,
+    LABEL_ASSOCIATION,
+    COMP_ASSOCIATIONS,
+    COMP_ASSOCIATION,
+    LABEL_ENTITY_NO_EXPOSE,
 } from './model';
 import { ER2CDSRootView, EdgeView, EntityNodeView, RelationshipNodeView } from './views';
 
@@ -72,17 +79,24 @@ export default (containerId: string) => {
         configureModelElement(context, COMP_ENTITY_HEADER, SCompartmentImpl, SCompartmentView);
         configureModelElement(context, COMP_ATTRIBUTES, SCompartmentImpl, SCompartmentView);
         configureModelElement(context, COMP_ATTRIBUTE, SCompartmentImpl, SCompartmentView);
+        configureModelElement(context, COMP_ASSOCIATIONS, SCompartmentImpl, SCompartmentView);
+        configureModelElement(context, COMP_ASSOCIATION, SCompartmentImpl, SCompartmentView);
+        configureModelElement(context, COMP_WHERE_CLAUSES, SCompartmentImpl, SCompartmentView);
+        configureModelElement(context, COMP_WHERE_CLAUSE, SCompartmentImpl, SCompartmentView);
         configureModelElement(context, COMP_JOIN_TABLE, SCompartmentImpl, EmptyView);
         configureModelElement(context, COMP_JOIN_CLAUSES, SCompartmentImpl, EmptyView);
         configureModelElement(context, COMP_JOIN_CLAUSE, SCompartmentImpl, EmptyView);
 
         // Labels
         configureModelElement(context, LABEL_ENTITY, SLabelImpl, SLabelView);
+        configureModelElement(context, LABEL_ENTITY_NO_EXPOSE, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_ENTITY_ALIAS, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_ATTRIBUTE, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_ATTRIBUTE_KEY, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_ATTRIBUTE_NO_OUT, SLabelImpl, SLabelView);
+        configureModelElement(context, LABEL_ASSOCIATION, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_SEPARATOR, SLabelImpl, SLabelView);
+        configureModelElement(context, LABEL_VALUE, SLabelImpl, SLabelView);
 
         configureModelElement(context, LABEL_RELATIONSHIP, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_RELATIONSHIP_ASSOCIATION, SLabelImpl, SLabelView);
@@ -93,6 +107,7 @@ export default (containerId: string) => {
         configureModelElement(context, LABEL_JOIN_TABLE, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_JOIN_ORDER, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_JOIN_CLAUSE, SLabelImpl, SLabelView);
+        configureModelElement(context, LABEL_JOIN_CLAUSE_COMPARISON, SLabelImpl, SLabelView);
 
         // Sprotty
         configureModelElement(context, 'html', HtmlRootImpl, HtmlRootView);
