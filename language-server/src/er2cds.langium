@@ -5,20 +5,21 @@ entry ER2CDS:
 	(entities+=Entity | relationships+=Relationship)*;
 
 Entity:
-	'entity' name=ID '{'
+	(type=EntityType)? 'entity' name=ID '{'
 		('alias' alias=ID)?
 		(attributes+=Attribute)*
+		('expose' (associations+=Association)*)?
 		('where' (whereClauses+=EntityWhereClause)*)?
 	'}';
-
-EntityWhereClause:
-	(attribute=[Attribute:ID] comparison=ComparisonType fixValue=FixValueType);
 
 Attribute:
 	(type=AttributeType)? name=ID (':' datatype=DataType)? ('as' alias=ID)?;
 
-DataType:
-	type=ID;
+Association:
+	name=ID ('as' alias=ID)?;
+
+EntityWhereClause:
+	(attribute=[Attribute:ID] comparison=ComparisonType fixValue=FixValueType);
 
 Relationship:
 	(type=RelationshipType)? 'relationship' name=ID '{'
@@ -28,12 +29,22 @@ Relationship:
 	'}';
 
 RelationshipEntity:
-	target=[Entity] ('[' 
+	target=[Entity:ID] ('[' 
 		cardinality=CardinalityType
 	']')?;
 
 RelationshipJoinClause:
 	(firstAttribute=[Attribute:ID] comparison=ComparisonType secondAttribute=[Attribute:ID]);
+
+DataType:
+	type=ID;
+
+type EntityType = 'no-expose';
+EntityType returns EntityType:
+	NO_EXPOSE
+;
+NO_EXPOSE returns string:
+	'no-expose';
 
 type AttributeType = 'key' | 'no-out';
 AttributeType returns AttributeType:

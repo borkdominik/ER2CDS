@@ -22,6 +22,10 @@ import {
     LABEL_RELATIONSHIP_COMPOSITION,
     COMP_WHERE_CLAUSES,
     COMP_WHERE_CLAUSE,
+    LABEL_ASSOCIATION,
+    COMP_ASSOCIATIONS,
+    COMP_ASSOCIATION,
+    LABEL_ENTITY_NO_EXPOSE,
 } from './model';
 import { ER2CDSRootView, EdgeView, EntityNodeView, RelationshipNodeView } from './views';
 
@@ -75,6 +79,8 @@ export default (containerId: string) => {
         configureModelElement(context, COMP_ENTITY_HEADER, SCompartmentImpl, SCompartmentView);
         configureModelElement(context, COMP_ATTRIBUTES, SCompartmentImpl, SCompartmentView);
         configureModelElement(context, COMP_ATTRIBUTE, SCompartmentImpl, SCompartmentView);
+        configureModelElement(context, COMP_ASSOCIATIONS, SCompartmentImpl, SCompartmentView);
+        configureModelElement(context, COMP_ASSOCIATION, SCompartmentImpl, SCompartmentView);
         configureModelElement(context, COMP_WHERE_CLAUSES, SCompartmentImpl, SCompartmentView);
         configureModelElement(context, COMP_WHERE_CLAUSE, SCompartmentImpl, SCompartmentView);
         configureModelElement(context, COMP_JOIN_TABLE, SCompartmentImpl, EmptyView);
@@ -83,10 +89,12 @@ export default (containerId: string) => {
 
         // Labels
         configureModelElement(context, LABEL_ENTITY, SLabelImpl, SLabelView);
+        configureModelElement(context, LABEL_ENTITY_NO_EXPOSE, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_ENTITY_ALIAS, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_ATTRIBUTE, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_ATTRIBUTE_KEY, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_ATTRIBUTE_NO_OUT, SLabelImpl, SLabelView);
+        configureModelElement(context, LABEL_ASSOCIATION, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_SEPARATOR, SLabelImpl, SLabelView);
         configureModelElement(context, LABEL_VALUE, SLabelImpl, SLabelView);
 

@@ -41,6 +41,10 @@ export class UpdateElementPropertyHandler {
                 await this.handleEntityAliasEdit(action, model);
                 break;
 
+            case 'entity-type':
+                await this.handleEntityNoExposeEdit(action, model);
+                break;
+
             case 'relationship-name':
                 await this.handleRelationshipNameEdit(action, model);
                 break;
@@ -63,6 +67,14 @@ export class UpdateElementPropertyHandler {
 
             case 'attribute-alias':
                 await this.handleAttributeAliasEdit(action, model);
+                break;
+
+            case 'association-name':
+                await this.handleAssociationNameEdit(action, model);
+                break;
+
+            case 'association-alias':
+                await this.handleAssociationAliasEdit(action, model);
                 break;
 
             case 'where-clause-attribute-name':
@@ -134,6 +146,19 @@ export class UpdateElementPropertyHandler {
             return Promise.resolve();
 
         entity.alias = action.value;
+    }
+
+    protected async handleEntityNoExposeEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
+        const entity = model.entities.find(e => e.name === action.elementId);
+
+        if (!entity)
+            return Promise.resolve();
+
+        if (entity.type === 'no-expose') {
+            entity.type = undefined;
+        } else {
+            entity.type = 'no-expose';
+        }
     }
 
     protected async handleRelationshipNameEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
@@ -249,6 +274,34 @@ export class UpdateElementPropertyHandler {
             return Promise.resolve();
 
         attribute.alias = action.value;
+    }
+
+    protected async handleAssociationNameEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
+        const split = action.elementId.split('.');
+        const entityId = split[0];
+        const associationId = split[1];
+
+        const entity = model.entities.find(e => e.name === entityId);
+        const association = entity?.associations.find(a => a.name === associationId);
+
+        if (!association)
+            return Promise.resolve();
+
+        association.name = action.value;
+    }
+
+    protected async handleAssociationAliasEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {
+        const split = action.elementId.split('.');
+        const entityId = split[0];
+        const associationId = split[1];
+
+        const entity = model.entities.find(e => e.name === entityId);
+        const association = entity?.associations.find(a => a.name === associationId);
+
+        if (!association)
+            return Promise.resolve();
+
+        association.alias = action.value;
     }
 
     protected async handleWhereClauseAttributeNameEdit(action: UpdateElementPropertyAction, model: ER2CDS): Promise<void> {

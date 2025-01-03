@@ -1,7 +1,7 @@
 
 import { GeneratorContext, IdCache, LangiumDiagramGenerator } from 'langium-sprotty';
 import { SCompartment, SLabel } from 'sprotty-protocol';
-import { Attribute, ER2CDS, Entity, Relationship, RelationshipJoinClause, RelationshipEntity, EntityWhereClause } from './generated/ast.js';
+import { Attribute, ER2CDS, Entity, Relationship, RelationshipJoinClause, RelationshipEntity, EntityWhereClause, Association } from './generated/ast.js';
 import { ER2CDSServices } from './er2cds-module.js';
 import { AstNode } from 'langium';
 import { LayoutOptions } from 'elkjs';
@@ -24,7 +24,11 @@ import {
     LABEL_JOIN_CLAUSE_COMPARISON,
     LABEL_VALUE,
     COMP_WHERE_CLAUSES,
-    COMP_WHERE_CLAUSE
+    COMP_WHERE_CLAUSE,
+    COMP_ASSOCIATIONS,
+    LABEL_ASSOCIATION,
+    COMP_ASSOCIATION,
+    LABEL_ENTITY_NO_EXPOSE
 } from './model.js';
 
 export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
@@ -59,6 +63,11 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
     protected generateEntity(entity: Entity, { idCache }: GeneratorContext<ER2CDS>): EntityNode {
         const entityId = idCache.uniqueId(entity.name, entity);
 
+        let entityType = LABEL_ENTITY;
+        if (entity.type === 'no-expose') {
+            entityType = LABEL_ENTITY_NO_EXPOSE;
+        }
+
         const node = <EntityNode>{
             type: NODE_ENTITY,
             id: entityId,
@@ -75,7 +84,7 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
             layout: 'hbox',
             children: [
                 <SLabel>{
-                    type: LABEL_ENTITY,
+                    type: entityType,
                     id: idCache.uniqueId(entityId + '.label'),
                     text: entity.name
                 },
@@ -99,6 +108,19 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
             children: entity.attributes.map(a => this.generateAttributeLabels(a, entityId, idCache))
         };
         node.children?.push(attributesCompartment);
+
+
+        const associationsCompartment = <SCompartment>{
+            type: COMP_ASSOCIATIONS,
+            id: idCache.uniqueId(entityId + '.associations'),
+            layout: 'vbox',
+            layoutOptions: <LayoutOptions>{
+                HAlign: 'left',
+                VGap: '1.0'
+            },
+            children: entity.associations.map(a => this.generateAssociationsLabels(a, entityId, idCache))
+        };
+        node.children?.push(associationsCompartment);
 
         const whereClausesCompartment = <SCompartment>{
             type: COMP_WHERE_CLAUSES,
@@ -281,6 +303,32 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
         }
 
         return ' ';
+    }
+
+    protected generateAssociationsLabels(association: Association, entityId: string, idCache: IdCache<AstNode>): SCompartment {
+        const associationId = idCache.uniqueId(entityId + '.' + association.name, association);
+
+        return <SCompartment>{
+            type: COMP_ASSOCIATION,
+            id: associationId,
+            layout: 'hbox',
+            layoutOptions: <LayoutOptions>{
+                VAlign: 'middle',
+                HGap: '5.0'
+            },
+            children: [
+                <SLabel>{
+                    id: associationId + '.label',
+                    text: association.name,
+                    type: LABEL_ASSOCIATION
+                },
+                <SLabel>{
+                    id: associationId + '.alias',
+                    text: association.alias,
+                    type: LABEL_ASSOCIATION
+                }
+            ]
+        };
     }
 
     protected generateWhereClauseLabels(entityWhereClause: EntityWhereClause, entityId: string, idCache: IdCache<AstNode>): SCompartment {

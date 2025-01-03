@@ -61,6 +61,21 @@ export namespace CreateAttributeAction {
     }
 }
 
+export interface CreateAssociationAction extends Action {
+    kind: typeof CreateAssociationAction.KIND;
+    elementId: string;
+}
+export namespace CreateAssociationAction {
+    export const KIND = 'createAssociation';
+
+    export function create(elementId: string): CreateAssociationAction {
+        return {
+            kind: KIND,
+            elementId
+        };
+    }
+}
+
 export interface CreateWhereClauseAction extends Action {
     kind: typeof CreateWhereClauseAction.KIND;
     elementId: string;

@@ -40,6 +40,8 @@ export function isCOMPOSITION(item: unknown): item is COMPOSITION {
     return item === 'composition';
 }
 
+export type EntityType = 'no-expose';
+
 export type EQUAL = '=';
 
 export function isEQUAL(item: unknown): item is EQUAL {
@@ -80,6 +82,12 @@ export function isLOWER_THAN(item: unknown): item is LOWER_THAN {
     return item === '<';
 }
 
+export type NO_EXPOSE = 'no-expose';
+
+export function isNO_EXPOSE(item: unknown): item is NO_EXPOSE {
+    return item === 'no-expose';
+}
+
 export type NO_OUT = 'no-out';
 
 export function isNO_OUT(item: unknown): item is NO_OUT {
@@ -104,6 +112,19 @@ export type ZERO_MANY = '0..N';
 
 export function isZERO_MANY(item: unknown): item is ZERO_MANY {
     return item === '0..N';
+}
+
+export interface Association extends AstNode {
+    readonly $container: Entity;
+    readonly $type: 'Association';
+    alias?: string
+    name: string
+}
+
+export const Association = 'Association';
+
+export function isAssociation(item: unknown): item is Association {
+    return reflection.isInstance(item, Association);
 }
 
 export interface Attribute extends AstNode {
@@ -137,8 +158,10 @@ export interface Entity extends AstNode {
     readonly $container: ER2CDS;
     readonly $type: 'Entity';
     alias?: string
+    associations: Array<Association>
     attributes: Array<Attribute>
     name: string
+    type?: EntityType
     whereClauses: Array<EntityWhereClause>
 }
 
@@ -220,6 +243,7 @@ export function isRelationshipJoinClause(item: unknown): item is RelationshipJoi
 }
 
 export type ER2CDSAstType = {
+    Association: Association
     Attribute: Attribute
     DataType: DataType
     ER2CDS: ER2CDS
@@ -233,7 +257,7 @@ export type ER2CDSAstType = {
 export class ER2CDSAstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return ['Attribute', 'DataType', 'ER2CDS', 'Entity', 'EntityWhereClause', 'Relationship', 'RelationshipEntity', 'RelationshipJoinClause'];
+        return ['Association', 'Attribute', 'DataType', 'ER2CDS', 'Entity', 'EntityWhereClause', 'Relationship', 'RelationshipEntity', 'RelationshipJoinClause'];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
@@ -267,6 +291,7 @@ export class ER2CDSAstReflection extends AbstractAstReflection {
                 return {
                     name: 'Entity',
                     mandatory: [
+                        { name: 'associations', type: 'array' },
                         { name: 'attributes', type: 'array' },
                         { name: 'whereClauses', type: 'array' }
                     ]

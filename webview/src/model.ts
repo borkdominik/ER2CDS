@@ -11,6 +11,8 @@ export const EDGE = 'edge';
 export const COMP_ENTITY_HEADER = 'comp:entity-header';
 export const COMP_ATTRIBUTES = 'comp:attributes';
 export const COMP_ATTRIBUTE = 'comp:attribute';
+export const COMP_ASSOCIATIONS = 'comp:associations';
+export const COMP_ASSOCIATION = 'comp:association';
 export const COMP_WHERE_CLAUSES = 'comp:where-clauses';
 export const COMP_WHERE_CLAUSE = 'comp:where-clause';
 
@@ -19,10 +21,12 @@ export const COMP_JOIN_CLAUSES = 'comp:join-clauses';
 export const COMP_JOIN_CLAUSE = 'comp:join-clause';
 
 export const LABEL_ENTITY = 'label:entity';
+export const LABEL_ENTITY_NO_EXPOSE = 'label:entity-no-expose';
 export const LABEL_ENTITY_ALIAS = 'label:entity-alias'
 export const LABEL_ATTRIBUTE = 'label:attribute';
 export const LABEL_ATTRIBUTE_KEY = 'label:attribute-key';
 export const LABEL_ATTRIBUTE_NO_OUT = 'label:attribute-no-out';
+export const LABEL_ASSOCIATION = 'label:association';
 export const LABEL_SEPARATOR = 'label:separator';
 export const LABEL_VALUE = 'label:value';
 

@@ -11,9 +11,9 @@ import { createTextProperty } from './text/text.creator';
 import { ElementTextPropertyItem } from './text/text.model';
 import { Action, SelectAction, Bounds } from 'sprotty-protocol';
 import { EditorPanelChild } from '../editor-panel/editor-panel';
-import { AutoCompleteValue, CreateAttributeAction, CreateJoinClauseAction, CreateWhereClauseAction, DeleteElementAction, RequestAutoCompleteAction, RequestPopupConfirmModelAction, UpdateElementPropertyAction } from '../actions';
+import { AutoCompleteValue, CreateAssociationAction, CreateAttributeAction, CreateJoinClauseAction, CreateWhereClauseAction, DeleteElementAction, RequestAutoCompleteAction, RequestPopupConfirmModelAction, UpdateElementPropertyAction } from '../actions';
 import { DiagramEditorService } from '../services/diagram-editor-service';
-import { ATTRIBUTE_TYPES, CARDINALITIES, COMPARISON_TYPES, COMP_ATTRIBUTE, DATATYPES, ER2CDSRoot, Edge, EntityNode, LABEL_ATTRIBUTE_KEY, LABEL_ATTRIBUTE_NO_OUT, LABEL_RELATIONSHIP_ASSOCIATION, LABEL_RELATIONSHIP_ASSOCIATION_TO_PARENT, LABEL_RELATIONSHIP_COMPOSITION, NODE_ENTITY, RELATIONSHIP_TYPES, RelationshipNode } from '../model';
+import { ATTRIBUTE_TYPES, CARDINALITIES, COMPARISON_TYPES, COMP_ATTRIBUTE, DATATYPES, ER2CDSRoot, Edge, EntityNode, LABEL_ATTRIBUTE_KEY, LABEL_ATTRIBUTE_NO_OUT, LABEL_ENTITY_NO_EXPOSE, LABEL_RELATIONSHIP_ASSOCIATION, LABEL_RELATIONSHIP_ASSOCIATION_TO_PARENT, LABEL_RELATIONSHIP_COMPOSITION, NODE_ENTITY, RELATIONSHIP_TYPES, RelationshipNode } from '../model';
 import { AutoCompleteWidget } from './auto-complete/auto-complete-widget';
 import { ElementAutoCompletePropertyItem } from './auto-complete/auto-complete.model';
 import { createAutoCompleteProperty } from './auto-complete/auto-complete.creator';
@@ -154,6 +154,17 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             element.children.length === 4
         ) {
             this.initializeAttributesPropertyPaletteItems(element, propertyPaletteItems);
+
+            // Associations
+        } else if (
+            element instanceof SCompartmentImpl &&
+            element.parent &&
+            (element.parent as SCompartmentImpl).parent &&
+            (element.parent as SCompartmentImpl).parent instanceof EntityNode &&
+            element.children.length === 2
+        ) {
+            this.initializeAssociationsPropertyPaletteItems(element, propertyPaletteItems);
+
 
             // Where Clauses
         } else if (
@@ -406,6 +417,15 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         };
         propertyPaletteItems.push(entityAliasPaletteItem);
 
+        const entityNoExposePaletteItem = <ElementBoolPropertyItem>{
+            type: ElementBoolPropertyItem.TYPE,
+            elementId: entity.id,
+            propertyId: 'entity-type',
+            label: 'No Expose',
+            value: entity.children[0].children[0].type === LABEL_ENTITY_NO_EXPOSE
+        };
+        propertyPaletteItems.push(entityNoExposePaletteItem);
+
         const entityAttributesPaletteItems = <ElementReferencePropertyItem>{
             type: ElementReferencePropertyItem.TYPE,
             elementId: entity.id,
@@ -416,12 +436,22 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
         }
         propertyPaletteItems.push(entityAttributesPaletteItems);
 
+        const entityAssociationsPaletteItems = <ElementReferencePropertyItem>{
+            type: ElementReferencePropertyItem.TYPE,
+            elementId: entity.id,
+            isOrderable: false,
+            label: 'Associations',
+            references: entity.children[2].children.map(c => ({ elementId: c.id, label: c.id, isReadonly: false }) as ElementReferencePropertyItem.Reference),
+            creates: [({ label: 'Create Association', action: CreateAssociationAction.create(entity.id) }) as ElementReferencePropertyItem.CreateReference]
+        }
+        propertyPaletteItems.push(entityAssociationsPaletteItems);
+
         const entityWhereClausesPaletteItems = <ElementReferencePropertyItem>{
             type: ElementReferencePropertyItem.TYPE,
             elementId: entity.id,
             isOrderable: false,
             label: 'Where Clause',
-            references: entity.children[2].children.map(c => (
+            references: entity.children[3].children.map(c => (
                 { elementId: c.id, label: `${(c.children[0] as SLabelImpl).text} ${(c.children[2] as SLabelImpl).text} ${(c.children[1] as SLabelImpl).text}`, isReadonly: false }
             ) as ElementReferencePropertyItem.Reference),
             creates: [({ label: 'Create Where Clause', action: CreateWhereClauseAction.create(entity.id) }) as ElementReferencePropertyItem.CreateReference]
@@ -604,6 +634,31 @@ export class PropertyPalette implements IActionHandler, EditorPanelChild {
             propertyPaletteItems.push(entityAttributeAliasPaletteItem);
         }
     }
+
+    protected initializeAssociationsPropertyPaletteItems(element: SCompartmentImpl, propertyPaletteItems: ElementPropertyItem[]) {
+        const entity = (element.parent as SCompartmentImpl).parent as EntityNode;
+
+        if (element.children.length > 1) {
+            const entityAssociationNamePaletteItem = <ElementTextPropertyItem>{
+                type: ElementTextPropertyItem.TYPE,
+                elementId: element.children[0].id,
+                propertyId: 'association-name',
+                label: 'Name',
+                text: (element.children[0] as SLabelImpl).text
+            }
+            propertyPaletteItems.push(entityAssociationNamePaletteItem);
+
+            const entityAssociationAliasPaletteItem = <ElementTextPropertyItem>{
+                type: ElementTextPropertyItem.TYPE,
+                elementId: element.children[1].id,
+                propertyId: 'association-alias',
+                label: 'Alias',
+                text: (element.children[1] as SLabelImpl).text
+            }
+            propertyPaletteItems.push(entityAssociationAliasPaletteItem);
+        }
+    }
+
 
     protected initializeWhereClausesPropertyPaletteItems(element: SCompartmentImpl, propertyPaletteItems: ElementPropertyItem[]) {
         const entity = (element.parent as SCompartmentImpl).parent as EntityNode;

@@ -1,6 +1,6 @@
 import { Action, DiagramServer, DiagramServices, RequestAction, ResponseAction } from 'sprotty-protocol';
 import { ER2CDSServices } from './er2cds-module.js';
-import { CreateAttributeAction, CreateEdgeAction, CreateElementAction, CreateElementExternalAction, CreateJoinClauseAction, CreateWhereClauseAction, DeleteElementAction, RequestAutoCompleteAction, RequestMarkersAction, RequestPopupConfirmModelAction, UpdateElementPropertyAction } from './actions.js';
+import { CreateAssociationAction, CreateAttributeAction, CreateEdgeAction, CreateElementAction, CreateElementExternalAction, CreateJoinClauseAction, CreateWhereClauseAction, DeleteElementAction, RequestAutoCompleteAction, RequestMarkersAction, RequestPopupConfirmModelAction, UpdateElementPropertyAction } from './actions.js';
 import { CreateElementActionHandler } from './handler/CreateElementActionHandler.js';
 import { CreateAttributeActionHandler } from './handler/CreateAttributeActionHandler.js';
 import { CreateEdgeActionHandler } from './handler/CreateEdgeActionHandler.js';
@@ -12,6 +12,7 @@ import { CreateElementExternalActionHandler } from './handler/CreateElementExter
 import { CreateJoinClauseActionHandler } from './handler/CreateJoinClauseActionHandler.js';
 import { RequestMarkersActionHandler } from './handler/RequestMarkersActionHandler.js';
 import { CreateWhereClauseActionHandler } from './handler/CreateWhereClauseActionHandler.js';
+import { CreateAssociationActionHandler } from './handler/CreateAssociationHandler.js';
 
 export class ER2CDSDiagramServer extends DiagramServer {
     private services: ER2CDSServices;
@@ -46,6 +47,10 @@ export class ER2CDSDiagramServer extends DiagramServer {
 
             case CreateAttributeAction.KIND:
                 new CreateAttributeActionHandler().handle(action as CreateAttributeAction, this, this.services);
+                break;
+
+            case CreateAssociationAction.KIND:
+                new CreateAssociationActionHandler().handle(action as CreateAssociationAction, this, this.services);
                 break;
 
             case CreateWhereClauseAction.KIND:

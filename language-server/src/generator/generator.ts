@@ -1,6 +1,6 @@
 import { URI, expandToString } from 'langium';
 import { createER2CDSServices } from '../er2cds-module.js';
-import { Attribute, ER2CDS, Entity, Relationship, RelationshipJoinClause } from '../generated/ast.js';
+import { Association, Attribute, ER2CDS, Entity, Relationship, RelationshipJoinClause } from '../generated/ast.js';
 import { ER2CDSFileSystem } from '../er2cds-file-system-provider.js';
 import { MessageType } from 'vscode-languageserver-protocol';
 import { connection } from '../server.js';
@@ -72,6 +72,11 @@ function generateSourceCode(model: ER2CDS): string | undefined {
         return 0;
     });
 
+    const generatedKeyAttributes = generateKeyAttributes(model);
+    const generatedAttributes = generateAttributes(model);
+    const generatedAssociationAttributes = generateAssociationAttributes(model);
+    const generatedImplicitAssociationAttributes = generateImplicitAssociationAttributes(model);
+
     return expandToString`
         ${generateHeaderAnnotations(model)}
         ${generateHeader(model)}
@@ -81,9 +86,10 @@ function generateSourceCode(model: ER2CDS): string | undefined {
             ${generateAssociationsToParent(model)}
             ${generateCompositions(model)}
         {
-            ${generateKeyAttributes(model)}${model.entities.find(e => e.attributes.find(a => a.type === 'key')) && model.entities.find(e => e.attributes.find(a => a.type !== 'key')) ? ',' : ''}
-            ${generateAttributes(model)}${model.entities.find(e => e.attributes.find(a => a.type !== 'key')) && model.relationships.find(r => r.type === 'association' || r.type === 'association-to-parent' || r.type === 'composition') ? ',' : ''}
-            ${generateAssociationAttributes(model)}
+            ${generatedKeyAttributes}${generatedKeyAttributes && ((generatedAttributes && generatedAttributes.length > 0) || (generatedAssociationAttributes && generatedAssociationAttributes.length > 0) || (generatedImplicitAssociationAttributes && generatedImplicitAssociationAttributes.length > 0)) ? ',' : ''}
+            ${generatedAttributes}${generatedAttributes && ((generatedAssociationAttributes && generatedAssociationAttributes.length > 0) || (generatedImplicitAssociationAttributes && generatedImplicitAssociationAttributes.length > 0)) ? ',' : ''}
+            ${generatedAssociationAttributes}${generatedAssociationAttributes && ((generatedImplicitAssociationAttributes && generatedImplicitAssociationAttributes.length > 0)) ? ',' : ''}
+            ${generatedImplicitAssociationAttributes}
         }
         ${generateWhereClause(model)}
     `;
@@ -410,12 +416,45 @@ function generateAttributeLabel(entity: Entity, attribute: Attribute): string | 
 }
 
 function generateAssociationAttributes(model: ER2CDS): string | undefined {
+    if (model.entities) {
+        let associations: string[] = [];
+
+        model.entities.forEach(e => {
+            associations.push(...e.associations.map(a => generateAssociationAttribute(e, a)));
+        });
+
+        return associations.filter(Boolean).join(',\n');
+    }
+
+    return undefined;
+}
+
+function generateAssociationAttribute(entity: Entity, association: Association): string {
+    return expandToString`
+            ${entity.alias ? entity.alias : entity.name}.${association.name} ${generateAssociationAttributeLabel(entity, association)}
+        `;
+}
+
+function generateAssociationAttributeLabel(entity: Entity, association: Association): string | undefined {
+    if (association.alias) {
+        return expandToString`
+            as ${association.alias}
+        `;
+    }
+
+    return undefined;
+}
+
+function generateImplicitAssociationAttributes(model: ER2CDS): string | undefined {
     if (model.relationships) {
         let associationAttributes: string[] = [];
 
-        model.relationships.filter(r => r.type === 'association' || r.type === 'association-to-parent' || r.type === 'composition').forEach(r => {
-            associationAttributes.push(expandToString`${r.target?.target.ref?.alias ? r.target?.target.ref?.alias : r.target?.target.ref?.name}`);
-        });
+        model.relationships
+            .filter(r => r.type === 'association' || r.type === 'association-to-parent' || r.type === 'composition')
+            .filter(r => !r.target?.target.ref?.type)
+            .forEach(r => {
+                associationAttributes.push(expandToString`${r.target?.target.ref?.alias ? r.target?.target.ref?.alias : r.target?.target.ref?.name}`);
+            });
 
         return associationAttributes.filter(Boolean).join(',\n');
     }

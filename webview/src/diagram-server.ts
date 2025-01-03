@@ -2,7 +2,7 @@ import { injectable } from 'inversify';
 import { ActionHandlerRegistry } from 'sprotty';
 import { Action } from 'sprotty-protocol';
 import { VscodeLspEditDiagramServer } from 'sprotty-vscode-webview/lib/lsp/editing';
-import { CreateElementAction, DeleteElementAction, CreateEdgeAction, CreateAttributeAction, UpdateElementPropertyAction, RequestAutoCompleteAction, CreateElementExternalAction, RequestPopupConfirmModelAction, CreateJoinClauseAction, RequestMarkersAction, CreateWhereClauseAction } from './actions';
+import { CreateElementAction, DeleteElementAction, CreateEdgeAction, CreateAttributeAction, UpdateElementPropertyAction, RequestAutoCompleteAction, CreateElementExternalAction, RequestPopupConfirmModelAction, CreateJoinClauseAction, RequestMarkersAction, CreateWhereClauseAction, CreateAssociationAction } from './actions';
 
 @injectable()
 export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
@@ -14,6 +14,7 @@ export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
         registry.register(CreateElementExternalAction.KIND, this);
         registry.register(CreateEdgeAction.KIND, this);
         registry.register(CreateAttributeAction.KIND, this);
+        registry.register(CreateAssociationAction.KIND, this);
         registry.register(CreateWhereClauseAction.KIND, this);
         registry.register(CreateJoinClauseAction.KIND, this);
 
@@ -37,6 +38,9 @@ export class ER2CDSDiagramServer extends VscodeLspEditDiagramServer {
                 return true;
 
             case CreateAttributeAction.KIND:
+                return true;
+
+            case CreateAssociationAction.KIND:
                 return true;
 
             case CreateWhereClauseAction.KIND:

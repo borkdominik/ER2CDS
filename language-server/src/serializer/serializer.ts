@@ -1,7 +1,7 @@
 import { URI, expandToString } from 'langium';
 import { ER2CDSDiagramServer } from '../er2cds-diagram-server.js';
 import { ER2CDSServices } from '../er2cds-module.js';
-import { Attribute, ER2CDS, Entity, EntityWhereClause, Relationship, RelationshipJoinClause } from '../generated/ast.js';
+import { Association, Attribute, ER2CDS, Entity, EntityWhereClause, Relationship, RelationshipJoinClause } from '../generated/ast.js';
 import { Range, Position } from 'vscode-languageserver-types';
 import { WorkspaceEditAction } from 'sprotty-vscode-protocol/lib/lsp/editing';
 
@@ -50,9 +50,10 @@ export function serializeEntities(entities: Entity[]): string {
 
 export function serializeEntity(entity: Entity): string {
     return expandToString`
-        entity ${entity.name} {
+        ${entity.type ? `${entity.type} ` : undefined}entity ${entity.name} {
             ${entity.alias ? `alias ${entity.alias}` : undefined}
             ${entity.attributes.length > 0 ? entity.attributes.map(a => serializeAttribute(a)).join('\n') : undefined}
+            ${serializeAssociations(entity)}
             ${serializeWhereClauses(entity)}
         }
     `;
@@ -61,6 +62,22 @@ export function serializeEntity(entity: Entity): string {
 export function serializeAttribute(attribute: Attribute): string {
     return expandToString`
         ${attribute.type ? attribute.type : undefined} ${attribute.name} : ${attribute.datatype?.type} ${attribute.alias ? `as ${attribute.alias}` : undefined}
+    `;
+}
+
+export function serializeAssociations(entity: Entity): string | undefined {
+    if (entity.associations.length <= 0)
+        return undefined;
+
+    return expandToString`
+        expose
+        ${entity.associations.map(a => serializeAssociation(a)).join('\n')}
+    `;
+}
+
+export function serializeAssociation(association: Association): string {
+    return expandToString`
+        ${association.name} ${association.alias ? `as ${association.alias}` : undefined}
     `;
 }
 
