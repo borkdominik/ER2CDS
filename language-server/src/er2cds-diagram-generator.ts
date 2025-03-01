@@ -97,42 +97,47 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
         };
         node.children?.push(headerCompartment);
 
-        const attributesCompartment = <SCompartment>{
-            type: COMP_ATTRIBUTES,
-            id: idCache.uniqueId(entityId + '.attributes'),
-            layout: 'vbox',
-            layoutOptions: <LayoutOptions>{
-                HAlign: 'left',
-                VGap: '1.0'
-            },
-            children: entity.attributes.map(a => this.generateAttributeLabels(a, entityId, idCache))
-        };
-        node.children?.push(attributesCompartment);
+        if (entity.attributes) {
+            const attributesCompartment = <SCompartment>{
+                type: COMP_ATTRIBUTES,
+                id: idCache.uniqueId(entityId + '.attributes'),
+                layout: 'vbox',
+                layoutOptions: <LayoutOptions>{
+                    HAlign: 'left',
+                    VGap: '1.0'
+                },
+                children: entity.attributes?.map(a => this.generateAttributeLabels(a, entityId, idCache))
+            };
+            node.children?.push(attributesCompartment);
+        }
 
+        if (entity.associations) {
+            const associationsCompartment = <SCompartment>{
+                type: COMP_ASSOCIATIONS,
+                id: idCache.uniqueId(entityId + '.associations'),
+                layout: 'vbox',
+                layoutOptions: <LayoutOptions>{
+                    HAlign: 'left',
+                    VGap: '1.0'
+                },
+                children: entity.associations?.map(a => this.generateAssociationsLabels(a, entityId, idCache))
+            };
+            node.children?.push(associationsCompartment);
+        }
 
-        const associationsCompartment = <SCompartment>{
-            type: COMP_ASSOCIATIONS,
-            id: idCache.uniqueId(entityId + '.associations'),
-            layout: 'vbox',
-            layoutOptions: <LayoutOptions>{
-                HAlign: 'left',
-                VGap: '1.0'
-            },
-            children: entity.associations.map(a => this.generateAssociationsLabels(a, entityId, idCache))
-        };
-        node.children?.push(associationsCompartment);
-
-        const whereClausesCompartment = <SCompartment>{
-            type: COMP_WHERE_CLAUSES,
-            id: idCache.uniqueId(entityId + '.where-clauses'),
-            layout: 'vbox',
-            layoutOptions: <LayoutOptions>{
-                HAlign: 'left',
-                VGap: '1.0'
-            },
-            children: entity.whereClauses.map(w => this.generateWhereClauseLabels(w, entityId, idCache))
-        };
-        node.children?.push(whereClausesCompartment);
+        if (entity.whereClauses) {
+            const whereClausesCompartment = <SCompartment>{
+                type: COMP_WHERE_CLAUSES,
+                id: idCache.uniqueId(entityId + '.where-clauses'),
+                layout: 'vbox',
+                layoutOptions: <LayoutOptions>{
+                    HAlign: 'left',
+                    VGap: '1.0'
+                },
+                children: entity.whereClauses?.map(w => this.generateWhereClauseLabels(w, entityId, idCache))
+            };
+            node.children?.push(whereClausesCompartment);
+        }
 
         return node;
     }
@@ -197,12 +202,14 @@ export class ER2CDSDiagramGenerator extends LangiumDiagramGenerator {
         };
         node.children?.push(joinTableCompartment);
 
-        const joinClauseCompartment = <SCompartment>{
-            type: COMP_JOIN_CLAUSES,
-            id: idCache.uniqueId(relationshipId + '.join-clause-comp'),
-            children: relationship.joinClauses.map(jc => this.generateJoinClauseLabels(jc, relationshipId, idCache))
+        if (relationship.joinClauses) {
+            const joinClauseCompartment = <SCompartment>{
+                type: COMP_JOIN_CLAUSES,
+                id: idCache.uniqueId(relationshipId + '.join-clause-comp'),
+                children: relationship.joinClauses.map(jc => this.generateJoinClauseLabels(jc, relationshipId, idCache))
+            }
+            node.children?.push(joinClauseCompartment);
         }
-        node.children?.push(joinClauseCompartment);
 
         return node;
     }

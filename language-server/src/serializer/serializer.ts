@@ -52,7 +52,7 @@ export function serializeEntity(entity: Entity): string {
     return expandToString`
         ${entity.type ? `${entity.type} ` : undefined}entity ${entity.name} {
             ${entity.alias ? `alias ${entity.alias}` : undefined}
-            ${entity.attributes.length > 0 ? entity.attributes.map(a => serializeAttribute(a)).join('\n') : undefined}
+            ${(entity.attributes && entity.attributes.length > 0) ? entity.attributes.map(a => serializeAttribute(a)).join('\n') : undefined}
             ${serializeAssociations(entity)}
             ${serializeWhereClauses(entity)}
         }
@@ -66,7 +66,7 @@ export function serializeAttribute(attribute: Attribute): string {
 }
 
 export function serializeAssociations(entity: Entity): string | undefined {
-    if (entity.associations.length <= 0)
+    if (!entity.associations || entity.associations.length <= 0)
         return undefined;
 
     return expandToString`
@@ -82,7 +82,7 @@ export function serializeAssociation(association: Association): string {
 }
 
 export function serializeWhereClauses(entity: Entity): string | undefined {
-    if (entity.whereClauses.length <= 0)
+    if (!entity.whereClauses || entity.whereClauses.length <= 0)
         return undefined;
 
     return expandToString`
@@ -151,7 +151,7 @@ export function serializeJoinOrder(relationship: Relationship): string | undefin
 }
 
 export function serializeJoinClauses(relationship: Relationship): string | undefined {
-    if (relationship.joinClauses.length <= 0)
+    if (!relationship.joinClauses || relationship.joinClauses.length <= 0)
         return undefined;
 
     return expandToString`
