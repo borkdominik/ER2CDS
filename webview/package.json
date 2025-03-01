@@ -1,6 +1,6 @@
 {
     "name": "er2cds",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "dependencies": {
         "@vscode/webview-ui-toolkit": "^1.4.0",
         "autocompleter": "^9.2.1",
