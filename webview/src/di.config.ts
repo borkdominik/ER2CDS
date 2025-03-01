@@ -81,8 +81,8 @@ export default (containerId: string) => {
         configureModelElement(context, COMP_ATTRIBUTE, SCompartmentImpl, SCompartmentView);
         configureModelElement(context, COMP_ASSOCIATIONS, SCompartmentImpl, SCompartmentView);
         configureModelElement(context, COMP_ASSOCIATION, SCompartmentImpl, SCompartmentView);
-        configureModelElement(context, COMP_WHERE_CLAUSES, SCompartmentImpl, SCompartmentView);
-        configureModelElement(context, COMP_WHERE_CLAUSE, SCompartmentImpl, SCompartmentView);
+        configureModelElement(context, COMP_WHERE_CLAUSES, SCompartmentImpl, EmptyView);
+        configureModelElement(context, COMP_WHERE_CLAUSE, SCompartmentImpl, EmptyView);
         configureModelElement(context, COMP_JOIN_TABLE, SCompartmentImpl, EmptyView);
         configureModelElement(context, COMP_JOIN_CLAUSES, SCompartmentImpl, EmptyView);
         configureModelElement(context, COMP_JOIN_CLAUSE, SCompartmentImpl, EmptyView);
