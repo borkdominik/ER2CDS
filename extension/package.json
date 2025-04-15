@@ -1,7 +1,7 @@
 {
   "name": "er2cds",
   "displayName": "bigER2CDS - Entity Relationship Modeling for SAP Core Data Services",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "publisher": "BIGModelingTools",
   "icon": "media/er2cds_logo.png",
   "repository": {
